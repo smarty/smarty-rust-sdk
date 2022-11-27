@@ -1,15 +1,27 @@
+extern crate core;
+
 use std::error::Error;
 use reqwest::{Method};
 use crate::builder::ClientBuilder;
 use tokio;
 use std::env;
 use std::env::VarError;
+use crate::candidate::{Candidate, Candidates};
+use crate::lookup::Lookup;
 
 mod builder;
 mod candidate;
+mod lookup;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
+    let lookup = Lookup {
+        street: "1600 Pennsylvania Avenue".to_string(),
+        last_line: "Washington, DC".to_string(),
+        max_candidates: 5,
+        ..Default::default()
+    };
+
     let auth = Authentication::new("SMARTY_AUTH_ID", "SMARTY_AUTH_TOKEN")?;
 
     let query = "&street=1600+amphitheatre+pkwy&city=mountain+view&state=CA&candidates=10";
@@ -26,9 +38,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let client = client_builder.build_httpclient();
 
     let req = client.request(Method::GET, url.as_str());
+
     let content = req.send()
         .await?
-        .text()
+        .json::<Candidates>()
         .await?;
 
     println!("text: {:?}", content);
