@@ -1,7 +1,8 @@
+use std::fmt::{Display, Formatter};
 use serde::{Deserialize, Serialize};
 use crate::candidate::{Candidate, Candidates};
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Lookup {
     pub street: String,
     pub street2: String,
@@ -9,16 +10,13 @@ pub struct Lookup {
     pub city: String,
     pub state: String,
     pub zipcode: String,
-    #[serde(rename = "lastline")]
-    pub last_line: String,
+    pub last_line: String, // lastline in json
     pub adressee: String,
     pub urbanization: String,
     pub input_id: String,
-    #[serde(rename = "candidates")]
-    pub max_candidates: i64, // Default Value: 1
+    pub max_candidates: i64, // Default Value: 1 // candidates in json
 
-    #[serde(rename = "match")]
-    pub match_strategy: MatchStrategy,
+    pub match_strategy: MatchStrategy, // match in json
 
     pub results: Candidates
 }
@@ -44,11 +42,49 @@ impl Default for Lookup {
     }
 }
 
-#[derive(Default, Debug, Clone, PartialEq, Serialize)]
-#[serde(rename_all = "snake_case")]
+impl Lookup {
+    pub fn to_param_array(self) -> Vec<(String, String)> {
+        vec![
+            has_param("street".to_string(), self.street),
+            has_param("street2".to_string(), self.street2),
+            has_param("secondary".to_string(), self.secondary),
+            has_param("city".to_string(), self.city),
+            has_param("state".to_string(), self.state),
+            has_param("zipcode".to_string(), self.zipcode),
+            has_param("lastline".to_string(), self.last_line),
+            has_param("adressee".to_string(), self.adressee),
+            has_param("urbanization".to_string(), self.urbanization),
+            has_param("input_id".to_string(), self.input_id),
+            has_param("candidates".to_string(), self.max_candidates.to_string()),
+            has_param("match".to_string(), self.match_strategy.to_string()),
+        ].iter()
+            .filter_map(Option::clone)
+            .collect::<Vec<_>>()
+    }
+}
+
+fn has_param(name: String, param: String) -> Option<(String, String)> {
+    if param != String::default() {
+        Some((name, param))
+    } else {
+        None
+    }
+}
+
+#[derive(Default, Debug, Clone, PartialEq)]
 pub enum MatchStrategy {
     #[default]
     Strict,
     Invalid,
     Enhanced
+}
+
+impl Display for MatchStrategy {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            MatchStrategy::Strict => { write!(f, "strict") }
+            MatchStrategy::Invalid => { write!(f, "invalid") }
+            MatchStrategy::Enhanced => { write!(f, "enhanced") }
+        }
+    }
 }

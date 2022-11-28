@@ -1,12 +1,10 @@
-extern crate core;
-
 use std::error::Error;
 use reqwest::{Method};
 use crate::builder::ClientBuilder;
 use tokio;
 use std::env;
 use std::env::VarError;
-use crate::candidate::{Candidate, Candidates};
+use crate::candidate::{Candidates};
 use crate::lookup::Lookup;
 
 mod builder;
@@ -21,6 +19,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
         max_candidates: 5,
         ..Default::default()
     };
+
+    println!("{:?}", lookup.to_param_array());
 
     let auth = Authentication::new("SMARTY_AUTH_ID", "SMARTY_AUTH_TOKEN")?;
 
