@@ -1,20 +1,17 @@
 use std::error::Error;
-use reqwest::{Client, Method, Request};
-use crate::builder::ClientBuilder;
+use reqwest::{Request};
 use tokio;
 use std::env;
 use std::env::VarError;
 use url::Url;
-use crate::candidate::{Candidates};
+use crate::batch::Batch;
 use crate::lookup::Lookup;
-use crate::sdk_client::SDKClient;
+use crate::smarty_client::SmartyClient;
 
-mod builder;
+mod smarty_client;
 mod candidate;
 mod lookup;
 mod batch;
-
-mod sdk_client;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -25,6 +22,17 @@ async fn main() -> Result<(), Box<dyn Error>> {
         ..Default::default()
     };
 
+    let lookup2 = Lookup {
+        street: "2758 W 530".to_string(),
+        last_line: "Provo, UT".to_string(),
+        max_candidates: 8,
+        ..Default::default()
+    };
+
+    let batch = &mut Batch::new();
+    batch.push(lookup);
+    batch.push(lookup2);
+
     let auth = Authentication::new("SMARTY_AUTH_ID", "SMARTY_AUTH_TOKEN")?;
 
     let url = format!("https://us-street.api.smartystreets.me/street-address?auth-id={auth_id}&auth-token={auth_token}&license={license}",
@@ -32,24 +40,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
                       auth_token = auth.auth_id,
                       license = "us-core-cloud");
 
-    let content = lookup.send(Client::new(), Url::parse(url.as_str())?).await?;
+    let client = SmartyClient::new(Url::parse(url.as_str())?);
 
-    println!("text: {:?}", content);
+    client.send_batch(batch).await?;
 
-    // println!("{}", url);
-    //
-    // let mut client_builder = ClientBuilder::new(url.as_str())?;
-    // client_builder.set_debug(true);
-    // let client = client_builder.build_httpclient();
-    //
-    // let req = client.request(Method::GET, url.as_str()).query(&lookup.to_param_array());
-    //
-    // let content = req.send()
-    //     .await?
-    //     .json::<Candidates>()
-    //     .await?;
-    //
-    // println!("text: {:?}", content);
+    println!("result: {:?}", batch.records().clone()[0].results);
 
     Ok(())
 }

@@ -1,26 +1,40 @@
-use std::fmt::{Display, Error, Formatter};
-use std::future::Future;
-use reqwest::{Client, Method, Request, RequestBuilder, Response};
-use serde::{Deserialize, Serialize};
-use url::Url;
+use std::fmt::{Display, Formatter};
+use serde::{Serialize};
 use crate::candidate::{Candidate, Candidates};
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(default)]
 pub struct Lookup {
+    #[serde(skip_serializing_if = "String::is_empty")]
     pub street: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
     pub street2: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
     pub secondary: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
     pub city: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
     pub state: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
     pub zipcode: String,
-    pub last_line: String, // lastline in json
+    #[serde(rename = "lastline")]
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub last_line: String, // "lastline" in json
+    #[serde(skip_serializing_if = "String::is_empty")]
     pub adressee: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
     pub urbanization: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
     pub input_id: String,
+
+    #[serde(rename = "candidates")]
+    #[serde(skip_serializing_if = "is_zero")]
     pub max_candidates: i64, // Default Value: 1 // candidates in json
 
-    pub match_strategy: MatchStrategy, // match in json
+    #[serde(rename = "match")]
+    pub match_strategy: MatchStrategy, // "match" in json
 
+    #[serde(skip_serializing)]
     pub results: Candidates
 }
 
@@ -45,8 +59,24 @@ impl Default for Lookup {
     }
 }
 
+/// This is only used for serialize
+#[allow(clippy::trivially_copy_pass_by_ref)]
+fn is_zero(num: &i64) -> bool {
+    *num == 0
+}
+
 impl Lookup {
     pub fn to_param_array(self) -> Vec<(String, String)> {
+        let mut max_candidates_string = self.max_candidates.to_string();
+
+        if self.max_candidates <= 0 {
+            max_candidates_string = String::default();
+        }
+
+        if self.match_strategy == MatchStrategy::Enhanced {
+            max_candidates_string = 5.to_string();
+        }
+
         vec![
             has_param("street".to_string(), self.street),
             has_param("street2".to_string(), self.street2),
@@ -58,16 +88,11 @@ impl Lookup {
             has_param("adressee".to_string(), self.adressee),
             has_param("urbanization".to_string(), self.urbanization),
             has_param("input_id".to_string(), self.input_id),
-            has_param("candidates".to_string(), self.max_candidates.to_string()),
+            has_param("candidates".to_string(), max_candidates_string),
             has_param("match".to_string(), self.match_strategy.to_string()),
         ].iter()
             .filter_map(Option::clone)
             .collect::<Vec<_>>()
-    }
-
-    pub async fn send(&self, client: Client, url: Url) -> Result<Candidates, reqwest::Error> {
-        let req = client.request(Method::GET, url.as_str()).query(&self.clone().to_param_array());
-        req.send().await?.json::<Candidates>().await
     }
 }
 
@@ -79,7 +104,8 @@ fn has_param(name: String, param: String) -> Option<(String, String)> {
     }
 }
 
-#[derive(Default, Debug, Clone, PartialEq)]
+#[derive(Default, Debug, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum MatchStrategy {
     #[default]
     Strict,
