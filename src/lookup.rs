@@ -1,5 +1,8 @@
-use std::fmt::{Display, Formatter};
+use std::fmt::{Display, Error, Formatter};
+use std::future::Future;
+use reqwest::{Client, Method, Request, RequestBuilder, Response};
 use serde::{Deserialize, Serialize};
+use url::Url;
 use crate::candidate::{Candidate, Candidates};
 
 #[derive(Debug, Clone, PartialEq)]
@@ -60,6 +63,11 @@ impl Lookup {
         ].iter()
             .filter_map(Option::clone)
             .collect::<Vec<_>>()
+    }
+
+    pub async fn send(&self, client: Client, url: Url) -> Result<Candidates, reqwest::Error> {
+        let req = client.request(Method::GET, url.as_str()).query(&self.clone().to_param_array());
+        req.send().await?.json::<Candidates>().await
     }
 }
 

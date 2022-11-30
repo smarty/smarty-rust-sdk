@@ -1,50 +1,55 @@
 use std::error::Error;
-use reqwest::{Method};
+use reqwest::{Client, Method, Request};
 use crate::builder::ClientBuilder;
 use tokio;
 use std::env;
 use std::env::VarError;
+use url::Url;
 use crate::candidate::{Candidates};
 use crate::lookup::Lookup;
+use crate::sdk_client::SDKClient;
 
 mod builder;
 mod candidate;
 mod lookup;
+mod batch;
+
+mod sdk_client;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     let lookup = Lookup {
-        street: "1600 Pennsylvania Avenue".to_string(),
-        last_line: "Washington, DC".to_string(),
-        max_candidates: 5,
+        street: "1600 Amphitheatre Pkwy".to_string(),
+        last_line: "Mountain View, CA".to_string(),
+        max_candidates: 10,
         ..Default::default()
     };
 
-    println!("{:?}", lookup.to_param_array());
-
     let auth = Authentication::new("SMARTY_AUTH_ID", "SMARTY_AUTH_TOKEN")?;
 
-    let query = "&street=1600+amphitheatre+pkwy&city=mountain+view&state=CA&candidates=10";
-
-    let url = format!("https://us-street.api.smartystreets.me/street-address?auth-id={auth_id}&auth-token={auth_token}&license={license}{query}",
+    let url = format!("https://us-street.api.smartystreets.me/street-address?auth-id={auth_id}&auth-token={auth_token}&license={license}",
                       auth_id = auth.auth_token,
                       auth_token = auth.auth_id,
-                      query = query,
                       license = "us-core-cloud");
 
-    println!("{}", url);
-
-    let mut client_builder = ClientBuilder::new(url.as_str())?;
-    let client = client_builder.build_httpclient();
-
-    let req = client.request(Method::GET, url.as_str());
-
-    let content = req.send()
-        .await?
-        .json::<Candidates>()
-        .await?;
+    let content = lookup.send(Client::new(), Url::parse(url.as_str())?).await?;
 
     println!("text: {:?}", content);
+
+    // println!("{}", url);
+    //
+    // let mut client_builder = ClientBuilder::new(url.as_str())?;
+    // client_builder.set_debug(true);
+    // let client = client_builder.build_httpclient();
+    //
+    // let req = client.request(Method::GET, url.as_str()).query(&lookup.to_param_array());
+    //
+    // let content = req.send()
+    //     .await?
+    //     .json::<Candidates>()
+    //     .await?;
+    //
+    // println!("text: {:?}", content);
 
     Ok(())
 }
