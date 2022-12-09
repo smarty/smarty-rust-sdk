@@ -1,4 +1,4 @@
-use crate::us_reverse_geo::address::Results;
+use crate::us_reverse_geo_api::address::Results;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Lookup {

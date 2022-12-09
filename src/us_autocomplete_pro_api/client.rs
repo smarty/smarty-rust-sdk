@@ -4,8 +4,8 @@ use crate::sdk::client::Client;
 use crate::sdk::error::SDKError;
 use crate::sdk::options::Options;
 use crate::sdk::send_request;
-use crate::us_autocomplete_pro::lookup::Lookup;
-use crate::us_autocomplete_pro::suggestion::{SuggestionListing};
+use crate::us_autocomplete_pro_api::lookup::Lookup;
+use crate::us_autocomplete_pro_api::suggestion::{SuggestionListing};
 
 const SUGGEST_URL: &'static str = "lookup";
 

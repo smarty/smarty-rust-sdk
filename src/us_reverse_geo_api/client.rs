@@ -4,8 +4,8 @@ use crate::sdk::client::Client;
 use crate::sdk::error::SDKError;
 use crate::sdk::options::Options;
 use crate::sdk::send_request;
-use crate::us_reverse_geo::address::Results;
-use crate::us_reverse_geo::lookup::Lookup;
+use crate::us_reverse_geo_api::address::Results;
+use crate::us_reverse_geo_api::lookup::Lookup;
 
 const US_REVERSE_GEO_API: &'static str = "lookup";
 

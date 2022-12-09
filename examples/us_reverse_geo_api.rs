@@ -5,8 +5,8 @@ extern crate serde_json;
 use std::error::Error;
 use smarty_rust_sdk::sdk::authentication::Authentication;
 use smarty_rust_sdk::sdk::options::Options;
-use smarty_rust_sdk::us_reverse_geo::client::USReverseGeoClient;
-use smarty_rust_sdk::us_reverse_geo::lookup::Lookup;
+use smarty_rust_sdk::us_reverse_geo_api::client::USReverseGeoClient;
+use smarty_rust_sdk::us_reverse_geo_api::lookup::Lookup;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {

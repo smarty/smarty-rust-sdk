@@ -64,16 +64,15 @@ pub(crate) fn has_param(name: String, param: String) -> Option<(String, String)>
     }
 }
 
-#[derive(Default, Debug, Clone, PartialEq, Serialize)]
-pub enum Geolocation {
-    #[default]
-    #[serde(rename = "city")]
-    GeolocateCity,
-    #[serde(rename = "none")]
-    GeolocateNone
+pub(crate) fn has_i32_param(name: String, param: i32, default: i32) -> Option<(String, String)>{
+    if param == default {
+        None
+    } else {
+        Some((name, param.to_string()))
+    }
 }
 
-pub(crate) fn has_i32_param(name: String, param: i32, default: i32) -> Option<(String, String)>{
+pub(crate) fn has_f64_param(name: String, param: f64, default: f64) -> Option<(String, String)>{
     if param == default {
         None
     } else {

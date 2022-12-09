@@ -1,5 +1,6 @@
-use crate::sdk::{Geolocation, has_i32_param, has_param, has_vec_param};
-use crate::us_autocomplete_pro::suggestion::{SuggestionListing};
+use serde::Serialize;
+use crate::sdk::{has_i32_param, has_param, has_vec_param};
+use crate::us_autocomplete_pro_api::suggestion::{SuggestionListing};
 
 #[derive(Clone)]
 pub struct Lookup {
@@ -70,4 +71,13 @@ impl Lookup {
             Geolocation::GeolocateNone => { Some(("prefer_geolocation".to_string(), "none".to_string())) }
         }
     }
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize)]
+pub enum Geolocation {
+    #[default]
+    #[serde(rename = "none")]
+    GeolocateNone,
+    #[serde(rename = "city")]
+    GeolocateCity
 }

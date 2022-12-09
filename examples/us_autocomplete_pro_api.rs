@@ -4,10 +4,9 @@ extern crate serde_json;
 
 use std::error::Error;
 use smarty_rust_sdk::sdk::authentication::Authentication;
-use smarty_rust_sdk::sdk::Geolocation;
 use smarty_rust_sdk::sdk::options::Options;
-use smarty_rust_sdk::us_autocomplete_pro::client::USAutocompleteProClient;
-use smarty_rust_sdk::us_autocomplete_pro::lookup::Lookup;
+use smarty_rust_sdk::us_autocomplete_pro_api::client::USAutocompleteProClient;
+use smarty_rust_sdk::us_autocomplete_pro_api::lookup::{Geolocation, Lookup};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
