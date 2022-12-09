@@ -9,6 +9,9 @@ pub mod options;
 pub mod error;
 pub mod client;
 pub mod authentication;
+pub mod batch;
+
+pub const MAX_BATCH_SIZE: usize = 100;
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize_repr, Deserialize_repr)]
 #[repr(u8)]
@@ -44,4 +47,18 @@ pub async fn send_request(request: RequestBuilder) -> Result<Response, SDKError>
     }
 
     Ok(response)
+}
+
+/// This is only used for Serializing for post
+#[allow(clippy::trivially_copy_pass_by_ref)]
+pub fn is_zero(num: &i64) -> bool {
+    *num == 0
+}
+
+pub fn has_param(name: String, param: String) -> Option<(String, String)> {
+    if param != String::default() {
+        Some((name, param))
+    } else {
+        None
+    }
 }

@@ -1,6 +1,7 @@
 use std::fmt::{Display, Formatter};
 use serde::{Serialize};
 use crate::us_street_api::candidate::Candidates;
+use crate::sdk::{has_param, is_zero};
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(default)]
@@ -59,12 +60,6 @@ impl Default for Lookup {
     }
 }
 
-/// This is only used for serialize
-#[allow(clippy::trivially_copy_pass_by_ref)]
-fn is_zero(num: &i64) -> bool {
-    *num == 0
-}
-
 impl Lookup {
     pub fn to_param_array(self) -> Vec<(String, String)> {
         let mut max_candidates_string = self.max_candidates.to_string();
@@ -93,14 +88,6 @@ impl Lookup {
         ].iter()
             .filter_map(Option::clone)
             .collect::<Vec<_>>()
-    }
-}
-
-fn has_param(name: String, param: String) -> Option<(String, String)> {
-    if param != String::default() {
-        Some((name, param))
-    } else {
-        None
     }
 }
 

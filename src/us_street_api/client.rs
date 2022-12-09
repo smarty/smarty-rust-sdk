@@ -3,10 +3,10 @@ use reqwest::{Method};
 
 use reqwest_middleware::RequestBuilder;
 use url::{ParseError, Url};
+use crate::sdk::batch::Batch;
 use crate::sdk::client::Client;
 
 use crate::sdk::error::SDKError;
-use crate::us_street_api::batch::Batch;
 use crate::us_street_api::candidate::Candidates;
 use crate::us_street_api::lookup::Lookup;
 use crate::sdk::options::Options;
@@ -33,7 +33,7 @@ impl USStreetAddressClient {
         Ok(())
     }
 
-    pub async fn send(&self, batch: &mut Batch) -> Result<(), SDKError> {
+    pub async fn send(&self, batch: &mut Batch<Lookup>) -> Result<(), SDKError> {
         if batch.is_empty() {
             return Ok(());
         }

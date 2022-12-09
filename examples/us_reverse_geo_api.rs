@@ -10,7 +10,6 @@ use smarty_rust_sdk::us_reverse_geo::lookup::Lookup;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-
     let lookup = &mut Lookup {
         latitude: 40.27644,
         longitude: -111.65747,

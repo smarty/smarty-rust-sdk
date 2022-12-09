@@ -1,12 +1,13 @@
 extern crate smarty_rust_sdk;
 extern crate tokio;
+extern crate serde_json;
 
 use smarty_rust_sdk::us_street_api::lookup::{Lookup, MatchStrategy};
 
 use std::error::Error;
 use smarty_rust_sdk::sdk::authentication::Authentication;
+use smarty_rust_sdk::sdk::batch::Batch;
 use smarty_rust_sdk::sdk::options::Options;
-use smarty_rust_sdk::us_street_api::batch::Batch;
 use smarty_rust_sdk::us_street_api::client::USStreetAddressClient;
 
 #[tokio::main]
@@ -41,7 +42,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     client.send(batch).await?;
 
-    println!("{:?}", batch.get_all_candidates(0));
+    println!("{}", serde_json::to_string_pretty(&batch.records()[0].results)?);
 
     Ok(())
 }
