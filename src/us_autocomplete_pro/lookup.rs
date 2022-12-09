@@ -42,13 +42,32 @@ impl Default for Lookup {
 
 impl Lookup {
     pub(crate) fn to_param_array(self) -> Vec<(String, String)> {
+        let geolocation_self = self.clone();
         vec![
             has_param("search".to_string(), self.search),
             has_param("source".to_string(), self.source),
             has_i32_param("max_results".to_string(), self.max_results, 0),
-            has_vec_param("city_filter".to_string(), self.city_filter)
+            has_vec_param("city_filter".to_string(), self.city_filter),
+            has_vec_param("state_filter".to_string(), self.state_filter),
+            has_vec_param("zip_filter".to_string(), self.zip_filter),
+            has_vec_param("exclude_states".to_string(), self.exclude_states),
+            has_vec_param("prefer_state".to_string(), self.prefer_state),
+            has_vec_param("prefer_zip".to_string(), self.prefer_zip),
+            has_i32_param("prefer_ratio".to_string(), self.prefer_ratio, 0),
+            geolocation_self.geolocation_param()
         ].iter()
             .filter_map(Option::clone)
             .collect::<Vec<_>>()
+    }
+
+    fn geolocation_param(self) -> Option<(String, String)> {
+        if self.zip_filter.len() > 0 || self.prefer_zip.len() > 0 {
+            return Some(("prefer_geolocation".to_string(), "none".to_string()))
+        }
+
+        return match self.geolocation {
+            Geolocation::GeolocateCity => { Some(("prefer_geolocation".to_string(), "city".to_string())) }
+            Geolocation::GeolocateNone => { Some(("prefer_geolocation".to_string(), "none".to_string())) }
+        }
     }
 }

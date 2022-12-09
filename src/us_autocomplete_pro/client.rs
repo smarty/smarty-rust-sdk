@@ -19,7 +19,6 @@ impl USAutocompleteProClient {
     }
 
     pub async fn send(&self, lookup: &mut Lookup) -> Result<(), SDKError> {
-        println!("{}", self.client.url.clone());
         let mut req = self.client.reqwest_client.request(Method::GET, self.client.url.clone());
         req = req.query(&lookup.clone().to_param_array());
 
