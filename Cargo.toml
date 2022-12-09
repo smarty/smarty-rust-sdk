@@ -7,7 +7,21 @@ edition = "2021"
 
 [dependencies]
 reqwest = { version = "0.11.12", features = ["json"] }
+reqwest-middleware = "0.2.0"
+reqwest-retry = "0.2.1"
 serde = { version = "1.0.147", features = ["derive"] }
 serde_json = "1.0.87"
+serde_repr = "0.1.9"
 tokio = { version = "1", features = ["full"] }
 url = "2.3.1"
+
+[lib]
+name = "smarty_rust_sdk"
+path = "src/lib.rs"
+crate-type = ["lib"]
+
+[[example]]
+name = "us_street_api"
+
+[[example]]
+name = "us_reverse_geo_api"

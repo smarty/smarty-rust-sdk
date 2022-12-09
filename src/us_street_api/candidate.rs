@@ -1,5 +1,6 @@
 use serde::Deserialize;
 use serde::Serialize;
+use crate::sdk::CoordinateLicense;
 
 pub type Candidates = Vec<Candidate>;
 
@@ -58,7 +59,7 @@ pub struct Metadata {
     pub elot_sort: String,
     pub latitude: f64,
     pub longitude: f64,
-    pub coordinate_license: u8, //TODO: Add Custom Struct For Coordinate License
+    pub coordinate_license: CoordinateLicense,
     pub precision: String,
     pub time_zone: String,
     pub utc_offset: f32,

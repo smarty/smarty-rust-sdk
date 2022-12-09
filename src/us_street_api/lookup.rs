@@ -1,6 +1,6 @@
 use std::fmt::{Display, Formatter};
 use serde::{Serialize};
-use crate::candidate::{Candidate, Candidates};
+use crate::us_street_api::candidate::Candidates;
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(default)]
@@ -106,6 +106,7 @@ fn has_param(name: String, param: String) -> Option<(String, String)> {
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
+#[allow(dead_code)]
 pub enum MatchStrategy {
     #[default]
     Strict,
