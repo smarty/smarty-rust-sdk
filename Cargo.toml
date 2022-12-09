@@ -28,3 +28,6 @@ name = "us_reverse_geo_api"
 
 [[example]]
 name = "us_zipcode_api"
+
+[[example]]
+name = "us_extract_api"

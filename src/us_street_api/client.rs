@@ -1,4 +1,3 @@
-use std::string::ToString;
 use reqwest::{Method};
 
 use reqwest_middleware::RequestBuilder;
@@ -42,7 +41,7 @@ impl USStreetAddressClient {
             self.send_lookup(&mut batch.records_mut()[0]).await?;
         }
         else {
-            let mut req = self.client.reqwest_client.post(self.client.url.clone());
+            let mut req = self.client.reqwest_client.request(Method::POST, self.client.url.clone());
             req = req.json(batch.records());
             req = req.header("Content-Type", "application/json");
 
@@ -64,6 +63,6 @@ async fn us_street_send_request(request: RequestBuilder) -> Result<Candidates, S
 
     return match response.json::<Candidates>().await {
         Ok(candidates) => Ok(candidates),
-        Err(_) => { Err(SDKError { code: None, detail: Some("Could not read json".to_string()) }) }
+        Err(err) => { Err(SDKError { code: None, detail: Some(format!("{:?}", err)) }) }
     }
 }
