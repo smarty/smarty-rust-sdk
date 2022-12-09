@@ -1,6 +1,7 @@
 use std::fmt::{Display, Formatter};
 use reqwest::Response;
 use reqwest_middleware::RequestBuilder;
+use serde::{Serialize};
 use crate::sdk::error::SDKError;
 use serde_repr::{Serialize_repr, Deserialize_repr};
 
@@ -51,13 +52,40 @@ pub async fn send_request(request: RequestBuilder) -> Result<Response, SDKError>
 
 /// This is only used for Serializing for post
 #[allow(clippy::trivially_copy_pass_by_ref)]
-pub fn is_zero(num: &i64) -> bool {
+pub(crate) fn is_zero(num: &i64) -> bool {
     *num == 0
 }
 
-pub fn has_param(name: String, param: String) -> Option<(String, String)> {
+pub(crate) fn has_param(name: String, param: String) -> Option<(String, String)> {
     if param != String::default() {
         Some((name, param))
+    } else {
+        None
+    }
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize)]
+pub enum Geolocation {
+    #[default]
+    #[serde(rename = "city")]
+    GeolocateCity,
+    #[serde(rename = "none")]
+    GeolocateNone
+}
+
+pub(crate) fn has_i32_param(name: String, param: i32, default: i32) -> Option<(String, String)>{
+    if param == default {
+        None
+    } else {
+        Some((name, param.to_string()))
+    }
+}
+
+pub(crate) fn has_vec_param(name: String, param: Vec<String>) -> Option<(String, String)> {
+    if param.len() > 0 {
+        Some((name,
+              format!("[{}]", param.join(","))
+        ))
     } else {
         None
     }

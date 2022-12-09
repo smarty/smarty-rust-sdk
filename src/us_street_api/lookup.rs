@@ -61,7 +61,7 @@ impl Default for Lookup {
 }
 
 impl Lookup {
-    pub fn to_param_array(self) -> Vec<(String, String)> {
+    pub(crate) fn to_param_array(self) -> Vec<(String, String)> {
         let mut max_candidates_string = self.max_candidates.to_string();
 
         if self.max_candidates <= 0 {

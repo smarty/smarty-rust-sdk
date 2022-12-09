@@ -18,7 +18,7 @@ pub struct USStreetAddressClient {
 }
 
 impl USStreetAddressClient {
-    pub fn new(base_url: Url, options: Options) -> Result<USStreetAddressClient, ParseError> {
+    pub fn new(base_url: Url, options: Options) -> Result<Self, ParseError> {
         Ok(USStreetAddressClient {client: Client::new(base_url, options, US_STREET_ADDRESS_API)? })
     }
 

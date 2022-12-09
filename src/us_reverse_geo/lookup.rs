@@ -18,7 +18,7 @@ impl Default for Lookup {
 }
 
 impl Lookup {
-    pub fn to_param_array(&self) -> Vec<(String, String)> {
+    pub(crate) fn to_param_array(&self) -> Vec<(String, String)> {
         vec![
             ("latitude".to_string(), self.latitude.to_string()),
             ("longitude".to_string(), self.longitude.to_string())

@@ -14,7 +14,7 @@ pub struct USReverseGeoClient {
 }
 
 impl USReverseGeoClient {
-    pub fn new(base_url: Url, options: Options) -> Result<USReverseGeoClient, ParseError> {
+    pub fn new(base_url: Url, options: Options) -> Result<Self, ParseError> {
         Ok(USReverseGeoClient {client: Client::new(base_url, options, US_REVERSE_GEO_API)? })
     }
 
@@ -23,8 +23,6 @@ impl USReverseGeoClient {
         let req = self.client.reqwest_client.request(Method::GET, self.client.url.clone()).query(&lookup.clone().to_param_array());
 
         let response = send_request(req).await?;
-
-        //println!("{}", response.text().await.unwrap());
 
         match response.json::<Results>().await {
             Ok(results) => { lookup.results = results },

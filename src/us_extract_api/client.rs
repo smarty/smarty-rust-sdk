@@ -12,12 +12,12 @@ pub struct USExtractClient {
 }
 
 impl USExtractClient {
-    pub fn new(base_url: Url, options: Options) -> Result<USExtractClient, ParseError> {
+    pub fn new(base_url: Url, options: Options) -> Result<Self, ParseError> {
         Ok(USExtractClient { client: Client::new(base_url, options, "")? })
     }
 
     pub async fn send(&self, lookup: &mut Lookup) -> Result<(), SDKError> {
-        let req = self.client.reqwest_client.request(Method::POST, self.client.url.clone());
+        let req = self.client.reqwest_client.request(Method::POST, self.client.url.clone()).json(lookup);
 
         let response = send_request(req).await?;
 

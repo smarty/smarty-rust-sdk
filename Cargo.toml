@@ -31,3 +31,6 @@ name = "us_zipcode_api"
 
 [[example]]
 name = "us_extract_api"
+
+[[example]]
+name = "us_autocomplete_pro_api"
