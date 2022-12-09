@@ -1,7 +1,6 @@
 use std::fmt::{Display, Formatter};
 use reqwest::Response;
 use reqwest_middleware::RequestBuilder;
-use serde::{Serialize};
 use crate::sdk::error::SDKError;
 use serde_repr::{Serialize_repr, Deserialize_repr};
 

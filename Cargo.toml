@@ -34,3 +34,6 @@ name = "us_extract_api"
 
 [[example]]
 name = "us_autocomplete_pro_api"
+
+[[example]]
+name = "international_street_api"

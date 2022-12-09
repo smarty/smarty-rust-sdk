@@ -1,4 +1,3 @@
-use std::fmt::{Display, Formatter, write};
 use serde::Serialize;
 use crate::sdk::{has_f64_param, has_i32_param, has_param, has_vec_param};
 use crate::us_autocomplete_api::suggestion::SuggestionListing;
