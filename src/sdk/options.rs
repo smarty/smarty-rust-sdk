@@ -1,3 +1,5 @@
+use crate::sdk::has_param;
+
 #[derive(Clone)]
 pub struct Options {
     pub auth_id: String,
@@ -20,13 +22,14 @@ impl Options {
 
     pub fn to_param_array(self) -> String {
         let test = vec![
-            ("auth-id".to_string(), self.auth_id),
-            ("auth-token".to_string(), self.auth_token),
-            ("license".to_string(), self.license),
+            Some(("auth-id".to_string(), self.auth_id)),
+            Some(("auth-token".to_string(), self.auth_token)),
+            has_param("license".to_string(), self.license),
         ]
-        .iter()
-        .map(|x| x.0.clone() + "=" + x.1.clone().as_str())
-        .collect::<Vec<String>>();
+            .iter()
+            .filter_map(Option::clone)
+            .map(|x| x.0.clone() + "=" + x.1.clone().as_str())
+            .collect::<Vec<String>>();
 
         test.join("&")
     }

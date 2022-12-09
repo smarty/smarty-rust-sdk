@@ -25,3 +25,6 @@ name = "us_street_api"
 
 [[example]]
 name = "us_reverse_geo_api"
+
+[[example]]
+name = "us_zipcode_api"

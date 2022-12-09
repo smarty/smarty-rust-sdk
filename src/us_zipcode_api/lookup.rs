@@ -18,6 +18,18 @@ pub struct Lookup {
     pub result: ZipcodeResult
 }
 
+impl Default for Lookup {
+    fn default() -> Self {
+        Lookup {
+            city: String::default(),
+            state: String::default(),
+            zipcode: String::default(),
+            input_id: String::default(),
+            result: ZipcodeResult::default()
+        }
+    }
+}
+
 impl Lookup {
     pub fn to_param_array(&self) -> Vec<(String, String)> {
         vec![
