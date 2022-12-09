@@ -1,5 +1,6 @@
 extern crate smarty_rust_sdk;
 extern crate tokio;
+extern crate serde_json;
 
 use std::error::Error;
 use smarty_rust_sdk::sdk::authentication::Authentication;
@@ -11,8 +12,8 @@ use smarty_rust_sdk::us_reverse_geo::lookup::Lookup;
 async fn main() -> Result<(), Box<dyn Error>> {
 
     let lookup = &mut Lookup {
-        latitude: 40.241336927519136,
-        longitude: -111.70786647260555,
+        latitude: 40.27644,
+        longitude: -111.65747,
         ..Default::default()
     };
 
@@ -27,7 +28,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     client.send(lookup).await?;
 
-    println!("{:?}", lookup.results);
+    println!("{}", serde_json::to_string_pretty(&lookup.results)?);
+    println!("Results Received: {}", lookup.results.results.len());
 
     Ok(())
 }
