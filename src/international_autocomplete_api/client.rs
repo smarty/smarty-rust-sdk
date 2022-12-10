@@ -14,13 +14,20 @@ pub struct InternationalAutocompleteClient {
 }
 
 impl InternationalAutocompleteClient {
-    pub fn new(base_url: Url, options: Options) -> Result<Self, ParseError> {
-        Ok(InternationalAutocompleteClient { client: Client::new(base_url, options, INTERNATIONAL_AUTOCOMPLETE_ADDRESS_API)? })
+    pub fn new(options: Options) -> Result<Self, ParseError> {
+        Ok(Self::new_custom_base_url("https://international-autocomplete.api.smartystreets.com".parse()?, options)?)
     }
 
-    pub async fn send(&self, lookup: &mut Lookup) -> Result<(), SDKError> {
-        let req = self.client.reqwest_client.request(Method::GET, self.client.url.clone())
-            .query(&lookup.clone().to_param_array());
+    pub fn new_custom_base_url(base_url: Url, options: Options) -> Result<Self, ParseError> {
+        Ok(Self { client: Client::new(base_url, options, INTERNATIONAL_AUTOCOMPLETE_ADDRESS_API)? })
+    }
+
+    pub async fn send(self, lookup: &mut Lookup) -> Result<(), SDKError> {
+        let mut req = self.client.reqwest_client.request(Method::GET, self.client.url.clone());
+        req = self.client.build_request(req);
+        req = req.query(&lookup.clone().to_param_array());
+
+
         let response = send_request(req).await?;
 
         lookup.results = match response.json::<SuggestionListing>().await {

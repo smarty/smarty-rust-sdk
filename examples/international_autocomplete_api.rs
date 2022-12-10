@@ -5,7 +5,7 @@ extern crate serde_json;
 use std::error::Error;
 use smarty_rust_sdk::international_autocomplete_api::client::InternationalAutocompleteClient;
 use smarty_rust_sdk::international_autocomplete_api::lookup::Lookup;
-use smarty_rust_sdk::sdk::authentication::Authentication;
+use smarty_rust_sdk::sdk::authentication::SecretKeyCredential;
 use smarty_rust_sdk::sdk::options::Options;
 
 #[tokio::main]
@@ -18,13 +18,13 @@ async fn main() -> Result<(), Box<dyn Error>> {
         ..Default::default()
     };
 
-    let authentication = Authentication::new("SMARTY_AUTH_ID", "SMARTY_AUTH_TOKEN")?;
+    let authentication = SecretKeyCredential::new(std::env::var("SMARTY_AUTH_ID")?, std::env::var("SMARTY_AUTH_TOKEN")?);
 
     let mut options = Options::new();
-    options.auth_id = authentication.auth_id.to_string();
-    options.auth_token = authentication.auth_token.to_string();
 
-    let client = InternationalAutocompleteClient::new("https://international-autocomplete.api.smartystreets.me".parse()?, options)?;
+    options.authentication = authentication;
+
+    let client = InternationalAutocompleteClient::new(options)?;
 
     client.send(lookup).await?;
 

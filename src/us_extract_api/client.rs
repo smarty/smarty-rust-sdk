@@ -12,12 +12,17 @@ pub struct USExtractClient {
 }
 
 impl USExtractClient {
-    pub fn new(base_url: Url, options: Options) -> Result<Self, ParseError> {
-        Ok(USExtractClient { client: Client::new(base_url, options, "")? })
+    pub fn new(options: Options) -> Result<Self, ParseError> {
+        Ok(Self::new_custom_base_url("https://us-extract.api.smartystreets.com/".parse()?, options)?)
+    }
+
+    pub fn new_custom_base_url(base_url: Url, options: Options) -> Result<Self, ParseError> {
+        Ok(Self { client: Client::new(base_url, options, "")? })
     }
 
     pub async fn send(&self, lookup: &mut Lookup) -> Result<(), SDKError> {
-        let req = self.client.reqwest_client.request(Method::POST, self.client.url.clone()).json(lookup);
+        let mut req = self.client.reqwest_client.request(Method::POST, self.client.url.clone());
+        req = req.json(lookup);
 
         let response = send_request(req).await?;
 

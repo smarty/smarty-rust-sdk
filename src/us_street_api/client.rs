@@ -14,16 +14,22 @@ use crate::sdk::send_request;
 const US_STREET_ADDRESS_API: &'static str = "street-address";
 
 pub struct USStreetAddressClient {
-    client: Client
+    client: Client,
 }
 
 impl USStreetAddressClient {
-    pub fn new(base_url: Url, options: Options) -> Result<Self, ParseError> {
-        Ok(USStreetAddressClient {client: Client::new(base_url, options, US_STREET_ADDRESS_API)? })
+    pub fn new(options: Options) -> Result<Self, ParseError> {
+        Ok(Self::new_custom_base_url("https://us-street.api.smartystreets.com/".parse()?, options)?)
     }
 
-    async fn send_lookup(&self, lookup: &mut Lookup) -> Result<(), SDKError> {
-        let req = self.client.reqwest_client.request(Method::GET, self.client.url.clone()).query(&lookup.clone().to_param_array());
+    pub fn new_custom_base_url(base_url: Url, options: Options) -> Result<Self, ParseError> {
+        Ok(Self { client: Client::new(base_url, options, US_STREET_ADDRESS_API)? })
+    }
+
+    async fn send_lookup(self, lookup: &mut Lookup) -> Result<(), SDKError> {
+        let mut req = self.client.reqwest_client.request(Method::GET, self.client.url.clone());
+        req = self.client.build_request(req);
+        req = req.query(&lookup.clone().to_param_array());
 
         let candidates = us_street_send_request(req).await?;
 
@@ -32,7 +38,7 @@ impl USStreetAddressClient {
         Ok(())
     }
 
-    pub async fn send(&self, batch: &mut Batch<Lookup>) -> Result<(), SDKError> {
+    pub async fn send(self, batch: &mut Batch<Lookup>) -> Result<(), SDKError> {
         if batch.is_empty() {
             return Ok(());
         }
@@ -42,6 +48,7 @@ impl USStreetAddressClient {
         }
         else {
             let mut req = self.client.reqwest_client.request(Method::POST, self.client.url.clone());
+            req = self.client.build_request(req);
             req = req.json(batch.records());
             req = req.header("Content-Type", "application/json");
 

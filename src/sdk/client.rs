@@ -1,4 +1,4 @@
-use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
+use reqwest_middleware::{ClientBuilder, ClientWithMiddleware, RequestBuilder};
 use reqwest_retry::policies::ExponentialBackoff;
 use reqwest_retry::RetryTransientMiddleware;
 use url::{ParseError, Url};
@@ -8,11 +8,12 @@ use crate::sdk::options::Options;
 pub struct Client {
     pub reqwest_client: ClientWithMiddleware,
     pub url: Url,
+    pub options: Options,
 }
 
 impl Client {
     pub fn new(base_url: Url, options: Options, api_path: &str) -> Result<Client, ParseError> {
-        let url = Url::parse((base_url.as_str().to_string() + api_path + "?" + options.clone().to_param_array().as_str()).as_str())?;
+        let url = base_url.join(api_path)?;
 
         let retry_policy = ExponentialBackoff::builder().build_with_max_retries(options.num_retries);
         let mut client_builder = ClientBuilder::new(reqwest::Client::new())
@@ -24,12 +25,25 @@ impl Client {
 
         let client = client_builder.build();
 
-
         let client = Client {
             reqwest_client: client,
-            url: url.clone()
+            url: url.clone(),
+            options
         };
 
         Ok(client)
+    }
+
+    pub fn build_request(self, mut builder: RequestBuilder) -> RequestBuilder {
+
+        builder = self.options.authentication.authenticate(builder);
+
+        builder = builder.query(&[("license".to_string(), self.options.license)]);
+
+        for (header_key, header_value) in self.options.headers {
+            builder = builder.header(header_key, header_value);
+        }
+
+        builder
     }
 }
