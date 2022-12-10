@@ -47,7 +47,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // To better learn, look at (https://rust-lang-nursery.github.io/rust-cookbook/development_tools/debugging/log.html)
     env_logger::init();
 
-    let client = USStreetAddressClient::new_custom_base_url("https://us-street.api.smartystreets.com/".parse()?, options)?;
+    let client = USStreetAddressClient::new_custom_base_url("https://us-street.api.smartystreets.me/".parse()?, options)?;
 
     client.send(batch).await?;
 

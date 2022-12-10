@@ -10,7 +10,7 @@ pub struct SecretKeyCredential {
 }
 
 impl SecretKeyCredential {
-    pub fn new(auth_id: String, auth_token: String) -> Box<SecretKeyCredential> {
+    pub fn new(auth_id: String, auth_token: String) -> Box<Self> {
         Box::new(SecretKeyCredential { auth_id, auth_token })
     }
 }
@@ -27,11 +27,8 @@ pub struct WebsiteKeyCredential {
 }
 
 impl WebsiteKeyCredential {
-    pub fn new(key: &str, host: &str) -> Self {
-        Self {
-            key: key.to_string(),
-            host: host.to_string()
-        }
+    pub fn new(key: &str, host: &str) -> Box<Self> {
+        Box::new(Self { key: key.to_string(), host: host.to_string() })
     }
 }
 
