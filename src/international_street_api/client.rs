@@ -7,7 +7,7 @@ use crate::sdk::error::SDKError;
 use crate::sdk::options::Options;
 use crate::sdk::send_request;
 
-const INTERNATIONAL_VERIFY_URL: &'static str = "verify";
+const INTERNATIONAL_STREET_ADDRESS_API: &'static str = "verify";
 
 pub struct InternationalStreetClient {
     client: Client
@@ -15,7 +15,7 @@ pub struct InternationalStreetClient {
 
 impl InternationalStreetClient {
     pub fn new(base_url: Url, options: Options) -> Result<Self, ParseError> {
-        Ok(InternationalStreetClient { client: Client::new(base_url, options, INTERNATIONAL_VERIFY_URL)? })
+        Ok(InternationalStreetClient { client: Client::new(base_url, options, INTERNATIONAL_STREET_ADDRESS_API)? })
     }
 
     pub async fn send(&self, lookup: &mut Lookup) -> Result<(), SDKError> {
