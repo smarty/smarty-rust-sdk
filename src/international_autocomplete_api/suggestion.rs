@@ -1,8 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(default)]
 pub struct SuggestionListing {
+    #[serde(rename = "candidates")]
     pub suggestions: Vec<Suggestion>
 }
 
