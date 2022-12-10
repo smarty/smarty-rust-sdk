@@ -24,6 +24,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let mut options = Options::new();
     options.auth_id = authentication.auth_id.to_string();
     options.auth_token = authentication.auth_token.to_string();
+    options.license = "us-core-cloud".to_string();
 
     let client = USExtractClient::new("https://us-extract.api.smartystreets.me".parse()?, options)?;
 

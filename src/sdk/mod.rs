@@ -10,6 +10,7 @@ pub mod error;
 pub mod client;
 pub mod authentication;
 pub mod batch;
+pub mod logging;
 
 pub const MAX_BATCH_SIZE: usize = 100;
 

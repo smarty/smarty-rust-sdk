@@ -2,6 +2,7 @@ use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
 use reqwest_retry::policies::ExponentialBackoff;
 use reqwest_retry::RetryTransientMiddleware;
 use url::{ParseError, Url};
+use crate::sdk::logging::LoggingMiddleware;
 use crate::sdk::options::Options;
 
 pub struct Client {
@@ -14,9 +15,15 @@ impl Client {
         let url = Url::parse((base_url.as_str().to_string() + api_path + "?" + options.clone().to_param_array().as_str()).as_str())?;
 
         let retry_policy = ExponentialBackoff::builder().build_with_max_retries(options.num_retries);
-        let client = ClientBuilder::new(reqwest::Client::new())
-            .with(RetryTransientMiddleware::new_with_policy(retry_policy))
-            .build();
+        let mut client_builder = ClientBuilder::new(reqwest::Client::new())
+            .with(RetryTransientMiddleware::new_with_policy(retry_policy));
+
+        if options.logging_enabled {
+            client_builder = client_builder.with(LoggingMiddleware);
+        }
+
+        let client = client_builder.build();
+
 
         let client = Client {
             reqwest_client: client,

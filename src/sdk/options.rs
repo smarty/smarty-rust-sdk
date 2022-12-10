@@ -8,6 +8,9 @@ pub struct Options {
 
     // Retry Sender
     pub num_retries: u32,
+
+    // Logger
+    pub logging_enabled: bool
 }
 
 impl Options {
@@ -17,6 +20,7 @@ impl Options {
             auth_token: String::default(),
             license: String::default(),
             num_retries: u32::default(),
+            logging_enabled: false
         }
     }
 
