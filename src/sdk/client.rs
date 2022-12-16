@@ -5,6 +5,7 @@ use url::{ParseError, Url};
 use crate::sdk::logging::LoggingMiddleware;
 use crate::sdk::options::Options;
 
+/// The base client for all of Smarty's rust sdk
 pub struct Client {
     pub reqwest_client: ClientWithMiddleware,
     pub url: Url,
@@ -13,7 +14,7 @@ pub struct Client {
 
 impl Client {
     pub fn new(base_url: Url, options: Options, api_path: &str) -> Result<Client, ParseError> {
-        let url = base_url.join(api_path)?;
+        let url = &mut base_url.join(api_path)?;
 
         let retry_policy = ExponentialBackoff::builder().build_with_max_retries(options.num_retries);
         let mut client_builder = ClientBuilder::new(reqwest::Client::new())
@@ -34,7 +35,7 @@ impl Client {
         Ok(client)
     }
 
-    pub fn build_request(self, mut builder: RequestBuilder) -> RequestBuilder {
+    pub(crate) fn build_request(self, mut builder: RequestBuilder) -> RequestBuilder {
 
         builder = self.options.authentication.authenticate(builder);
 

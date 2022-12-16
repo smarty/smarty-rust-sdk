@@ -35,7 +35,7 @@ impl WebsiteKeyCredential {
 impl Authenticate for WebsiteKeyCredential {
     fn authenticate(&self, mut request: RequestBuilder) -> RequestBuilder {
         request = request.query(&[("key".to_string(), self.key.clone())]);
-        request = request.header("Referer".to_string(), self.host.clone());
+        request = request.header(reqwest::header::REFERER, self.host.clone());
         request
     }
 }

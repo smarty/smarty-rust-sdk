@@ -47,6 +47,3 @@ name = "international_autocomplete_api"
 
 [[example]]
 name = "logger"
-
-[[example]]
-name = "website_key_authentication"

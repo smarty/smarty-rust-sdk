@@ -2,6 +2,7 @@ use crate::sdk::error::SDKError;
 use crate::sdk::MAX_BATCH_SIZE;
 
 #[derive(Clone)]
+/// A batch of generics that are used for running lots of Lookups
 pub struct Batch<T> {
     lookups: Vec<T>
 }

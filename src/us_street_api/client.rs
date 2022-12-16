@@ -50,7 +50,6 @@ impl USStreetAddressClient {
             let mut req = self.client.reqwest_client.request(Method::POST, self.client.url.clone());
             req = self.client.build_request(req);
             req = req.json(batch.records());
-            req = req.header("Content-Type", "application/json");
 
             let results = us_street_send_request(req).await?;
 

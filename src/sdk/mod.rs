@@ -31,7 +31,7 @@ impl Display for CoordinateLicense {
     }
 }
 
-pub async fn send_request(request: RequestBuilder) -> Result<Response, SDKError> {
+pub(crate) async fn send_request(request: RequestBuilder) -> Result<Response, SDKError> {
     let response = match request.send().await {
         Ok(response) => response,
         Err(error) => { return Err(SDKError { code: None, detail: Some(format!("{:?}", error)) } ); }
