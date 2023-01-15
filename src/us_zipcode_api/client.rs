@@ -11,7 +11,7 @@ use crate::us_zipcode_api::lookup::Lookup;
 const US_ZIPCODE_API: &'static str = "lookup";
 
 pub struct USZipcodeClient {
-    client: Client
+    pub(crate) client: Client
 }
 
 impl USZipcodeClient {

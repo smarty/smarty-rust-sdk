@@ -10,7 +10,7 @@ use crate::sdk::send_request;
 const INTERNATIONAL_STREET_ADDRESS_API: &'static str = "verify";
 
 pub struct InternationalStreetClient {
-    client: Client
+    pub(crate) client: Client
 }
 
 impl InternationalStreetClient {

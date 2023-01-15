@@ -10,7 +10,7 @@ use crate::us_autocomplete_pro_api::suggestion::{SuggestionListing};
 const SUGGEST_URL: &'static str = "lookup";
 
 pub struct USAutocompleteProClient {
-    client: Client
+    pub(crate) client: Client
 }
 
 impl USAutocompleteProClient {

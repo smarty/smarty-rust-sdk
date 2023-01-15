@@ -10,7 +10,7 @@ use crate::sdk::send_request;
 const INTERNATIONAL_AUTOCOMPLETE_ADDRESS_API: &'static str = "lookup";
 
 pub struct InternationalAutocompleteClient {
-    client: Client
+    pub(crate) client: Client
 }
 
 impl InternationalAutocompleteClient {

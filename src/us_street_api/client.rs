@@ -14,7 +14,7 @@ use crate::sdk::send_request;
 const US_STREET_ADDRESS_API: &'static str = "street-address";
 
 pub struct USStreetAddressClient {
-    client: Client,
+    pub(crate) client: Client,
 }
 
 impl USStreetAddressClient {

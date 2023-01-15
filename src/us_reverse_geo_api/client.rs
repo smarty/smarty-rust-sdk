@@ -10,7 +10,7 @@ use crate::us_reverse_geo_api::lookup::Lookup;
 const US_REVERSE_GEO_API: &'static str = "lookup";
 
 pub struct USReverseGeoClient {
-    client: Client
+    pub(crate) client: Client
 }
 
 impl USReverseGeoClient {

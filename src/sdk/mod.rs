@@ -89,3 +89,37 @@ pub(crate) fn has_vec_param(name: String, param: Vec<String>) -> Option<(String,
         None
     }
 }
+
+// Tests
+#[cfg(test)]
+mod tests {
+    use crate::sdk::authentication::{SecretKeyCredential};
+    use crate::sdk::batch::Batch;
+    use crate::sdk::client::Client;
+    use crate::sdk::options::Options;
+
+    #[test]
+    fn batch_test() {
+        let lookup = "Hello World".to_string();
+        let mut batch = Batch::new();
+        batch.push(lookup).unwrap();
+
+        assert_eq!(batch.length(), 1);
+        assert_eq!(batch.records()[0], "Hello World".to_string())
+    }
+
+    #[test]
+    fn authentication_test() {
+        let authentication = SecretKeyCredential::new("1234".to_string(), "ABCD".to_string());
+
+        assert_eq!(authentication.auth_id, "1234".to_string());
+        assert_eq!(authentication.auth_token, "ABCD".to_string());
+    }
+
+    #[test]
+    fn client_test() {
+        let client = Client::new("https://www.smarty.com".parse().unwrap(), Options::new(), "docs").unwrap();
+
+        assert_eq!(client.url.to_string(), "https://www.smarty.com/docs");
+    }
+}

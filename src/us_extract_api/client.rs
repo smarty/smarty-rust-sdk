@@ -8,7 +8,7 @@ use crate::us_extract_api::extraction::ExtractionResult;
 use crate::us_extract_api::lookup::Lookup;
 
 pub struct USExtractClient {
-    client: Client
+    pub(crate) client: Client
 }
 
 impl USExtractClient {
