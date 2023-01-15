@@ -22,7 +22,7 @@ impl InternationalStreetClient {
         Ok(Self { client: Client::new(base_url, options, INTERNATIONAL_STREET_ADDRESS_API)? })
     }
 
-    pub async fn send(self, lookup: &mut Lookup) -> Result<(), SDKError> {
+    pub async fn send(&self, lookup: &mut Lookup) -> Result<(), SDKError> {
         let mut req = self.client.reqwest_client.request(Method::GET, self.client.url.clone());
         req = self.client.build_request(req);
         req = req.query(&lookup.clone().to_param_array());

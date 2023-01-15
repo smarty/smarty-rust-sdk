@@ -26,7 +26,7 @@ impl USStreetAddressClient {
         Ok(Self { client: Client::new(base_url, options, US_STREET_ADDRESS_API)? })
     }
 
-    async fn send_lookup(self, lookup: &mut Lookup) -> Result<(), SDKError> {
+    async fn send_lookup(&self, lookup: &mut Lookup) -> Result<(), SDKError> {
         let mut req = self.client.reqwest_client.request(Method::GET, self.client.url.clone());
         req = self.client.build_request(req);
         req = req.query(&lookup.clone().to_param_array());
@@ -38,7 +38,7 @@ impl USStreetAddressClient {
         Ok(())
     }
 
-    pub async fn send(self, batch: &mut Batch<Lookup>) -> Result<(), SDKError> {
+    pub async fn send(&self, batch: &mut Batch<Lookup>) -> Result<(), SDKError> {
         if batch.is_empty() {
             return Ok(());
         }

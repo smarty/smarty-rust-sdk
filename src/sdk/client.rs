@@ -35,13 +35,13 @@ impl Client {
         Ok(client)
     }
 
-    pub(crate) fn build_request(self, mut builder: RequestBuilder) -> RequestBuilder {
+    pub(crate) fn build_request(&self, mut builder: RequestBuilder) -> RequestBuilder {
 
         builder = self.options.authentication.authenticate(builder);
 
-        builder = builder.query(&[("license".to_string(), self.options.license)]);
+        builder = builder.query(&[("license".to_string(), self.options.license.clone())]);
 
-        for (header_key, header_value) in self.options.headers {
+        for (header_key, header_value) in self.options.headers.clone() {
             builder = builder.header(header_key, header_value);
         }
 

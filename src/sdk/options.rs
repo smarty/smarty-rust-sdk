@@ -2,6 +2,7 @@ use crate::sdk::authentication::{Authenticate, SecretKeyCredential};
 
 /// Options that can be passed into a new client
 /// num_retries: the number of retries that the client with run before giving up.
+/// logging_enabled: whether we should send logging data
 /// headers: Custom headers that you can pass in
 /// authentication: A authentication for Smarty
 pub struct Options {
