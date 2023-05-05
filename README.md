@@ -1,1 +1,1 @@
-# smartystreets-rust-sdk
+# smarty-rust-sdk
