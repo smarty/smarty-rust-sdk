@@ -10,7 +10,7 @@ mod tests {
 
     #[test]
     fn client_test() {
-        let client = USAutocompleteProClient::new(Options::new()).unwrap();
+        let client = USAutocompleteProClient::new(Options::default()).unwrap();
 
         assert_eq!(client.client.url.to_string(), "https://us-autocomplete-pro.api.smartystreets.com/lookup".to_string())
     }
@@ -40,6 +40,6 @@ mod tests {
             ("prefer_geolocation".to_string(), "city".to_string())
         ];
 
-        assert_eq!(lookup.to_param_array(), expected_results)
+        assert_eq!(lookup.into_param_array(), expected_results)
     }
 }

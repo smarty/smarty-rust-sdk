@@ -25,7 +25,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let authentication = SecretKeyCredential::new(std::env::var("SMARTY_AUTH_ID")?, std::env::var("SMARTY_AUTH_TOKEN")?);
 
-    let mut options = Options::new();
+    let mut options = Options::default();
     options.license = "international-global-plus-cloud".to_string();
 
     options.authentication = authentication;

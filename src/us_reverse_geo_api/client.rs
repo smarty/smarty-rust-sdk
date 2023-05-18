@@ -7,7 +7,7 @@ use crate::sdk::send_request;
 use crate::us_reverse_geo_api::address::Results;
 use crate::us_reverse_geo_api::lookup::Lookup;
 
-const US_REVERSE_GEO_API: &'static str = "lookup";
+const US_REVERSE_GEO_API: &str = "lookup";
 
 pub struct USReverseGeoClient {
     pub(crate) client: Client
@@ -15,7 +15,7 @@ pub struct USReverseGeoClient {
 
 impl USReverseGeoClient {
     pub fn new(options: Options) -> Result<Self, ParseError> {
-        Ok(Self::new_custom_base_url("https://us-reverse-geo.api.smartystreets.com/".parse()?, options)?)
+        Self::new_custom_base_url("https://us-reverse-geo.api.smartystreets.com/".parse()?, options)
     }
 
     pub fn new_custom_base_url(base_url: Url, options: Options) -> Result<Self, ParseError> {

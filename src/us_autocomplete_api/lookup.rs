@@ -32,7 +32,7 @@ impl Default for Lookup {
 }
 
 impl Lookup {
-    pub(crate) fn to_param_array(self) -> Vec<(String, String)> {
+    pub(crate) fn into_param_array(self) -> Vec<(String, String)> {
         vec![
             has_param("prefix".to_string(), self.prefix),
             has_i32_param("max_suggestions".to_string(), self.max_suggestions, 0),

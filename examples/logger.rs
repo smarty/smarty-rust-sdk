@@ -28,13 +28,13 @@ async fn main() -> Result<(), Box<dyn Error>> {
         ..Default::default()
     };
 
-    let batch = &mut Batch::new();
+    let batch = &mut Batch::default();
     batch.push(lookup)?;
     batch.push(lookup2)?;
 
     let authentication = SecretKeyCredential::new(std::env::var("SMARTY_AUTH_ID")?, std::env::var("SMARTY_AUTH_TOKEN")?);
 
-    let mut options = Options::new();
+    let mut options = Options::default();
     options.license = "us-core-cloud".to_string();
 
     // Enable Logging

@@ -12,7 +12,7 @@ mod tests {
 
     #[test]
     fn client_test() {
-        let client = USStreetAddressClient::new(Options::new()).unwrap();
+        let client = USStreetAddressClient::new(Options::default()).unwrap();
 
         assert_eq!(client.client.url.to_string(), "https://us-street.api.smartystreets.com/street-address".to_string());
     }
@@ -34,7 +34,7 @@ mod tests {
             ("match".to_string(), "enhanced".to_string())
         ];
 
-        assert_eq!(lookup.to_param_array(), expected_result);
+        assert_eq!(lookup.into_param_array(), expected_result);
     }
 
     #[test]
@@ -54,13 +54,13 @@ mod tests {
             ("match".to_string(), "enhanced".to_string())
         ];
 
-        let mut batch = Batch::new();
+        let mut batch = Batch::default();
         batch.push(lookup.clone()).unwrap();
         batch.push(lookup.clone()).unwrap();
         batch.push(lookup.clone()).unwrap();
         batch.push(lookup.clone()).unwrap();
 
-        assert_eq!(batch.records()[0].clone().to_param_array(), expected_result);
+        assert_eq!(batch.records()[0].clone().into_param_array(), expected_result);
         assert_eq!(batch.records().len(), 4);
     }
 }

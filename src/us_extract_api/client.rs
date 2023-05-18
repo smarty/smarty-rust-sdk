@@ -13,7 +13,7 @@ pub struct USExtractClient {
 
 impl USExtractClient {
     pub fn new(options: Options) -> Result<Self, ParseError> {
-        Ok(Self::new_custom_base_url("https://us-extract.api.smartystreets.com/".parse()?, options)?)
+        Self::new_custom_base_url("https://us-extract.api.smartystreets.com/".parse()?, options)
     }
 
     pub fn new_custom_base_url(base_url: Url, options: Options) -> Result<Self, ParseError> {
