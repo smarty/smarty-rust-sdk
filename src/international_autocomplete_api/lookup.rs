@@ -36,7 +36,7 @@ impl Default for Lookup {
 }
 
 impl Lookup {
-    pub(crate) fn to_param_array(self) -> Vec<(String, String)> {
+    pub(crate) fn into_param_array(self) -> Vec<(String, String)> {
         vec![
             has_param("country".to_string(), self.country),
             has_param("search".to_string(), self.search),

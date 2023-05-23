@@ -10,7 +10,7 @@ mod tests {
 
     #[test]
     fn client_test() {
-        let client = InternationalStreetClient::new(Options::new()).unwrap();
+        let client = InternationalStreetClient::new(Options::default()).unwrap();
 
         assert_eq!(client.client.url.to_string(), "https://international-street.api.smartystreets.com/verify".to_string())
     }
@@ -41,6 +41,6 @@ mod tests {
             ("postal_code".to_string(), "02516-050".to_string())
         ];
 
-        assert_eq!(lookup.to_param_array(), expected_results);
+        assert_eq!(lookup.into_param_array(), expected_results);
     }
 }

@@ -2,7 +2,7 @@ use serde::Serialize;
 use crate::sdk::has_param;
 use crate::us_zipcode_api::candidate::ZipcodeResult;
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Default)]
 #[serde(default)]
 pub struct Lookup {
     #[serde(skip_serializing_if = "String::is_empty")]
@@ -16,18 +16,6 @@ pub struct Lookup {
 
     #[serde(skip_serializing)]
     pub result: ZipcodeResult
-}
-
-impl Default for Lookup {
-    fn default() -> Self {
-        Lookup {
-            city: String::default(),
-            state: String::default(),
-            zipcode: String::default(),
-            input_id: String::default(),
-            result: ZipcodeResult::default()
-        }
-    }
 }
 
 impl Lookup {

@@ -7,14 +7,16 @@ pub struct Batch<T> {
     lookups: Vec<T>
 }
 
-#[allow(dead_code)]
-impl<T> Batch<T> {
-
-    pub fn new() -> Self {
-        Batch {
+impl<T> Default for Batch<T> {
+    fn default() -> Self {
+        Self {
             lookups: vec![]
         }
     }
+}
+
+#[allow(dead_code)]
+impl<T> Batch<T> {
 
     pub fn push(&mut self, lookup: T) -> Result<(), SDKError> {
         if self.is_full() {

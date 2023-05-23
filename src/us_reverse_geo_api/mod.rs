@@ -10,7 +10,7 @@ mod tests {
 
     #[test]
     fn client_test() {
-        let client = USReverseGeoClient::new(Options::new()).unwrap();
+        let client = USReverseGeoClient::new(Options::default()).unwrap();
 
         assert_eq!(client.client.url.to_string(), "https://us-reverse-geo.api.smartystreets.com/lookup".to_string())
     }

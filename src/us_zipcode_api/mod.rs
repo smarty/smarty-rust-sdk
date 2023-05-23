@@ -14,7 +14,7 @@ mod tests {
 
     #[test]
     fn client_test() {
-        let options = Options::new();
+        let options = Options::default();
         let client = USZipcodeClient::new(options).unwrap();
 
         assert_eq!(client.client.url.to_string(), "https://us-zipcode.api.smartystreets.com/lookup".to_string())
@@ -53,7 +53,7 @@ mod tests {
             ("zipcode".to_string(), "84604".to_string()),
         ];
 
-        let mut batch = Batch::new();
+        let mut batch = Batch::default();
         batch.push(lookup.clone()).unwrap();
         batch.push(lookup.clone()).unwrap();
         batch.push(lookup.clone()).unwrap();

@@ -11,7 +11,7 @@ use crate::us_street_api::lookup::Lookup;
 use crate::sdk::options::Options;
 use crate::sdk::send_request;
 
-const US_STREET_ADDRESS_API: &'static str = "street-address";
+const US_STREET_ADDRESS_API: &str = "street-address";
 
 pub struct USStreetAddressClient {
     pub(crate) client: Client,
@@ -19,7 +19,7 @@ pub struct USStreetAddressClient {
 
 impl USStreetAddressClient {
     pub fn new(options: Options) -> Result<Self, ParseError> {
-        Ok(Self::new_custom_base_url("https://us-street.api.smartystreets.com/".parse()?, options)?)
+        Self::new_custom_base_url("https://us-street.api.smartystreets.com/".parse()?, options)
     }
 
     pub fn new_custom_base_url(base_url: Url, options: Options) -> Result<Self, ParseError> {
@@ -29,7 +29,7 @@ impl USStreetAddressClient {
     async fn send_lookup(&self, lookup: &mut Lookup) -> Result<(), SDKError> {
         let mut req = self.client.reqwest_client.request(Method::GET, self.client.url.clone());
         req = self.client.build_request(req);
-        req = req.query(&lookup.clone().to_param_array());
+        req = req.query(&lookup.clone().into_param_array());
 
         let candidates = us_street_send_request(req).await?;
 
@@ -67,7 +67,7 @@ async fn us_street_send_request(request: RequestBuilder) -> Result<Candidates, S
 
     let response = send_request(request).await?;
 
-    return match response.json::<Candidates>().await {
+    match response.json::<Candidates>().await {
         Ok(candidates) => Ok(candidates),
         Err(err) => { Err(SDKError { code: None, detail: Some(format!("{:?}", err)) }) }
     }

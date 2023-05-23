@@ -10,7 +10,7 @@ mod tests {
 
     #[test]
     fn client_test() {
-        let client = USExtractClient::new(Options::new()).unwrap();
+        let client = USExtractClient::new(Options::default()).unwrap();
 
         assert_eq!(client.client.url.to_string(), "https://us-extract.api.smartystreets.com/".to_string())
     }

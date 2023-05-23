@@ -21,8 +21,8 @@ pub struct Options {
     pub authentication: Box<dyn Authenticate>
 }
 
-impl Options {
-    pub fn new() -> Self {
+impl Default for Options {
+    fn default() -> Self {
         Self {
             license: String::default(),
             num_retries: u32::default(),

@@ -8,7 +8,7 @@ use crate::sdk::send_request;
 use crate::us_zipcode_api::candidate::ZipcodeResult;
 use crate::us_zipcode_api::lookup::Lookup;
 
-const US_ZIPCODE_API: &'static str = "lookup";
+const US_ZIPCODE_API: &str = "lookup";
 
 pub struct USZipcodeClient {
     pub(crate) client: Client
@@ -16,7 +16,7 @@ pub struct USZipcodeClient {
 
 impl USZipcodeClient {
     pub fn new(options: Options) -> Result<Self, ParseError> {
-        Ok(Self::new_custom_base_url("https://us-zipcode.api.smartystreets.com/".parse()?, options)?)
+        Self::new_custom_base_url("https://us-zipcode.api.smartystreets.com/".parse()?, options)
     }
 
     pub fn new_custom_base_url(base_url: Url, options: Options) -> Result<Self, ParseError> {

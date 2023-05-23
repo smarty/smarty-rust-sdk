@@ -81,7 +81,7 @@ pub(crate) fn has_f64_param(name: String, param: f64, default: f64) -> Option<(S
 }
 
 pub(crate) fn has_vec_param(name: String, param: Vec<String>) -> Option<(String, String)> {
-    if param.len() > 0 {
+    if !param.is_empty() {
         Some((name,
               format!("[{}]", param.join(","))
         ))
@@ -101,7 +101,7 @@ mod tests {
     #[test]
     fn batch_test() {
         let lookup = "Hello World".to_string();
-        let mut batch = Batch::new();
+        let mut batch = Batch::default();
         batch.push(lookup).unwrap();
 
         assert_eq!(batch.length(), 1);
@@ -118,7 +118,7 @@ mod tests {
 
     #[test]
     fn client_test() {
-        let client = Client::new("https://www.smarty.com".parse().unwrap(), Options::new(), "docs").unwrap();
+        let client = Client::new("https://www.smarty.com".parse().unwrap(), Options::default(), "docs").unwrap();
 
         assert_eq!(client.url.to_string(), "https://www.smarty.com/docs");
     }

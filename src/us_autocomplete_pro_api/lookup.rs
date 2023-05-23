@@ -42,7 +42,7 @@ impl Default for Lookup {
 }
 
 impl Lookup {
-    pub(crate) fn to_param_array(self) -> Vec<(String, String)> {
+    pub(crate) fn into_param_array(self) -> Vec<(String, String)> {
         let geolocation_self = self.clone();
         vec![
             has_param("search".to_string(), self.search),
@@ -62,11 +62,11 @@ impl Lookup {
     }
 
     fn geolocation_param(self) -> Option<(String, String)> {
-        if self.zip_filter.len() > 0 || self.prefer_zip.len() > 0 {
+        if !self.zip_filter.is_empty() || !self.prefer_zip.is_empty() {
             return Some(("prefer_geolocation".to_string(), "none".to_string()))
         }
 
-        return match self.geolocation {
+        match self.geolocation {
             Geolocation::GeolocateCity => { Some(("prefer_geolocation".to_string(), "city".to_string())) }
             Geolocation::GeolocateNone => { Some(("prefer_geolocation".to_string(), "none".to_string())) }
         }

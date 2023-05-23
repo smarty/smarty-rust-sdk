@@ -10,7 +10,7 @@ mod tests {
 
     #[test]
     fn client_test() {
-        let client = InternationalAutocompleteClient::new(Options::new()).unwrap();
+        let client = InternationalAutocompleteClient::new(Options::default()).unwrap();
 
         assert_eq!(client.client.url.to_string(), "https://international-autocomplete.api.smartystreets.com/lookup".to_string())
     }
@@ -32,6 +32,6 @@ mod tests {
             ("include_only_locality".to_string(), "Paris".to_string()),
         ];
 
-        assert_eq!(lookup.to_param_array(), expected_results)
+        assert_eq!(lookup.into_param_array(), expected_results)
     }
 }
