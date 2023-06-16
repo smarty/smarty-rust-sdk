@@ -9,7 +9,7 @@ use url::{ParseError, Url};
 
 #[smarty_api(
     api_path = "",
-    default_url = "https://us-extract.api.smartystreets.me/",
+    default_url = "https://us-extract.api.smartystreets.com/",
     lookup_style(lookup),
     lookup_type = "Lookup",
     result_type = "ExtractionResult",

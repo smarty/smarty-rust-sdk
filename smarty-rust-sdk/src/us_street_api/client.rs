@@ -11,7 +11,7 @@ use crate::us_street_api::candidate::Candidates;
 use crate::us_street_api::lookup::Lookup;
 
 #[smarty_api(
-    default_url = "https://us-street.api.smartystreets.me/",
+    default_url = "https://us-street.api.smartystreets.com/",
     api_path = "street-address",
     lookup_style(batch),
     lookup_type = "Lookup",
