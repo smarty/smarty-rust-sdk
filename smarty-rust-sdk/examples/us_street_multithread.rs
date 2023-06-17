@@ -1,4 +1,4 @@
-use std::error::Error;
+use std::{error::Error, sync::Arc};
 
 use smarty_rust_sdk::{
     sdk::{authentication::SecretKeyCredential, batch::Batch, options::OptionsBuilder},
@@ -9,7 +9,6 @@ use smarty_rust_sdk::{
 };
 
 use futures::future::join_all;
-use url::Url;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -38,20 +37,12 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .build()
         .unwrap();
 
-    for _ in 0..500 {
-        let options = options.clone();
+    let client = Arc::new(USStreetAddressClient::new(options).expect("Failed to create client"));
+
+    for _ in 0..1000 {
         let lookup = lookup.clone();
+        let client = client.clone();
         let result = tokio::spawn(async move {
-            let client = USStreetAddressClient::new_custom_base_url(
-                "https://us-street.api.smartystreets.me/"
-                    .parse::<Url>()
-                    .unwrap(),
-                options.clone(),
-            )
-            .expect("Failed to create client");
-
-            let lookup = lookup.clone();
-
             let mut batch = Batch::default();
             for _ in 0..100 {
                 batch.push(lookup.clone()).expect("Overflowed Batch");

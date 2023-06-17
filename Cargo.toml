@@ -1,6 +1,7 @@
-
 [workspace]
+
 package.version = "0.1.0"
+
 members = [
   "smarty-rust-sdk",
   "smarty-rust-proc-macro"
