@@ -37,7 +37,7 @@ mod tests {
 
         assert_eq!(
             serde_json::to_string_pretty(&lookup).unwrap(),
-            "{\n  \"text\": \"Meet me at 3214 N University Ave Provo UT 84604 just after 3pm.\",\n  \"html\": \"\",\n  \"aggressive\": true,\n  \"addr_line_breaks\": false,\n  \"addr_per_line\": 1\n}"
+            "{\n  \"text\": \"Meet me at 3214 N University Ave Provo UT 84604 just after 3pm.\",\n  \"html\": \"\",\n  \"aggressive\": true,\n  \"addr_line_breaks\": false,\n  \"addr_per_line\": 1,\n  \"match\": \"strict\"\n}"
         );
     }
 }

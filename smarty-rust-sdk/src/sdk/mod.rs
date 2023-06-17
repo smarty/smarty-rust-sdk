@@ -10,7 +10,6 @@ pub mod client;
 pub mod error;
 pub mod logging;
 pub mod options;
-pub mod version;
 
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 pub const MAX_BATCH_SIZE: usize = 100;
@@ -125,7 +124,6 @@ mod tests {
     use crate::sdk::batch::Batch;
     use crate::sdk::client::Client;
     use crate::sdk::options::OptionsBuilder;
-    use crate::sdk::version::get_version;
 
     #[test]
     fn batch_test() {
@@ -158,13 +156,5 @@ mod tests {
         .unwrap();
 
         assert_eq!(client.url.to_string(), "https://www.smarty.com/docs");
-    }
-
-    #[test]
-    fn version_test() {
-        let version = get_version();
-        let expected = env!("CARGO_PKG_VERSION");
-
-        assert_eq!(version, expected);
     }
 }

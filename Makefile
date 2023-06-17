@@ -12,8 +12,10 @@ test:
 build:
 	cargo build
 
-package: test
-	cargo publish
+publish: test
+	sed -i -r "s/0\.0\.0/${VERSION}/g" "$(VERSION_FILE)" \
+	  && cargo publish --package smarty-rust-proc-macro --dry-run \
+	  && cargo publish --package smarty-rust-sdk --dry-run
 
 clippy:
 	cargo clippy

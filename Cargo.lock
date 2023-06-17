@@ -1094,7 +1094,7 @@ checksum = "a507befe795404456341dfab10cef66ead4c041f62b8b11bbb92bffe5d0953e0"
 
 [[package]]
 name = "smarty-rust-proc-macro"
-version = "0.1.0"
+version = "0.0.0"
 dependencies = [
  "darling",
  "quote",
@@ -1103,7 +1103,7 @@ dependencies = [
 
 [[package]]
 name = "smarty-rust-sdk"
-version = "0.1.0"
+version = "0.0.0"
 dependencies = [
  "async-trait",
  "env_logger",
