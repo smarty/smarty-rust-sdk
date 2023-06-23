@@ -10,3 +10,7 @@
 **/*.rs.bk
 
 *.idea
+*DS_Store*
+*.swp
+*.iml
+__MACOSX
