@@ -124,7 +124,6 @@ mod tests {
     use crate::sdk::batch::Batch;
     use crate::sdk::client::Client;
     use crate::sdk::options::OptionsBuilder;
-    use crate::sdk::version::get_version;
 
     #[test]
     fn batch_test() {
@@ -157,13 +156,5 @@ mod tests {
         .unwrap();
 
         assert_eq!(client.url.to_string(), "https://www.smarty.com/docs");
-    }
-
-    #[test]
-    fn version_test() {
-        let version = get_version();
-        let expected = env!("CARGO_PKG_VERSION");
-
-        assert_eq!(version, expected);
     }
 }

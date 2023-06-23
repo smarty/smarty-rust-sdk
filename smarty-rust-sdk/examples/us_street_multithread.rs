@@ -39,7 +39,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let client = Arc::new(USStreetAddressClient::new(options).expect("Failed to create client"));
 
-    for _ in 0..1000 {
+    //Note: This will issue 1000 requests, be careful...
+    for _ in 0..10 {
         let lookup = lookup.clone();
         let client = client.clone();
         let result = tokio::spawn(async move {

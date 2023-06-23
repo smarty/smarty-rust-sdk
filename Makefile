@@ -13,7 +13,8 @@ build:
 	cargo build
 
 package: test
-	cargo publish
+	sed -i -r "s/0\.0\.0/${VERSION}/g" "$(VERSION_FILE)"
+		&& cargo publish -token
 
 clippy:
 	cargo clippy
