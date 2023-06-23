@@ -4,6 +4,6 @@
 
 The official client libraries for accessing SmartyStreets APIs from Rust
 
-You may have noticed this page is curiously sparse. Don't panic, there's [documentation](https://smarty.com/docs/sdk/rust) and [examples](examples).
+You may have noticed this page is curiously sparse. Don't panic, there's [documentation](https://smarty.com/docs/sdk/rust) and [examples](smarty-rust-sdk/examples).
 
 [Apache 2.0 License](LICENSE)
