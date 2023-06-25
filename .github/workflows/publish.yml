@@ -14,12 +14,6 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-          override: true
-      - uses: katyo/publish-crates@v2
-        with:
-          path: '.'
-          args: --no-verify
-          dry-run: true
       - run : |
           VERSION="${GITHUB_REF#refs/*/}" make publish
         env:
