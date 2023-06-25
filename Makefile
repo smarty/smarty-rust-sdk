@@ -12,9 +12,10 @@ test:
 build:
 	cargo build
 
-package: test
+publish: test
 	sed -i -r "s/0\.0\.0/${VERSION}/g" "$(VERSION_FILE)"
-		&& cargo publish -token
+		&& cargo publish --package smarty-rust-proc-macro -token
+		&& cargo publish --package smarty-rust-sdk -token
 
 clippy:
 	cargo clippy
