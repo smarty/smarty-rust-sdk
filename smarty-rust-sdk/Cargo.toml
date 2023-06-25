@@ -19,7 +19,7 @@ serde_repr = "0.1.9"
 task-local-extensions = "0.1.3"
 tokio = { version = "1", features = ["full"] }
 url = "2.3.1"
-smarty-rust-proc-macro = {path="../smarty-rust-proc-macro"}
+smarty-rust-proc-macro = {path="../smarty-rust-proc-macro", version="*"}
 
 [dev-dependencies]
 futures = "0.3.28"
