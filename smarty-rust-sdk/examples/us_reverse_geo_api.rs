@@ -11,8 +11,9 @@ use std::error::Error;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     let lookup = &mut Lookup {
-        latitude: 40.27644,
-        longitude: -111.65747,
+        latitude: 43.674389,
+        longitude: -116.686195,
+        source: "all".to_string(),
         ..Default::default()
     };
 

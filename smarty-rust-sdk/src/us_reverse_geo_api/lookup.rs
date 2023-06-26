@@ -1,9 +1,11 @@
+use crate::sdk::has_param;
 use crate::us_reverse_geo_api::address::Results;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Lookup {
     pub latitude: f64,
     pub longitude: f64,
+    pub source: String,
     pub results: Results,
 }
 
@@ -12,6 +14,7 @@ impl Default for Lookup {
         Lookup {
             latitude: 0.0,
             longitude: 0.0,
+            source: String::default(),
             results: Results { results: vec![] },
         }
     }
@@ -19,9 +22,11 @@ impl Default for Lookup {
 
 impl Lookup {
     pub(crate) fn into_param_array(self) -> Vec<(String, String)> {
+        let source_string = has_param("source".to_string(), self.source).unwrap();
         vec![
             ("latitude".to_string(), self.latitude.to_string()),
             ("longitude".to_string(), self.longitude.to_string()),
+            (source_string),
         ]
     }
 }

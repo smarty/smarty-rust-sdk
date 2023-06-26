@@ -30,5 +30,6 @@ pub struct Address {
     pub street: String,
     pub city: String,
     pub state_abbreviation: String,
-    pub zipcode: String
+    pub zipcode: String,
+    pub source: String
 }
