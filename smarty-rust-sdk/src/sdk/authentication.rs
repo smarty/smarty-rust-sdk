@@ -1,14 +1,19 @@
 use reqwest_middleware::RequestBuilder;
 use std::fmt::Debug;
 
+/// Allows for cloning of an authentication system
 pub trait AuthClone {
     fn clone_box(&self) -> Box<dyn Authenticate>;
 }
 
+/// What the authentication does to the request in order to
+/// authenticate the client.
 pub trait Authenticate: Sync + Send + Debug + AuthClone {
+    /// Authenticates the Request with the given authentication credentials
     fn authenticate(&self, request: RequestBuilder) -> RequestBuilder;
 }
 
+// TODO: Doc String
 #[derive(Clone, PartialEq, Debug)]
 pub struct SecretKeyCredential {
     pub auth_id: String,
@@ -39,6 +44,7 @@ impl Authenticate for SecretKeyCredential {
     }
 }
 
+// TODO: Doc String
 #[derive(Clone, PartialEq, Debug)]
 pub struct WebsiteKeyCredential {
     key: String,

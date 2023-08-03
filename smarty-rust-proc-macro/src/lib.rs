@@ -168,7 +168,7 @@ fn impl_smarty_api_macro(attrs: &MacroArgs, ast: &mut syn::DeriveInput) -> Token
                             return Ok(())
                         }
 
-                        if batch.length() == 1 {
+                        if batch.len() == 1 {
                             return self.send_lookup(&mut batch.records_mut()[0]).await
                         }
 

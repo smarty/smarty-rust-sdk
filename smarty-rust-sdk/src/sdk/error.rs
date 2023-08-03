@@ -3,15 +3,19 @@ use std::fmt::{Display, Formatter};
 
 #[derive(Debug, Clone)]
 
-/// A Simple Error that returns an error code, if there is one, and the details that were recieved.
+/// An error returned by a struct in the SDK.
 pub struct SDKError {
     pub code: Option<u16>,
-    pub detail: Option<String>
+    pub detail: Option<String>,
 }
 
 impl Display for SDKError {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "SDK Error: ErrorCode: {:?}\nDetails: {:?}", self.code, self.detail)
+        write!(
+            f,
+            "SDK Error: ErrorCode: {:?}\nDetails: {:?}",
+            self.code, self.detail
+        )
     }
 }
 
