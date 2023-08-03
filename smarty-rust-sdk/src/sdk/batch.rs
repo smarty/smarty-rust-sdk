@@ -2,24 +2,26 @@ use crate::sdk::error::SDKError;
 use crate::sdk::MAX_BATCH_SIZE;
 
 #[derive(Clone)]
-/// A batch of generics that are used for running lots of Lookups
+/// A storage for lookups.
+/// Has a maximum limit of 100 lookups
 pub struct Batch<T> {
-    lookups: Vec<T>
+    lookups: Vec<T>,
 }
 
 impl<T> Default for Batch<T> {
     fn default() -> Self {
-        Self {
-            lookups: vec![]
-        }
+        Self { lookups: vec![] }
     }
 }
 
 impl<T> Batch<T> {
-
+    /// Pushes a lookup into the batch, returns an SDKError if the batch is full.
     pub fn push(&mut self, lookup: T) -> Result<(), SDKError> {
         if self.is_full() {
-            return Err(SDKError { code: None, detail: Some(format!("Batch is full (max {})", MAX_BATCH_SIZE)) } )
+            return Err(SDKError {
+                code: None,
+                detail: Some(format!("Batch is full (max {})", MAX_BATCH_SIZE)),
+            });
         }
 
         self.lookups.push(lookup);
@@ -27,26 +29,36 @@ impl<T> Batch<T> {
         Ok(())
     }
 
+    /// Returns whether or not the batch is full.
     pub fn is_full(&self) -> bool {
-        self.lookups.len() > MAX_BATCH_SIZE
+        self.lookups.len() >= MAX_BATCH_SIZE
     }
 
+    /// Returns whether or not the batch is empty.
     pub fn is_empty(&self) -> bool {
         self.lookups.is_empty()
     }
 
-    pub fn length(&self) -> usize {
+    /// Returns the number of lookups in the batch.
+    pub fn len(&self) -> usize {
         self.lookups.len()
     }
 
-    pub fn records (&self) -> &Vec<T> {
+    /// Returns the lookups stored in the batch
+    ///
+    /// Mostly used to get the results from the lookups
+    pub fn records(&self) -> &Vec<T> {
         &self.lookups
     }
 
+    /// Returns the lookups stored in the batch as a mutable reference
+    ///
+    /// Mostly used to alter lookups all at once.
     pub fn records_mut(&mut self) -> &mut Vec<T> {
         &mut self.lookups
     }
 
+    /// Clears all lookups from the batch.
     pub fn clear(&mut self) {
         self.lookups.clear();
     }

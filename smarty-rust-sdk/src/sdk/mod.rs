@@ -131,7 +131,7 @@ mod tests {
         let mut batch = Batch::default();
         batch.push(lookup).unwrap();
 
-        assert_eq!(batch.length(), 1);
+        assert_eq!(batch.len(), 1);
         assert_eq!(batch.records()[0], "Hello World".to_string())
     }
 

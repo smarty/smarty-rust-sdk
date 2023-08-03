@@ -69,6 +69,6 @@ mod tests {
             batch.records()[0].clone().into_param_array(),
             expected_result
         );
-        assert_eq!(batch.length(), 3);
+        assert_eq!(batch.len(), 3);
     }
 }
