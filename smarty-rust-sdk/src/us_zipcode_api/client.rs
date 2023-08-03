@@ -10,7 +10,7 @@ use smarty_rust_proc_macro::smarty_api;
 use url::{ParseError, Url};
 
 #[smarty_api(
-    default_url = "https://us-zipcode.api.smartystreets.com/",
+    default_url = "https://us-zipcode.api.smarty.com/",
     api_path = "lookup",
     lookup_style(batch),
     result_type = "ZipcodeResult",

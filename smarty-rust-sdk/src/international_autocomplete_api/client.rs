@@ -10,7 +10,7 @@ use url::{ParseError, Url};
 
 #[smarty_api(
     api_path = "lookup",
-    default_url = "https://international-autocomplete.api.smartystreets.com/",
+    default_url = "https://international-autocomplete.api.smarty.com/",
     lookup_style(lookup),
     lookup_type = "Lookup",
     result_type = "SuggestionListing"

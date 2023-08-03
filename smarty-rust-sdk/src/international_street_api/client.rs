@@ -10,7 +10,7 @@ use url::{ParseError, Url};
 
 #[smarty_api(
     api_path = "verify",
-    default_url = "https://international-street.api.smartystreets.com/",
+    default_url = "https://international-street.api.smarty.com/",
     lookup_style(lookup),
     lookup_type = "Lookup",
     result_type = "Vec<Candidate>"
