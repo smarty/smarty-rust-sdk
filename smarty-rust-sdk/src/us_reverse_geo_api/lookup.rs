@@ -22,7 +22,7 @@ impl Default for Lookup {
 
 impl Lookup {
     pub(crate) fn into_param_array(self) -> Vec<(String, String)> {
-        let source_string = has_param("source".to_string(), self.source).unwrap();
+        let source_string = has_param("source".to_string(), self.source).expect("source string should be valid");
         vec![
             ("latitude".to_string(), self.latitude.to_string()),
             ("longitude".to_string(), self.longitude.to_string()),

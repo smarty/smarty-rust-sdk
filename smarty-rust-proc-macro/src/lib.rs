@@ -28,14 +28,14 @@ impl LookupStyle {
     fn get_lookup_method(&self) -> Path {
         match self.overrides.lookup_method.clone() {
             Some(path) => path,
-            None => Path::from_string("Method::GET").unwrap(),
+            None => Path::from_string("Method::GET").expect("Constant failed to parse"),
         }
     }
 
     fn get_batch_method(&self) -> Path {
         match self.overrides.batch_method.clone() {
             Some(path) => path,
-            None => Path::from_string("Method::POST").unwrap(),
+            None => Path::from_string("Method::POST").expect("Constant failed to parse"),
         }
     }
 }
@@ -70,7 +70,7 @@ pub fn smarty_api(args: TokenStream, input: TokenStream) -> TokenStream {
         Err(e) => return TokenStream::from(Error::from(e).write_errors()),
     };
 
-    let mut ast = syn::parse(input).unwrap();
+    let mut ast = syn::parse(input).expect("macro input stream should be valid");
 
     let args = match MacroArgs::from_list(attr_args.as_ref()) {
         Ok(v) => v,
