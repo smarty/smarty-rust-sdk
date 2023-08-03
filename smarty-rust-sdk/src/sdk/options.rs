@@ -2,7 +2,19 @@ use crate::sdk::authentication::Authenticate;
 
 use super::error::SDKError;
 
-/// Builds out the options for your client
+/// A builder for the options
+///
+/// Example:
+/// ```rust
+/// let authentication = SecretKeyCredential::new("test", "test");
+///
+/// OptionsBuilder::new()
+///     .with_license("test_license")
+///     .with_logging()
+///     .authenticate()
+///     .build()
+///     .expect("Authentication failed")
+/// ```
 pub struct OptionsBuilder {
     license: String,
     num_retries: u32,
@@ -41,23 +53,32 @@ impl OptionsBuilder {
             detail: Some("Authentication Required".to_string()),
         })
     }
+
+    /// Adds a license string to the options
     pub fn with_license(mut self, license: &str) -> Self {
         self.license = license.to_string();
         self
     }
+
+    /// Forces a maximum number of retries that a request will attempt to handle.
     pub fn with_retries(mut self, num_retries: u32) -> Self {
         self.num_retries = num_retries;
         self
     }
-    /// Enables Logging on these options
+
+    /// Enables Logging
     pub fn with_logging(mut self) -> Self {
         self.logging_enabled = true;
         self
     }
+
+    /// Adds a set of custom headers to your request.
     pub fn with_headers(mut self, headers: Vec<(String, String)>) -> Self {
         self.headers = headers;
         self
     }
+
+    /// Inserts the authentication into the options.
     pub fn authenticate(mut self, authentication: Box<dyn Authenticate>) -> Self {
         self.authentication = Some(authentication);
         self
@@ -65,10 +86,10 @@ impl OptionsBuilder {
 }
 
 /// Options that can be passed into a new client
-/// num_retries: the number of retries that the client with run before giving up.
-/// logging_enabled: whether we should send logging data
-/// headers: Custom headers that you can pass in
-/// authentication: A authentication for Smarty
+/// <num_retries>: the number of retries that the client with run before giving up.
+/// <logging_enabled>: whether we should send logging data
+/// <headers>: Custom headers that you can pass in
+/// <authentication>: A authentication for Smarty
 pub struct Options {
     pub(crate) license: String,
 
