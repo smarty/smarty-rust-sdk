@@ -21,7 +21,7 @@ mod tests {
 
         assert_eq!(
             client.client.url.to_string(),
-            "https://us-autocomplete-pro.api.smartystreets.com/lookup".to_string()
+            "https://us-autocomplete-pro.api.smarty.com/lookup".to_string()
         )
     }
 

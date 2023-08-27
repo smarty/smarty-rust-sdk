@@ -5,19 +5,19 @@ use super::error::SDKError;
 /// A builder for the options
 ///
 /// Example:
-/// ```rust
-/// let authentication = SecretKeyCredential::new("test", "test");
+/// ```ignore
+/// let authentication = SecretKeyCredential::new("test".to_string(), "test".to_string());
 ///
 /// OptionsBuilder::new()
 ///     .with_license("test_license")
 ///     .with_logging()
-///     .authenticate()
+///     .authenticate(authentication)
 ///     .build()
 ///     .expect("Authentication failed")
 /// ```
 pub struct OptionsBuilder {
     license: String,
-    num_retries: u32,
+    num_retries: u64,
     logging_enabled: bool,
     headers: Vec<(String, String)>,
     authentication: Option<Box<dyn Authenticate>>,
@@ -29,7 +29,7 @@ impl OptionsBuilder {
     pub fn new() -> Self {
         Self {
             license: "".to_string(),
-            num_retries: u32::default(),
+            num_retries: 10,
             logging_enabled: false,
             headers: vec![],
             authentication: None,
@@ -61,7 +61,7 @@ impl OptionsBuilder {
     }
 
     /// Forces a maximum number of retries that a request will attempt to handle.
-    pub fn with_retries(mut self, num_retries: u32) -> Self {
+    pub fn with_retries(mut self, num_retries: u64) -> Self {
         self.num_retries = num_retries;
         self
     }
@@ -94,7 +94,7 @@ pub struct Options {
     pub(crate) license: String,
 
     // Retry Sender
-    pub(crate) num_retries: u32,
+    pub(crate) num_retries: u64,
 
     // Logger
     pub(crate) logging_enabled: bool,

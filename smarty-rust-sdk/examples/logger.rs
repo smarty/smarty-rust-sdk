@@ -13,6 +13,7 @@ use std::error::Error;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
+    // Create a couple simple lookups
     let lookup = Lookup {
         street: "1600 Amphitheatre Pkwy".to_string(),
         last_line: "Mountain View, CA".to_string(),
@@ -28,34 +29,36 @@ async fn main() -> Result<(), Box<dyn Error>> {
         ..Default::default()
     };
 
+    // Build a simple batch
     let mut batch = Batch::default();
     batch.push(lookup)?;
     batch.push(lookup2)?;
 
+    // Build a secret key auth id from environment variables
     let authentication = SecretKeyCredential::new(
         std::env::var("SMARTY_AUTH_ID")?,
         std::env::var("SMARTY_AUTH_TOKEN")?,
     );
 
+    // Create the options from it's builder pattern
     let options = OptionsBuilder::new()
         .with_license("us-core-cloud")
         .with_logging()
+        .with_retries(2)
         .authenticate(authentication)
         .build()
         .unwrap();
 
-    // TODO: Remove the following after code review.
     // Setup the logger
     // To better learn, look at (https://rust-lang-nursery.github.io/rust-cookbook/development_tools/debugging/log.html)
     env_logger::init();
 
-    let client = USStreetAddressClient::new_custom_base_url(
-        "https://us-street.api.smartystreets.com/".parse()?,
-        options,
-    )?;
+    let client = USStreetAddressClient::new(options)?;
 
+    // Send the Request to the server.
     client.send(&mut batch).await?;
 
+    // Print out the results as a pretty json string, but only the first index of them.
     println!(
         "{}",
         serde_json::to_string_pretty(&batch.records()[0].results)?

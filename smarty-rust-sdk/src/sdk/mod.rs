@@ -10,6 +10,7 @@ pub mod client;
 pub mod error;
 pub mod logging;
 pub mod options;
+pub mod retry_strategy;
 
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 pub const MAX_BATCH_SIZE: usize = 100;
