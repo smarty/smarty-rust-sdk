@@ -23,7 +23,7 @@ mod tests {
 
         assert_eq!(
             client.client.url.to_string(),
-            "https://us-street.api.smartystreets.com/street-address".to_string()
+            "https://us-street.api.smarty.com/street-address".to_string()
         );
     }
 

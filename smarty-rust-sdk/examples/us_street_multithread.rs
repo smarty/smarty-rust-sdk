@@ -12,6 +12,15 @@ use futures::future::join_all;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
+    // Due to this being a possibly costly example, ensure the user want's to send it.
+    println!("Are you sure that you want to run this example?\nIt will run a 1000 lookups.\n(Y/N)");
+    let mut confirmation = "".to_string();
+    std::io::stdin().read_line(&mut confirmation)?;
+
+    if confirmation != "Y" {
+        return Ok(());
+    }
+
     let lookup = Lookup {
         street: "1600 Amphitheatre Pkwy".to_string(),
         last_line: "Mountain View, CA".to_string(),
@@ -39,7 +48,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let client = Arc::new(USStreetAddressClient::new(options).expect("Failed to create client"));
 
-    //Note: This will issue 1000 requests, be careful...
+    // Note: This will issue 1000 requests, be careful...
     for _ in 0..10 {
         let lookup = lookup.clone();
         let client = client.clone();

@@ -3,9 +3,9 @@ use crate::sdk::options::Options;
 use crate::sdk::VERSION;
 use reqwest::header::USER_AGENT;
 use reqwest_middleware::{ClientBuilder, ClientWithMiddleware, RequestBuilder};
-use reqwest_retry::policies::ExponentialBackoff;
-use reqwest_retry::RetryTransientMiddleware;
 use url::{ParseError, Url};
+
+use super::retry_strategy::SmartyRetryMiddleware;
 
 /// The base client for all of Smarty's rust sdk
 pub(crate) struct Client {
@@ -22,10 +22,8 @@ impl Client {
     ) -> Result<Client, ParseError> {
         let url = &mut base_url.join(api_path)?;
 
-        let retry_policy =
-            ExponentialBackoff::builder().build_with_max_retries(options.num_retries);
         let mut client_builder = ClientBuilder::new(reqwest::Client::new())
-            .with(RetryTransientMiddleware::new_with_policy(retry_policy));
+            .with(SmartyRetryMiddleware::new(options.num_retries));
 
         if options.logging_enabled {
             client_builder = client_builder.with(LoggingMiddleware);

@@ -7,3 +7,6 @@ pub mod us_extract_api;
 pub mod us_reverse_geo_api;
 pub mod us_street_api;
 pub mod us_zipcode_api;
+
+#[macro_use]
+extern crate anyhow;

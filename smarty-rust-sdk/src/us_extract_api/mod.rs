@@ -21,7 +21,7 @@ mod tests {
 
         assert_eq!(
             client.client.url.to_string(),
-            "https://us-extract.api.smartystreets.com/".to_string()
+            "https://us-extract.api.smarty.com/".to_string()
         )
     }
 
