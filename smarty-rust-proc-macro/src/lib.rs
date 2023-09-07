@@ -99,21 +99,22 @@ fn impl_smarty_api_macro(attrs: &MacroArgs, ast: &mut syn::DeriveInput) -> Token
 
     // Lets make sure that the API Type has the values it needs.
     let mut result = quote! {
-        pub struct #name {
-            pub(crate) client: Client
+
+    pub struct #name {
+        pub(crate) client: Client
+    }
+
+    impl #name {
+        /// Creates a new client with the given options
+        pub fn new(options: Options) -> Result<Self, ParseError> {
+            Self::new_custom_base_url(#default_url.parse()?, options)
         }
 
-        impl #name {
-            /// Creates a new client with the given options
-            pub fn new(options: Options) -> Result<Self, ParseError> {
-                Self::new_custom_base_url(#default_url.parse()?, options)
-            }
-
-            /// Creates a new client with the given options that points to a different url.
-            pub fn new_custom_base_url(base_url: Url, options: Options) -> Result<Self, ParseError> {
-                Ok(Self {client: Client::new(base_url, options, #api_path)?})
-            }
+        /// Creates a new client with the given options that points to a different url.
+        pub fn new_custom_base_url(base_url: Url, options: Options) -> Result<Self, ParseError> {
+            Ok(Self {client: Client::new(base_url, options, #api_path)?})
         }
+    }
 
     };
 
