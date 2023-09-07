@@ -1,8 +1,8 @@
-use std::fmt::{Display, Formatter};
-use crate::international_street_api::candidate::{Candidate};
+use crate::international_street_api::candidate::Candidate;
 use crate::sdk::has_param;
+use std::fmt::{Display, Formatter};
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Lookup {
     pub input_id: String,
     pub country: String,
@@ -18,7 +18,7 @@ pub struct Lookup {
     pub administrative_area: String,
     pub postal_code: String,
 
-    pub results: Vec<Candidate>
+    pub results: Vec<Candidate>,
 }
 
 impl Default for Lookup {
@@ -37,7 +37,7 @@ impl Default for Lookup {
             locality: String::default(),
             administrative_area: String::default(),
             postal_code: String::default(),
-            results: vec![]
+            results: vec![],
         }
     }
 }
@@ -56,24 +56,25 @@ impl Lookup {
             has_param("organization".to_string(), self.organization),
             has_param("locality".to_string(), self.locality),
             has_param("administrative_area".to_string(), self.administrative_area),
-            has_param("postal_code".to_string(), self.postal_code)
-        ].iter()
-            .filter_map(Option::clone)
-            .collect::<Vec<_>>()
+            has_param("postal_code".to_string(), self.postal_code),
+        ]
+        .iter()
+        .filter_map(Option::clone)
+        .collect::<Vec<_>>()
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum Language {
     Native,
-    Latin
+    Latin,
 }
 
 impl Display for Language {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
             Language::Native => write!(f, "native"),
-            Language::Latin => write!(f, "latin")
+            Language::Latin => write!(f, "latin"),
         }
     }
 }

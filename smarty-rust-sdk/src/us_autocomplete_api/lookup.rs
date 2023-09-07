@@ -1,8 +1,8 @@
-use serde::Serialize;
 use crate::sdk::{has_f64_param, has_i32_param, has_param, has_vec_param};
 use crate::us_autocomplete_api::suggestion::SuggestionListing;
+use serde::Serialize;
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Lookup {
     pub prefix: String,
     pub max_suggestions: i32,
@@ -12,7 +12,7 @@ pub struct Lookup {
     pub geolocation: Geolocation,
     pub prefer_ratio: f64,
 
-    pub results: SuggestionListing
+    pub results: SuggestionListing,
 }
 
 impl Default for Lookup {
@@ -25,8 +25,10 @@ impl Default for Lookup {
             prefer_ratio: 0.0,
             geolocation: Geolocation::default(),
 
-            results: SuggestionListing { suggestions: vec![] },
-            preferences: vec![]
+            results: SuggestionListing {
+                suggestions: vec![],
+            },
+            preferences: vec![],
         }
     }
 }
@@ -40,10 +42,11 @@ impl Lookup {
             has_vec_param("state_filter".to_string(), self.state_filter),
             has_vec_param("preferences".to_string(), self.preferences),
             self.geolocation.geolocation_to_param(),
-            has_f64_param("prefer_ratio".to_string(), self.prefer_ratio, 0.0)
-        ].iter()
-            .filter_map(Option::clone)
-            .collect::<Vec<_>>()
+            has_f64_param("prefer_ratio".to_string(), self.prefer_ratio, 0.0),
+        ]
+        .iter()
+        .filter_map(Option::clone)
+        .collect::<Vec<_>>()
     }
 }
 
@@ -55,7 +58,7 @@ pub enum Geolocation {
     #[serde(rename = "city")]
     GeolocateCity,
     #[serde(rename = "state")]
-    GeolocateState
+    GeolocateState,
 }
 
 impl Geolocation {
@@ -63,7 +66,9 @@ impl Geolocation {
         match self {
             Geolocation::GeolocateNone => Some(("geolocate".to_string(), "false".to_string())),
             Geolocation::GeolocateCity => None,
-            Geolocation::GeolocateState => Some(("geolocate_precision".to_string(), "state".to_string())),
+            Geolocation::GeolocateState => {
+                Some(("geolocate_precision".to_string(), "state".to_string()))
+            }
         }
     }
 }
