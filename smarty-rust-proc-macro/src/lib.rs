@@ -63,8 +63,10 @@ struct MacroArgs {
     result_handler: ResultHandler,
 }
 
+// The main proc macro that allows someone to create a smarty api
 #[proc_macro_attribute]
 pub fn smarty_api(args: TokenStream, input: TokenStream) -> TokenStream {
+    // Turn the attributes into a set of args.
     let attr_args = match NestedMeta::parse_meta_list(args.into()) {
         Ok(v) => v,
         Err(e) => return TokenStream::from(Error::from(e).write_errors()),
@@ -72,6 +74,7 @@ pub fn smarty_api(args: TokenStream, input: TokenStream) -> TokenStream {
 
     let mut ast = syn::parse(input).expect("macro input stream should be valid");
 
+    // Generate the arguments in the form of a struct
     let args = match MacroArgs::from_list(attr_args.as_ref()) {
         Ok(v) => v,
         Err(e) => return TokenStream::from(e.write_errors()),
@@ -96,19 +99,22 @@ fn impl_smarty_api_macro(attrs: &MacroArgs, ast: &mut syn::DeriveInput) -> Token
 
     // Lets make sure that the API Type has the values it needs.
     let mut result = quote! {
-        pub struct #name {
-            pub(crate) client: Client
+
+    pub struct #name {
+        pub(crate) client: Client
+    }
+
+    impl #name {
+        /// Creates a new client with the given options
+        pub fn new(options: Options) -> Result<Self, ParseError> {
+            Self::new_custom_base_url(#default_url.parse()?, options)
         }
 
-        impl #name {
-            pub fn new(options: Options) -> Result<Self, ParseError> {
-                Self::new_custom_base_url(#default_url.parse()?, options)
-            }
-
-            pub fn new_custom_base_url(base_url: Url, options: Options) -> Result<Self, ParseError> {
-                Ok(Self {client: Client::new(base_url, options, #api_path)?})
-            }
+        /// Creates a new client with the given options that points to a different url.
+        pub fn new_custom_base_url(base_url: Url, options: Options) -> Result<Self, ParseError> {
+            Ok(Self {client: Client::new(base_url, options, #api_path)?})
         }
+    }
 
     };
 
@@ -149,6 +155,9 @@ fn impl_smarty_api_macro(attrs: &MacroArgs, ast: &mut syn::DeriveInput) -> Token
                 #result
 
                 impl #name {
+                    /// Uses the lookup and the client in
+                    /// order to build a request and send the message
+                    /// to the server.
                     async fn send_lookup(&self, lookup: &mut #lookup_type) -> Result<(), SDKError> {
                         let mut req = self
                             .client
@@ -163,6 +172,10 @@ fn impl_smarty_api_macro(attrs: &MacroArgs, ast: &mut syn::DeriveInput) -> Token
 
                         Ok(())
                     }
+
+                    /// Uses a batch and the client in
+                    /// Order to build a request
+                    /// that will handle the batch
                     pub async fn send(&self, batch: &mut Batch<#lookup_type>) -> Result<(), SDKError> {
                         if batch.is_empty() {
                             return Ok(())
@@ -190,6 +203,9 @@ fn impl_smarty_api_macro(attrs: &MacroArgs, ast: &mut syn::DeriveInput) -> Token
                 #result
 
                 impl #name {
+                    /// Uses the lookup and the client in
+                    /// order to build a request and send the message
+                    /// to the server.
                     pub async fn send(&self, lookup: &mut #lookup_type) -> Result<(), SDKError> {
                         let mut req = self
                             .client
