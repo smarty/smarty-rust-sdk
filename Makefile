@@ -6,6 +6,7 @@ SDK_VERSION_FILE := smarty-rust-sdk/Cargo.toml
 clean:
 	cargo clean
 	git checkout "$(VERSION_FILE)"
+	git checkout "$(SDK_VERSION_FILE)"
 
 test:
 	cargo test
@@ -16,8 +17,8 @@ build:
 publish: test
 	sed -i -r "s/version=\"0\.0\.0\"/version=\"${VERSION}\"/g" "$(SDK_VERSION_FILE)" \
 	  && sed -i -r "s/0\.0\.0/${VERSION}/g" "$(VERSION_FILE)" \
-	  && cargo publish --package smarty-rust-proc-macro \
-	  && cargo publish --package smarty-rust-sdk
+	  && cargo publish --package smarty-rust-proc-macro --allow-dirty \
+	  && cargo publish --package smarty-rust-sdk --allow-dirty
 
 clippy:
 	cargo clippy
