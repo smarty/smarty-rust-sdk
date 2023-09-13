@@ -2,7 +2,7 @@
 
 # SmartyStreets Rust SDK
 
-The official client libraries for accessing SmartyStreets APIs from Rust
+The official client libraries for accessing Smarty APIs from Rust
 
 You may have noticed this page is curiously sparse. Don't panic, there's [documentation](https://smarty.com/docs/sdk/rust) and [examples](smarty-rust-sdk/examples).
 
