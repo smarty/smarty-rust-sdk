@@ -14,7 +14,7 @@ use futures::future::join_all;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     // Due to this being a possibly costly example, ensure the user want's to send it.
-    print!("Are you sure that you want to run this example?\nIt will run a 1000 lookups.\n(Y/N): ");
+    print!("Are you sure that you want to run this example?\nIt will use 1000 lookups.\n(Y/N): ");
     std::io::stdout().flush()?;
     let mut confirmation = "".to_string();
     std::io::stdin().read_line(&mut confirmation)?;

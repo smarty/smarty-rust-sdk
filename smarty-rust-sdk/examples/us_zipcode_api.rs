@@ -28,8 +28,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
     batch.push(lookup2)?;
 
     let authentication = SecretKeyCredential::new(
-        std::env::var("SMARTY_AUTH_ID")?,
-        std::env::var("SMARTY_AUTH_TOKEN")?,
+        std::env::var("SMARTY_AUTH_ID").expect("Missing SMARTY_AUTH_ID env variable"),
+        std::env::var("SMARTY_AUTH_TOKEN").expect("Missing SMARTY_AUTH_TOKEN env variable"),
     );
 
     let options = OptionsBuilder::new()

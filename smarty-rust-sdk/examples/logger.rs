@@ -36,8 +36,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     // Build a secret key auth id from environment variables
     let authentication = SecretKeyCredential::new(
-        std::env::var("SMARTY_AUTH_ID")?,
-        std::env::var("SMARTY_AUTH_TOKEN")?,
+        std::env::var("SMARTY_AUTH_ID").expect("Missing SMARTY_AUTH_ID env variable"),
+        std::env::var("SMARTY_AUTH_TOKEN").expect("Missing SMARTY_AUTH_TOKEN env variable"),
     );
 
     // Create the options from it's builder pattern

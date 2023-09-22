@@ -32,8 +32,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
     batch.push(lookup2)?;
 
     let authentication = SecretKeyCredential::new(
-        std::env::var("SMARTY_AUTH_ID")?,
-        std::env::var("SMARTY_AUTH_TOKEN")?,
+        std::env::var("SMARTY_AUTH_ID").expect("Missing SMARTY_AUTH_ID env variable"),
+        std::env::var("SMARTY_AUTH_TOKEN").expect("Missing SMARTY_AUTH_TOKEN env variable"),
     );
 
     let options = OptionsBuilder::new()
@@ -46,10 +46,12 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     client.send(&mut batch).await?;
 
-    println!(
-        "{}",
-        serde_json::to_string_pretty(&batch.records()[0].results)?
-    );
+    for record in batch.records() {
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&record.results)?
+        );
+    }
 
     Ok(())
 }
