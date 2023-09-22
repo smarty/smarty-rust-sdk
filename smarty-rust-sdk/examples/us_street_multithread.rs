@@ -71,7 +71,15 @@ async fn main() -> Result<(), Box<dyn Error>> {
         tasks.push(result);
     }
 
-    let _ = join_all(tasks).await;
+    let batches = join_all(tasks).await;
+    for batch in batches {
+        for record in batch?.records() {
+            println!(
+                "{}",
+                serde_json::to_string_pretty(&record.results)?
+            );
+        }
+    }
 
     Ok(())
 }
