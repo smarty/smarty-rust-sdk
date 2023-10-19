@@ -35,6 +35,9 @@ pub struct Lookup {
     #[serde(rename = "match")]
     pub match_strategy: MatchStrategy, // "match" in json
 
+    #[serde(rename = "format")]
+    pub format_output: OutputFormat,
+
     #[serde(skip_serializing)]
     pub results: Candidates
 }
@@ -55,6 +58,7 @@ impl Default for Lookup {
             max_candidates: 1,
 
             match_strategy: Default::default(),
+            format_output: Default::default(),
             results: vec![]
         }
     }
@@ -85,6 +89,7 @@ impl Lookup {
             has_param("input_id".to_string(), self.input_id),
             has_param("candidates".to_string(), max_candidates_string),
             has_param("match".to_string(), self.match_strategy.to_string()),
+            has_param("format".to_string(), self.format_output.to_string()),
         ].iter()
             .filter_map(Option::clone)
             .collect::<Vec<_>>()
@@ -107,6 +112,26 @@ impl Display for MatchStrategy {
             MatchStrategy::Strict => { write!(f, "strict") }
             MatchStrategy::Invalid => { write!(f, "invalid") }
             MatchStrategy::Enhanced => { write!(f, "enhanced") }
+        }
+    }
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+#[allow(dead_code)]
+pub enum OutputFormat {
+    #[default]
+    FormatDefault,
+    ProjectUsa,
+    Cass
+}
+
+impl Display for OutputFormat {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            OutputFormat::FormatDefault => { write!(f, "default") }
+            OutputFormat::ProjectUsa => { write!(f, "project-usa") }
+            OutputFormat::Cass => { write!(f, "cass") }
         }
     }
 }
