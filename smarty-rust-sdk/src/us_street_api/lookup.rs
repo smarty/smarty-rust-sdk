@@ -97,8 +97,6 @@ impl Lookup {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize)]
-#[serde(rename_all = "snake_case")]
-#[allow(dead_code)]
 pub enum MatchStrategy {
     #[default]
     Strict,
@@ -117,8 +115,6 @@ impl Display for MatchStrategy {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize)]
-#[serde(rename_all = "snake_case")]
-#[allow(dead_code)]
 pub enum OutputFormat {
     #[default]
     FormatDefault,
