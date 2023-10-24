@@ -97,6 +97,7 @@ impl Lookup {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum MatchStrategy {
     #[default]
     Strict,

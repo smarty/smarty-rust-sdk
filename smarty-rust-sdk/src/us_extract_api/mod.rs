@@ -35,9 +35,12 @@ mod tests {
             ..Default::default()
         };
 
-        assert_eq!(
-            serde_json::to_string_pretty(&lookup).unwrap(),
-            "{\n  \"text\": \"Meet me at 3214 N University Ave Provo UT 84604 just after 3pm.\",\n  \"html\": \"\",\n  \"aggressive\": true,\n  \"addr_line_breaks\": false,\n  \"addr_per_line\": 1,\n  \"match\": \"strict\"\n}"
-        );
+        let expected_result = vec![
+            ("aggressive".to_string(), "true".to_string()),
+            ("addr_per_line".to_string(), "1".to_string()),
+            ("match".to_string(), "strict".to_string()),
+        ];
+
+        assert_eq!(lookup.into_param_array(), expected_result);
     }
 }

@@ -42,6 +42,7 @@ mod tests {
             ("lastline".to_string(), "Mountain View, CA".to_string()),
             ("candidates".to_string(), 5.to_string()),
             ("match".to_string(), "enhanced".to_string()),
+            ("format".to_string(), "default".to_string()),
         ];
 
         assert_eq!(lookup.into_param_array(), expected_result);
@@ -62,6 +63,7 @@ mod tests {
             ("lastline".to_string(), "Mountain View, CA".to_string()),
             ("candidates".to_string(), 5.to_string()),
             ("match".to_string(), "enhanced".to_string()),
+            ("format".to_string(), "default".to_string()),
         ];
 
         let mut batch = Batch::default();
