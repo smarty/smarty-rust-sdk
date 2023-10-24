@@ -119,8 +119,7 @@ impl Display for MatchStrategy {
 pub enum OutputFormat {
     #[default]
     FormatDefault,
-    ProjectUsa,
-    Cass
+    ProjectUsa
 }
 
 impl Display for OutputFormat {
@@ -128,7 +127,6 @@ impl Display for OutputFormat {
         match self {
             OutputFormat::FormatDefault => { write!(f, "default") }
             OutputFormat::ProjectUsa => { write!(f, "project-usa") }
-            OutputFormat::Cass => { write!(f, "cass") }
         }
     }
 }
