@@ -20,7 +20,7 @@ pub struct Lookup {
 
 impl Lookup {
     pub(crate) fn into_param_array(self) -> Vec<(String, String)> {
-        vec![
+        [
             has_param("city".to_string(), self.city.clone()),
             has_param("state".to_string(), self.state.clone()),
             has_param("zipcode".to_string(), self.zipcode.clone()),

@@ -1,10 +1,9 @@
 [package]
 name = "smarty-rust-proc-macro"
 edition = "2021"
-description = "The official client macro for creating Smarty APIs from Rust"
-license = "Apache-2.0"
+description = "The official client macro for creating Smarty APIs for Rust"
 license-file = "../LICENSE.md"
-reposity = "https://github.com/smarty/smarty-rust-sdk"
+repository = "https://github.com/smarty/smarty-rust-sdk"
 rust-version = "1.63.0"
 readme = "../README.md"
 

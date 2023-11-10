@@ -1,10 +1,10 @@
-use serde::{Deserialize, Serialize};
 use crate::sdk::CoordinateLicense;
+use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(default)]
 pub struct Results {
-    pub results: Vec<Result>
+    pub results: Vec<Result>,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -12,7 +12,7 @@ pub struct Results {
 pub struct Result {
     pub coordinate: Coordinate,
     pub address: Address,
-    pub distance: f64
+    pub distance: f64,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -21,7 +21,7 @@ pub struct Coordinate {
     pub latitude: f64,
     pub longitude: f64,
     pub accuracy: String,
-    pub license: CoordinateLicense
+    pub license: CoordinateLicense,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -31,5 +31,5 @@ pub struct Address {
     pub city: String,
     pub state_abbreviation: String,
     pub zipcode: String,
-    pub source: String
+    pub source: String,
 }
