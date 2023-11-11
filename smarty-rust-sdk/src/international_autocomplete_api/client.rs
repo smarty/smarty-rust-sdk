@@ -9,8 +9,8 @@ use smarty_rust_proc_macro::smarty_api;
 use url::{ParseError, Url};
 
 #[smarty_api(
-    api_path = "lookup",
-    default_url = "https://international-autocomplete.api.smarty.com/",
+    api_path = "v2/lookup",
+    default_url = "https://international-autocomplete.api.smarty.com",
     lookup_style(lookup),
     lookup_type = "Lookup",
     result_type = "SuggestionListing"
