@@ -21,7 +21,7 @@ mod tests {
 
         assert_eq!(
             client.client.url.to_string(),
-            "https://international-autocomplete.api.smarty.com/lookup".to_string()
+            "https://international-autocomplete.api.smarty.com/v2/lookup".to_string()
         )
     }
 
@@ -38,7 +38,6 @@ mod tests {
             ("country".to_string(), "FRA".to_string()),
             ("search".to_string(), "Louis".to_string()),
             ("max_results".to_string(), "5".to_string()),
-            ("distance".to_string(), "5".to_string()),
             ("include_only_locality".to_string(), "Paris".to_string()),
         ];
 
