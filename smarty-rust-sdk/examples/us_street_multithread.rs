@@ -1,5 +1,5 @@
-use std::{error::Error, sync::Arc};
 use std::io::Write;
+use std::{error::Error, sync::Arc};
 
 use smarty_rust_sdk::{
     sdk::{authentication::SecretKeyCredential, batch::Batch, options::OptionsBuilder},
@@ -19,7 +19,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let mut confirmation = "".to_string();
     std::io::stdin().read_line(&mut confirmation)?;
 
-    if !confirmation.starts_with("Y") {
+    if !confirmation.starts_with('Y') {
         println!("'Y' not chosen. Exiting.");
         return Ok(());
     }
@@ -74,10 +74,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let batches = join_all(tasks).await;
     for batch in batches {
         for record in batch?.records() {
-            println!(
-                "{}",
-                serde_json::to_string_pretty(&record.results)?
-            );
+            println!("{}", serde_json::to_string_pretty(&record.results)?);
         }
     }
 
