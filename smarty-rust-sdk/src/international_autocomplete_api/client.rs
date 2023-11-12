@@ -10,9 +10,40 @@ use url::{ParseError, Url};
 
 #[smarty_api(
     api_path = "v2/lookup",
-    default_url = "https://international-autocomplete.api.smarty.com",
+    default_url = "https://international-autocomplete.api.smarty.com/",
     lookup_style(lookup),
     lookup_type = "Lookup",
-    result_type = "SuggestionListing"
+    result_type = "SuggestionListing",
+    custom_send = true
 )]
 pub struct InternationalAutocompleteClient;
+
+impl InternationalAutocompleteClient {
+    /// Uses the lookup and the client in
+    /// order to build a request and send the message
+    /// to the server.
+    pub async fn send(&self, lookup: &mut Lookup) -> Result<(), SDKError> {
+        println!("{}", self.client.url);
+        let mut url = self.client.url.clone();
+        if lookup.address_id != String::default() {
+            match url.join(&lookup.address_id) {
+                Ok(value) => url = value,
+                Err(err) => {
+                    return Err(SDKError {
+                        code: None,
+                        detail: Some(err.to_string()),
+                    })
+                }
+            }
+        }
+        let mut req = self.client.reqwest_client.request(Method::GET, url);
+        req = self.client.build_request(req);
+        req = req.query(&lookup.clone().into_param_array());
+
+        let candidates = send_request::<SuggestionListing>(req).await?;
+
+        lookup.results = candidates;
+
+        Ok(())
+    }
+}
