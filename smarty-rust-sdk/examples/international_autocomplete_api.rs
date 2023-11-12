@@ -31,7 +31,20 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     client.send(lookup).await?;
 
-    println!("{}", serde_json::to_string_pretty(&lookup.results)?);
+    println!("Original Value: {}", serde_json::to_string_pretty(&lookup.results)?);
+
+    for result in &lookup.results.suggestions {
+        let additional_lookup = &mut Lookup {
+            country: "FRA".to_string(),
+            address_id: result.address_id.clone(),
+            max_results: result.entries,
+            ..Default::default()
+        };
+
+        client.send(additional_lookup).await?;
+
+        println!("Entries for {} {}", serde_json::to_string_pretty(&result)?, serde_json::to_string_pretty(&additional_lookup.results)?);
+    }
 
     Ok(())
 }

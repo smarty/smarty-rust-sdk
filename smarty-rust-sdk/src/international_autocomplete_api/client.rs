@@ -9,7 +9,7 @@ use smarty_rust_proc_macro::smarty_api;
 use url::{ParseError, Url};
 
 #[smarty_api(
-    api_path = "v2/lookup",
+    api_path = "v2/lookup/",
     default_url = "https://international-autocomplete.api.smarty.com/",
     lookup_style(lookup),
     lookup_type = "Lookup",
@@ -23,7 +23,6 @@ impl InternationalAutocompleteClient {
     /// order to build a request and send the message
     /// to the server.
     pub async fn send(&self, lookup: &mut Lookup) -> Result<(), SDKError> {
-        println!("{}", self.client.url);
         let mut url = self.client.url.clone();
         if lookup.address_id != String::default() {
             match url.join(&lookup.address_id) {
