@@ -13,9 +13,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let lookup = &mut Lookup {
         search: "1042 W Center".to_string(),
         max_results: 5,
-        city_filter: vec!["Denver".to_string(), "Orem".to_string()],
-        state_filter: vec!["CO".to_string(), "UT".to_string()],
-        prefer_state: vec!["CO".to_string()],
+        city_filter: vec!["Orem,UT".to_string(), "Madisonville,KY".to_string()],
+        state_filter: vec!["UT".to_string(), "KY".to_string()],
+        prefer_state: vec!["KY".to_string()],
         prefer_ratio: 3,
         geolocation: Geolocation::GeolocateCity,
         source: "all".to_string(),

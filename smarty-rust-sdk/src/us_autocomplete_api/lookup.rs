@@ -38,9 +38,9 @@ impl Lookup {
         vec![
             has_param("prefix".to_string(), self.prefix),
             has_i32_param("max_suggestions".to_string(), self.max_suggestions, 0),
-            has_vec_param("city_filter".to_string(), self.city_filter),
-            has_vec_param("state_filter".to_string(), self.state_filter),
-            has_vec_param("preferences".to_string(), self.preferences),
+            has_vec_param("city_filter".to_string(), ",", self.city_filter),
+            has_vec_param("state_filter".to_string(), ",", self.state_filter),
+            has_vec_param("preferences".to_string(), ",", self.preferences),
             self.geolocation.geolocation_to_param(),
             has_f64_param("prefer_ratio".to_string(), self.prefer_ratio, 0.0),
         ]
