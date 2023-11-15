@@ -30,7 +30,7 @@ mod tests {
         let lookup = Lookup {
             search: "1042 W Center".to_string(),
             max_results: 5,
-            city_filter: vec!["Denver".to_string(), "Orem".to_string()],
+            city_filter: vec!["Denver,CO".to_string(), "Orem,UT".to_string()],
             state_filter: vec!["CO".to_string(), "UT".to_string()],
             prefer_state: vec!["CO".to_string()],
             prefer_ratio: 3,
@@ -43,9 +43,9 @@ mod tests {
             ("search".to_string(), "1042 W Center".to_string()),
             ("source".to_string(), "all".to_string()),
             ("max_results".to_string(), "5".to_string()),
-            ("city_filter".to_string(), "[Denver,Orem]".to_string()),
-            ("state_filter".to_string(), "[CO,UT]".to_string()),
-            ("prefer_state".to_string(), "[CO]".to_string()),
+            ("include_only_cities".to_string(), "Denver,CO;Orem,UT".to_string()),
+            ("include_only_states".to_string(), "CO;UT".to_string()),
+            ("prefer_states".to_string(), "CO".to_string()),
             ("prefer_ratio".to_string(), "3".to_string()),
             ("prefer_geolocation".to_string(), "city".to_string()),
         ];
