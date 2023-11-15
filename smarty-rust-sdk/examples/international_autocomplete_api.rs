@@ -24,6 +24,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let options = OptionsBuilder::new()
         .authenticate(authentication)
+        .with_license("international-autocomplete-v2-cloud")
         .build()
         .unwrap();
 
