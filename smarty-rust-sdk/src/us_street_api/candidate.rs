@@ -1,6 +1,6 @@
+use crate::sdk::CoordinateLicense;
 use serde::Deserialize;
 use serde::Serialize;
-use crate::sdk::CoordinateLicense;
 
 pub type Candidates = Vec<Candidate>;
 
@@ -42,7 +42,7 @@ pub struct Components {
     pub plus4_code: String,
     pub delivery_point: String,
     pub delivery_point_check_digit: String,
-    pub urbanization: String
+    pub urbanization: String,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -65,7 +65,7 @@ pub struct Metadata {
     pub time_zone: String,
     pub utc_offset: f32,
     pub dst: bool,
-    pub ews_match: bool
+    pub ews_match: bool,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
