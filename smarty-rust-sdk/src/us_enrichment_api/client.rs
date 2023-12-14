@@ -28,7 +28,15 @@ impl USEnrichmentClient {
         lookup: &mut EnrichmentLookup<R>,
     ) -> Result<(), SDKError> {
         let mut url = self.client.url.clone();
-        R::build_url(url);
+        match url.join(&format!("/lookup/{}/property/{}", lookup.smarty_key, R::lookup_type())) {
+            Ok(value) => url = value,
+            Err(err) => {
+                return Err(SDKError {
+                    code: None,
+                    detail: Some(err.to_string()),
+                })
+            }
+        }
         let mut req = self.client.reqwest_client.request(Method::GET, url);
         req = self.client.build_request(req);
 

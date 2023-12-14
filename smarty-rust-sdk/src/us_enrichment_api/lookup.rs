@@ -1,5 +1,3 @@
-use url::Url;
-use crate::sdk::error::SDKError;
 use crate::us_enrichment_api::results::EnrichmentResponse;
 
 #[derive(Clone)]

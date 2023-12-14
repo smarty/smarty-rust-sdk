@@ -116,7 +116,7 @@ pub(crate) fn has_vec_param(
     param: Vec<String>,
 ) -> Option<(String, String)> {
     if !param.is_empty() {
-        Some((name, format!("{}", param.join(separator))))
+        Some((name, param.join(separator)))
     } else {
         None
     }
