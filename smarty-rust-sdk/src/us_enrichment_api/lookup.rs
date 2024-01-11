@@ -7,7 +7,7 @@ pub struct EnrichmentLookup<R: EnrichmentResponse> {
 }
 
 impl<R: EnrichmentResponse> EnrichmentLookup<R> {
-    pub fn set_results(&mut self, results: Vec<R>) {
+    pub(crate) fn set_results(&mut self, results: Vec<R>) {
         self.results = results
     }
 
