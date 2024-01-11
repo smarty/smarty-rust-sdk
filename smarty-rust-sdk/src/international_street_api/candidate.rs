@@ -8,7 +8,7 @@ pub struct Candidate {
     pub root_level: RootLevel,
     pub components: Components,
     pub metadata: Metadata,
-    pub analysis: Analysis
+    pub analysis: Analysis,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -74,7 +74,7 @@ pub struct Components {
     pub level_number: String,
     pub post_box: String,
     pub post_box_type: String,
-    pub post_box_number: String
+    pub post_box_number: String,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -84,7 +84,7 @@ pub struct Metadata {
     pub longitude: f64,
     pub geocode_precision: String,
     pub max_geocode_precision: String,
-    pub address_format: String
+    pub address_format: String,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -94,7 +94,7 @@ pub struct Analysis {
     pub address_precision: String,
     pub max_address_precision: String,
 
-    pub changes: Changes
+    pub changes: Changes,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -103,5 +103,5 @@ pub struct Changes {
     #[serde(flatten)]
     pub root_level: RootLevel,
 
-    pub components: Components
+    pub components: Components,
 }

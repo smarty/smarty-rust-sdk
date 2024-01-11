@@ -1,7 +1,7 @@
-use std::fmt::{Display, Formatter};
-use serde::{Serialize};
-use crate::us_street_api::candidate::Candidates;
 use crate::sdk::{has_param, is_zero};
+use crate::us_street_api::candidate::Candidates;
+use serde::Serialize;
+use std::fmt::{Display, Formatter};
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(default)]
@@ -39,7 +39,7 @@ pub struct Lookup {
     pub format_output: OutputFormat,
 
     #[serde(skip_serializing)]
-    pub results: Candidates
+    pub results: Candidates,
 }
 
 impl Default for Lookup {
@@ -59,7 +59,7 @@ impl Default for Lookup {
 
             match_strategy: Default::default(),
             format_output: Default::default(),
-            results: vec![]
+            results: vec![],
         }
     }
 }
@@ -90,9 +90,10 @@ impl Lookup {
             has_param("candidates".to_string(), max_candidates_string),
             has_param("match".to_string(), self.match_strategy.to_string()),
             has_param("format".to_string(), self.format_output.to_string()),
-        ].iter()
-            .filter_map(Option::clone)
-            .collect::<Vec<_>>()
+        ]
+        .iter()
+        .filter_map(Option::clone)
+        .collect::<Vec<_>>()
     }
 }
 
@@ -102,15 +103,21 @@ pub enum MatchStrategy {
     #[default]
     Strict,
     Invalid,
-    Enhanced
+    Enhanced,
 }
 
 impl Display for MatchStrategy {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
-            MatchStrategy::Strict => { write!(f, "strict") }
-            MatchStrategy::Invalid => { write!(f, "invalid") }
-            MatchStrategy::Enhanced => { write!(f, "enhanced") }
+            MatchStrategy::Strict => {
+                write!(f, "strict")
+            }
+            MatchStrategy::Invalid => {
+                write!(f, "invalid")
+            }
+            MatchStrategy::Enhanced => {
+                write!(f, "enhanced")
+            }
         }
     }
 }
@@ -119,14 +126,18 @@ impl Display for MatchStrategy {
 pub enum OutputFormat {
     #[default]
     FormatDefault,
-    ProjectUsa
+    ProjectUsa,
 }
 
 impl Display for OutputFormat {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
-            OutputFormat::FormatDefault => { write!(f, "default") }
-            OutputFormat::ProjectUsa => { write!(f, "project-usa") }
+            OutputFormat::FormatDefault => {
+                write!(f, "default")
+            }
+            OutputFormat::ProjectUsa => {
+                write!(f, "project-usa")
+            }
         }
     }
 }

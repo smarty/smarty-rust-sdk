@@ -47,10 +47,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     client.send(&mut batch).await?;
 
     for record in batch.records() {
-        println!(
-            "{}",
-            serde_json::to_string_pretty(&record.results)?
-        );
+        println!("{}", serde_json::to_string_pretty(&record.results)?);
     }
 
     Ok(())

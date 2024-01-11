@@ -43,7 +43,10 @@ mod tests {
             ("search".to_string(), "1042 W Center".to_string()),
             ("source".to_string(), "all".to_string()),
             ("max_results".to_string(), "5".to_string()),
-            ("include_only_cities".to_string(), "Denver,CO;Orem,UT".to_string()),
+            (
+                "include_only_cities".to_string(),
+                "Denver,CO;Orem,UT".to_string(),
+            ),
             ("include_only_states".to_string(), "CO;UT".to_string()),
             ("prefer_states".to_string(), "CO".to_string()),
             ("prefer_ratio".to_string(), "3".to_string()),

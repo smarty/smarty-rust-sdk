@@ -110,14 +110,17 @@ pub(crate) fn has_bool_param(name: String, param: bool, default: bool) -> Option
     }
 }
 
-pub(crate) fn has_vec_param(name: String, separator: &'static str, param: Vec<String>) -> Option<(String, String)> {
+pub(crate) fn has_vec_param(
+    name: String,
+    separator: &'static str,
+    param: Vec<String>,
+) -> Option<(String, String)> {
     if !param.is_empty() {
-        Some((name, format!("{}", param.join(separator))))
+        Some((name, param.join(separator)))
     } else {
         None
     }
 }
-
 
 // Tests
 #[cfg(test)]

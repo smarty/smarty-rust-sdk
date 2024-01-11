@@ -32,7 +32,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     client.send(lookup).await?;
 
-    println!("Original Value: {}", serde_json::to_string_pretty(&lookup.results)?);
+    println!(
+        "Original Value: {}",
+        serde_json::to_string_pretty(&lookup.results)?
+    );
 
     for result in &lookup.results.suggestions {
         let additional_lookup = &mut Lookup {
@@ -44,7 +47,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
         client.send(additional_lookup).await?;
 
-        println!("Entries for {} {}", serde_json::to_string_pretty(&result)?, serde_json::to_string_pretty(&additional_lookup.results)?);
+        println!(
+            "Entries for {} {}",
+            serde_json::to_string_pretty(&result)?,
+            serde_json::to_string_pretty(&additional_lookup.results)?
+        );
     }
 
     Ok(())
