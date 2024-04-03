@@ -1,7 +1,5 @@
 use crate::sdk::authentication::Authenticate;
 
-use super::error::SDKError;
-
 /// A builder for the options
 ///
 /// Example:
@@ -20,38 +18,33 @@ pub struct OptionsBuilder {
     num_retries: u64,
     logging_enabled: bool,
     headers: Vec<(String, String)>,
-    authentication: Option<Box<dyn Authenticate>>,
+    authentication: Box<dyn Authenticate>,
 }
 
 // Allowing this because it is a builder pattern
 #[allow(clippy::new_without_default)]
 impl OptionsBuilder {
-    pub fn new() -> Self {
+    /// Creates a new OptionsBuilder, taking in the authentication for the options.
+    pub fn new(authentication: Box<dyn Authenticate>) -> Self {
         Self {
             license: "".to_string(),
             num_retries: 10,
             logging_enabled: false,
             headers: vec![],
-            authentication: None,
+            authentication,
         }
     }
 
     /// Builds the builder into options with the parameters you set
     /// Returns an error if authentication is not set
-    pub fn build(self) -> Result<Options, SDKError> {
-        if let Some(auth) = self.authentication {
-            return Ok(Options {
-                license: self.license,
-                num_retries: self.num_retries,
-                logging_enabled: self.logging_enabled,
-                headers: self.headers,
-                authentication: auth,
-            });
+    pub fn build(self) -> Options {
+        Options {
+            license: self.license,
+            num_retries: self.num_retries,
+            logging_enabled: self.logging_enabled,
+            headers: self.headers,
+            authentication: self.authentication,
         }
-        Err(SDKError {
-            code: None,
-            detail: Some("Authentication Required".to_string()),
-        })
     }
 
     /// Adds a license string to the options
@@ -75,12 +68,6 @@ impl OptionsBuilder {
     /// Adds a set of custom headers to your request.
     pub fn with_headers(mut self, headers: Vec<(String, String)>) -> Self {
         self.headers = headers;
-        self
-    }
-
-    /// Inserts the authentication into the options.
-    pub fn authenticate(mut self, authentication: Box<dyn Authenticate>) -> Self {
-        self.authentication = Some(authentication);
         self
     }
 }

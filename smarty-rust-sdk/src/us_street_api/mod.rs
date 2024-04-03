@@ -14,10 +14,7 @@ mod tests {
     #[test]
     fn client_test() {
         let client = USStreetAddressClient::new(
-            OptionsBuilder::new()
-                .authenticate(SecretKeyCredential::new("".to_string(), "".to_string()))
-                .build()
-                .unwrap(),
+            OptionsBuilder::new(SecretKeyCredential::new("".to_string(), "".to_string())).build(),
         )
         .unwrap();
 

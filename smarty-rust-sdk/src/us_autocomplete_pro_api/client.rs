@@ -1,5 +1,5 @@
 use crate::sdk::client::Client;
-use crate::sdk::error::SDKError;
+use crate::sdk::error::SmartyError;
 use crate::sdk::options::Options;
 use crate::sdk::send_request;
 use crate::us_autocomplete_pro_api::lookup::Lookup;

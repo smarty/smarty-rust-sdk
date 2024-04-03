@@ -1,5 +1,5 @@
 use crate::sdk::client::Client;
-use crate::sdk::error::SDKError;
+use crate::sdk::error::SmartyError;
 use crate::sdk::options::Options;
 use crate::sdk::send_request;
 use crate::us_enrichment_api::lookup::EnrichmentLookup;
@@ -26,17 +26,14 @@ impl USEnrichmentClient {
     pub async fn send<R: EnrichmentResponse + DeserializeOwned>(
         &self,
         lookup: &mut EnrichmentLookup<R>,
-    ) -> Result<(), SDKError> {
+    ) -> Result<(), SmartyError> {
         let mut url = self.client.url.clone();
-        match url.join(&format!("/lookup/{}/property/{}", lookup.smarty_key, R::lookup_type())) {
-            Ok(value) => url = value,
-            Err(err) => {
-                return Err(SDKError {
-                    code: None,
-                    detail: Some(err.to_string()),
-                })
-            }
-        }
+        url = url.join(&format!(
+            "/lookup/{}/property/{}",
+            lookup.smarty_key,
+            R::lookup_type()
+        ))?;
+
         let mut req = self.client.reqwest_client.request(Method::GET, url);
         req = self.client.build_request(req);
 

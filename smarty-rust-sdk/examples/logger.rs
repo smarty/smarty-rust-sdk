@@ -41,13 +41,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
     );
 
     // Create the options from it's builder pattern
-    let options = OptionsBuilder::new()
+    let options = OptionsBuilder::new(authentication)
         .with_license("us-core-cloud")
         .with_logging()
         .with_retries(2)
-        .authenticate(authentication)
-        .build()
-        .unwrap();
+        .build();
 
     // Setup the logger
     // To better learn, look at (https://rust-lang-nursery.github.io/rust-cookbook/development_tools/debugging/log.html)

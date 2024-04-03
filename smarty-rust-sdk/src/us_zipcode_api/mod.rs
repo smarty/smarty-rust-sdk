@@ -15,10 +15,8 @@ mod tests {
 
     #[test]
     fn client_test() {
-        let options = OptionsBuilder::new()
-            .authenticate(SecretKeyCredential::new("".to_string(), "".to_string()))
-            .build()
-            .unwrap();
+        let options =
+            OptionsBuilder::new(SecretKeyCredential::new("".to_string(), "".to_string())).build();
         let client = USZipcodeClient::new(options).unwrap();
 
         assert_eq!(

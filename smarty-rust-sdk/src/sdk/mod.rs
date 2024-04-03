@@ -1,4 +1,4 @@
-use crate::sdk::error::SDKError;
+use crate::sdk::error::SmartyError;
 use reqwest_middleware::RequestBuilder;
 use serde::de::DeserializeOwned;
 use serde_repr::{Deserialize_repr, Serialize_repr};
@@ -36,40 +36,26 @@ impl Display for CoordinateLicense {
     }
 }
 
-pub(crate) async fn send_request<C>(request: RequestBuilder) -> Result<C, SDKError>
+pub(crate) async fn send_request<C>(request: RequestBuilder) -> Result<C, SmartyError>
 where
     C: DeserializeOwned,
 {
-    let response = match request.send().await {
-        Ok(response) => response,
-        Err(error) => {
-            return Err(SDKError {
-                code: None,
-                detail: Some(format!("{:?}", error)),
-            });
-        }
-    };
+    let response = request.send().await.map_err(|e| match e {
+        reqwest_middleware::Error::Middleware(e) => SmartyError::from(e),
+        reqwest_middleware::Error::Reqwest(e) => SmartyError::from(e),
+    })?;
 
     if !response.status().is_success() {
         let status_code = response.status();
-        let body = match response.text().await {
-            Ok(body) => body,
-            Err(_) => "Could not read body for response".to_string(),
-        };
+        let body = response.text().await?;
 
-        return Err(SDKError {
-            code: Some(status_code.as_u16()),
-            detail: Some(body),
+        return Err(SmartyError::HttpError {
+            code: status_code,
+            detail: body,
         });
     }
 
-    match response.json::<C>().await {
-        Ok(candidates) => Ok(candidates),
-        Err(err) => Err(SDKError {
-            code: None,
-            detail: Some(format!("{:?}", err)),
-        }),
-    }
+    Ok(response.json::<C>().await?)
 }
 
 /// This is only used for Serializing for post
@@ -131,10 +117,7 @@ mod tests {
     fn client_test() {
         let client = Client::new(
             "https://www.smarty.com".parse().unwrap(),
-            OptionsBuilder::new()
-                .authenticate(SecretKeyCredential::new("".to_string(), "".to_string()))
-                .build()
-                .unwrap(),
+            OptionsBuilder::new(SecretKeyCredential::new("".to_string(), "".to_string())).build(),
             "docs",
         )
         .unwrap();

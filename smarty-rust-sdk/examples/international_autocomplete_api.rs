@@ -22,11 +22,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
         std::env::var("SMARTY_AUTH_TOKEN").expect("Missing SMARTY_AUTH_TOKEN env variable"),
     );
 
-    let options = OptionsBuilder::new()
-        .authenticate(authentication)
+    let options = OptionsBuilder::new(authentication)
         .with_license("international-autocomplete-v2-cloud")
-        .build()
-        .unwrap();
+        .build();
 
     let client = InternationalAutocompleteClient::new(options)?;
 
