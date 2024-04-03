@@ -1,4 +1,4 @@
-use crate::sdk::{has_bool_param, has_i32_param, has_param};
+use crate::sdk::has_param;
 use crate::us_extract_api::extraction::ExtractionResult;
 use crate::us_street_api::lookup::MatchStrategy;
 use serde::Serialize;
@@ -37,13 +37,12 @@ impl Lookup {
     pub(crate) fn into_param_array(self) -> Vec<(String, String)> {
         vec![
             has_param("html".to_string(), self.html.to_string()),
-            has_bool_param("aggressive".to_string(), self.aggressive, false),
-            has_bool_param(
+            has_param("aggressive".to_string(), self.aggressive),
+            has_param(
                 "addr_line_breaks".to_string(),
                 self.addresses_with_line_breaks,
-                false,
             ),
-            has_i32_param("addr_per_line".to_string(), self.addresses_per_line, 0),
+            has_param("addr_per_line".to_string(), self.addresses_per_line),
             has_param("match".to_string(), self.match_strategy.to_string()),
         ]
         .iter()

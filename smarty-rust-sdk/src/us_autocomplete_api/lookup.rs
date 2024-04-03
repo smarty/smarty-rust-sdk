@@ -1,4 +1,4 @@
-use crate::sdk::{has_f64_param, has_i32_param, has_param, has_vec_param};
+use crate::sdk::{has_param, has_vec_param};
 use crate::us_autocomplete_api::suggestion::SuggestionListing;
 use serde::Serialize;
 
@@ -37,12 +37,12 @@ impl Lookup {
     pub(crate) fn into_param_array(self) -> Vec<(String, String)> {
         vec![
             has_param("prefix".to_string(), self.prefix),
-            has_i32_param("max_suggestions".to_string(), self.max_suggestions, 0),
+            has_param("max_suggestions".to_string(), self.max_suggestions),
             has_vec_param("city_filter".to_string(), ",", self.city_filter),
             has_vec_param("state_filter".to_string(), ",", self.state_filter),
             has_vec_param("preferences".to_string(), ",", self.preferences),
             self.geolocation.geolocation_to_param(),
-            has_f64_param("prefer_ratio".to_string(), self.prefer_ratio, 0.0),
+            has_param("prefer_ratio".to_string(), self.prefer_ratio),
         ]
         .iter()
         .filter_map(Option::clone)

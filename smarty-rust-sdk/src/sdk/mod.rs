@@ -78,35 +78,14 @@ pub(crate) fn is_zero(num: &i64) -> bool {
     *num == 0
 }
 
-pub(crate) fn has_param(name: String, param: String) -> Option<(String, String)> {
-    if param != String::default() {
-        Some((name, param))
-    } else {
-        None
-    }
-}
-
-pub(crate) fn has_i32_param(name: String, param: i32, default: i32) -> Option<(String, String)> {
-    if param == default {
-        None
-    } else {
+pub(crate) fn has_param<P: PartialEq + Display + Default>(
+    name: String,
+    param: P,
+) -> Option<(String, String)> {
+    if param != P::default() {
         Some((name, param.to_string()))
-    }
-}
-
-pub(crate) fn has_f64_param(name: String, param: f64, default: f64) -> Option<(String, String)> {
-    if param == default {
-        None
     } else {
-        Some((name, param.to_string()))
-    }
-}
-
-pub(crate) fn has_bool_param(name: String, param: bool, default: bool) -> Option<(String, String)> {
-    if param == default {
         None
-    } else {
-        Some((name, param.to_string()))
     }
 }
 
