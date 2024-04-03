@@ -42,12 +42,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
     );
 
     // Set Up The Options Here
-    let options = OptionsBuilder::new()
+    let options = OptionsBuilder::new(authentication)
         .with_license("us-core-cloud")
         .with_logging()
-        .authenticate(authentication)
-        .build()
-        .unwrap();
+        .build();
 
     let client = Arc::new(USStreetAddressClient::new(options).expect("Failed to create client"));
 

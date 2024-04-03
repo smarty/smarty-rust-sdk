@@ -24,6 +24,7 @@ url = "2.4.1"
 smarty-rust-proc-macro = {path="../smarty-rust-proc-macro", version="0.0.0"} # This version will be replaced at publish time, Do not change it.
 anyhow = "1.0.75"
 hyper = "0.14.27"
+thiserror = "1.0.58"
 
 [dev-dependencies]
 futures = "0.3.28"

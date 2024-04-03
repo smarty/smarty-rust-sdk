@@ -158,7 +158,7 @@ fn impl_smarty_api_macro(attrs: &MacroArgs, ast: &mut syn::DeriveInput) -> Token
                     /// Uses the lookup and the client in
                     /// order to build a request and send the message
                     /// to the server.
-                    async fn send_lookup(&self, lookup: &mut #lookup_type) -> Result<(), SDKError> {
+                    async fn send_lookup(&self, lookup: &mut #lookup_type) -> Result<(), SmartyError> {
                         let mut req = self
                             .client
                             .reqwest_client
@@ -176,7 +176,7 @@ fn impl_smarty_api_macro(attrs: &MacroArgs, ast: &mut syn::DeriveInput) -> Token
                     /// Uses a batch and the client in
                     /// Order to build a request
                     /// that will handle the batch
-                    pub async fn send(&self, batch: &mut Batch<#lookup_type>) -> Result<(), SDKError> {
+                    pub async fn send(&self, batch: &mut Batch<#lookup_type>) -> Result<(), SmartyError> {
                         if batch.is_empty() {
                             return Ok(())
                         }
@@ -206,7 +206,7 @@ fn impl_smarty_api_macro(attrs: &MacroArgs, ast: &mut syn::DeriveInput) -> Token
                     /// Uses the lookup and the client in
                     /// order to build a request and send the message
                     /// to the server.
-                    pub async fn send(&self, lookup: &mut #lookup_type) -> Result<(), SDKError> {
+                    pub async fn send(&self, lookup: &mut #lookup_type) -> Result<(), SmartyError> {
                         let mut req = self
                             .client
                             .reqwest_client

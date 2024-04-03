@@ -1,7 +1,7 @@
 use crate::international_street_api::candidate::Candidate;
 use crate::international_street_api::lookup::Lookup;
 use crate::sdk::client::Client;
-use crate::sdk::error::SDKError;
+use crate::sdk::error::SmartyError;
 use crate::sdk::options::Options;
 use crate::sdk::send_request;
 use reqwest::Method;

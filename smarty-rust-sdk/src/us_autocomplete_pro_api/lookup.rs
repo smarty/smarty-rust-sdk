@@ -1,4 +1,4 @@
-use crate::sdk::{has_i32_param, has_param, has_vec_param};
+use crate::sdk::{has_param, has_vec_param};
 use crate::us_autocomplete_pro_api::suggestion::SuggestionListing;
 use serde::Serialize;
 
@@ -49,14 +49,14 @@ impl Lookup {
         vec![
             has_param("search".to_string(), self.search),
             has_param("source".to_string(), self.source),
-            has_i32_param("max_results".to_string(), self.max_results, 0),
+            has_param("max_results".to_string(), self.max_results),
             has_vec_param("include_only_cities".to_string(), ";", self.city_filter),
             has_vec_param("include_only_states".to_string(), ";", self.state_filter),
             has_vec_param("include_only_zip_codes".to_string(), ";", self.zip_filter),
             has_vec_param("exclude_states".to_string(), ";", self.exclude_states),
             has_vec_param("prefer_states".to_string(), ";", self.prefer_state),
             has_vec_param("prefer_zip_codes".to_string(), ";", self.prefer_zip),
-            has_i32_param("prefer_ratio".to_string(), self.prefer_ratio, 0),
+            has_param("prefer_ratio".to_string(), self.prefer_ratio),
             geolocation_self.geolocation_param(),
         ]
         .iter()
