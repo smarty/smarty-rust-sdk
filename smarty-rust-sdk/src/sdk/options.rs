@@ -6,12 +6,10 @@ use crate::sdk::authentication::Authenticate;
 /// ```ignore
 /// let authentication = SecretKeyCredential::new("test".to_string(), "test".to_string());
 ///
-/// OptionsBuilder::new()
+/// OptionsBuilder::new(authentication)
 ///     .with_license("test_license")
 ///     .with_logging()
-///     .authenticate(authentication)
 ///     .build()
-///     .expect("Authentication failed")
 /// ```
 pub struct OptionsBuilder {
     license: String,
