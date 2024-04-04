@@ -4,17 +4,13 @@ pub mod lookup;
 
 #[cfg(test)]
 mod tests {
-    use crate::sdk::authentication::SecretKeyCredential;
     use crate::sdk::options::OptionsBuilder;
     use crate::us_extract_api::client::USExtractClient;
     use crate::us_extract_api::lookup::Lookup;
 
     #[test]
     fn client_test() {
-        let client = USExtractClient::new(
-            OptionsBuilder::new(SecretKeyCredential::new("".to_string(), "".to_string())).build(),
-        )
-        .unwrap();
+        let client = USExtractClient::new(OptionsBuilder::new(None).build()).unwrap();
 
         assert_eq!(
             client.client.url.to_string(),

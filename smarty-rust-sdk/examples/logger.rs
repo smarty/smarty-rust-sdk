@@ -41,7 +41,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     );
 
     // Create the options from it's builder pattern
-    let options = OptionsBuilder::new(authentication)
+    let options = OptionsBuilder::new(Some(authentication))
         .with_license("us-core-cloud")
         .with_logging()
         .with_retries(2)

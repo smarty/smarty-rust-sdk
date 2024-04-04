@@ -42,7 +42,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     );
 
     // Set Up The Options Here
-    let options = OptionsBuilder::new(authentication)
+    let options = OptionsBuilder::new(Some(authentication))
         .with_license("us-core-cloud")
         .with_logging()
         .build();

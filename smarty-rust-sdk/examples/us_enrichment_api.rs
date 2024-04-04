@@ -25,7 +25,7 @@ async fn lookup<R: EnrichmentResponse>(key: u32) -> Result<(), Box<dyn Error>> {
         std::env::var("SMARTY_AUTH_TOKEN").expect("Missing SMARTY_AUTH_TOKEN env variable"),
     );
 
-    let options = OptionsBuilder::new(authentication)
+    let options = OptionsBuilder::new(Some(authentication))
         .with_license(&format!("us-property-data-{}-cloud", R::lookup_type()))
         .with_logging()
         .build();
