@@ -16,14 +16,14 @@ pub struct OptionsBuilder {
     num_retries: u64,
     logging_enabled: bool,
     headers: Vec<(String, String)>,
-    authentication: Box<dyn Authenticate>,
+    authentication: Option<Box<dyn Authenticate>>,
 }
 
 // Allowing this because it is a builder pattern
 #[allow(clippy::new_without_default)]
 impl OptionsBuilder {
     /// Creates a new OptionsBuilder, taking in the authentication for the options.
-    pub fn new(authentication: Box<dyn Authenticate>) -> Self {
+    pub fn new(authentication: Option<Box<dyn Authenticate>>) -> Self {
         Self {
             license: "".to_string(),
             num_retries: 10,
@@ -88,7 +88,7 @@ pub struct Options {
     pub(crate) headers: Vec<(String, String)>,
 
     // Authentication
-    pub(crate) authentication: Box<dyn Authenticate>,
+    pub(crate) authentication: Option<Box<dyn Authenticate>>,
 }
 
 impl Clone for Options {
@@ -98,7 +98,7 @@ impl Clone for Options {
             num_retries: self.num_retries,
             logging_enabled: self.logging_enabled,
             headers: self.headers.clone(),
-            authentication: self.authentication.clone_box(),
+            authentication: self.authentication.as_ref().map(|x| x.clone_box()),
         }
     }
 }

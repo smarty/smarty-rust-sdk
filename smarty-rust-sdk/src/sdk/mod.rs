@@ -117,7 +117,7 @@ mod tests {
     fn client_test() {
         let client = Client::new(
             "https://www.smarty.com".parse().unwrap(),
-            OptionsBuilder::new(SecretKeyCredential::new("".to_string(), "".to_string())).build(),
+            OptionsBuilder::new(None).build(),
             "docs",
         )
         .unwrap();

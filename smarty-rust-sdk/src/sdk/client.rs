@@ -41,7 +41,9 @@ impl Client {
     }
 
     pub(crate) fn build_request(&self, mut builder: RequestBuilder) -> RequestBuilder {
-        builder = self.options.authentication.authenticate(builder);
+        if let Some(auth) = &self.options.authentication {
+            builder = auth.authenticate(builder);
+        }
 
         builder = builder.query(&[("license".to_string(), self.options.license.clone())]);
 

@@ -6,15 +6,11 @@ pub mod lookup;
 mod tests {
     use crate::international_street_api::client::InternationalStreetClient;
     use crate::international_street_api::lookup::Lookup;
-    use crate::sdk::authentication::SecretKeyCredential;
     use crate::sdk::options::OptionsBuilder;
 
     #[test]
     fn client_test() {
-        let client = InternationalStreetClient::new(
-            OptionsBuilder::new(SecretKeyCredential::new("".to_string(), "".to_string())).build(),
-        )
-        .unwrap();
+        let client = InternationalStreetClient::new(OptionsBuilder::new(None).build()).unwrap();
 
         assert_eq!(
             client.client.url.to_string(),

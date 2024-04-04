@@ -32,7 +32,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         std::env::var("SMARTY_AUTH_TOKEN").expect("Missing SMARTY_AUTH_TOKEN env variable"),
     );
 
-    let options = OptionsBuilder::new(authentication)
+    let options = OptionsBuilder::new(Some(authentication))
         .with_license("us-core-cloud")
         .build();
 
