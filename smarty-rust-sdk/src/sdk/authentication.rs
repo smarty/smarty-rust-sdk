@@ -13,7 +13,6 @@ pub trait Authenticate: Sync + Send + Debug + AuthClone {
     fn authenticate(&self, request: RequestBuilder) -> RequestBuilder;
 }
 
-// TODO: Doc String
 #[derive(Clone, PartialEq, Debug)]
 pub struct SecretKeyCredential {
     pub auth_id: String,
@@ -44,7 +43,6 @@ impl Authenticate for SecretKeyCredential {
     }
 }
 
-// TODO: Doc String
 #[derive(Clone, PartialEq, Debug)]
 pub struct WebsiteKeyCredential {
     key: String,

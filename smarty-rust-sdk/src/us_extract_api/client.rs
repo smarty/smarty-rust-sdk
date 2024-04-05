@@ -1,5 +1,5 @@
 use crate::sdk::client::Client;
-use crate::sdk::error::SDKError;
+use crate::sdk::error::SmartyError;
 use crate::sdk::options::Options;
 use crate::sdk::send_request;
 use crate::us_extract_api::lookup::Lookup;
@@ -18,7 +18,7 @@ use url::{ParseError, Url};
 pub struct USExtractClient;
 
 impl USExtractClient {
-    pub async fn send(&self, lookup: &mut Lookup) -> Result<(), SDKError> {
+    pub async fn send(&self, lookup: &mut Lookup) -> Result<(), SmartyError> {
         let mut req = self
             .client
             .reqwest_client

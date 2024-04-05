@@ -6,18 +6,12 @@ pub mod suggestion;
 mod tests {
     use crate::international_autocomplete_api::client::InternationalAutocompleteClient;
     use crate::international_autocomplete_api::lookup::Lookup;
-    use crate::sdk::authentication::SecretKeyCredential;
     use crate::sdk::options::OptionsBuilder;
 
     #[test]
     fn client_test() {
-        let client = InternationalAutocompleteClient::new(
-            OptionsBuilder::new()
-                .authenticate(SecretKeyCredential::new("".to_string(), "".to_string()))
-                .build()
-                .unwrap(),
-        )
-        .unwrap();
+        let client =
+            InternationalAutocompleteClient::new(OptionsBuilder::new(None).build()).unwrap();
 
         assert_eq!(
             client.client.url.to_string(),

@@ -1,19 +1,15 @@
 use crate::sdk::authentication::Authenticate;
 
-use super::error::SDKError;
-
 /// A builder for the options
 ///
 /// Example:
 /// ```ignore
 /// let authentication = SecretKeyCredential::new("test".to_string(), "test".to_string());
 ///
-/// OptionsBuilder::new()
+/// OptionsBuilder::new(authentication)
 ///     .with_license("test_license")
 ///     .with_logging()
-///     .authenticate(authentication)
 ///     .build()
-///     .expect("Authentication failed")
 /// ```
 pub struct OptionsBuilder {
     license: String,
@@ -26,32 +22,27 @@ pub struct OptionsBuilder {
 // Allowing this because it is a builder pattern
 #[allow(clippy::new_without_default)]
 impl OptionsBuilder {
-    pub fn new() -> Self {
+    /// Creates a new OptionsBuilder, taking in the authentication for the options.
+    pub fn new(authentication: Option<Box<dyn Authenticate>>) -> Self {
         Self {
             license: "".to_string(),
             num_retries: 10,
             logging_enabled: false,
             headers: vec![],
-            authentication: None,
+            authentication,
         }
     }
 
     /// Builds the builder into options with the parameters you set
     /// Returns an error if authentication is not set
-    pub fn build(self) -> Result<Options, SDKError> {
-        if let Some(auth) = self.authentication {
-            return Ok(Options {
-                license: self.license,
-                num_retries: self.num_retries,
-                logging_enabled: self.logging_enabled,
-                headers: self.headers,
-                authentication: auth,
-            });
+    pub fn build(self) -> Options {
+        Options {
+            license: self.license,
+            num_retries: self.num_retries,
+            logging_enabled: self.logging_enabled,
+            headers: self.headers,
+            authentication: self.authentication,
         }
-        Err(SDKError {
-            code: None,
-            detail: Some("Authentication Required".to_string()),
-        })
     }
 
     /// Adds a license string to the options
@@ -77,12 +68,6 @@ impl OptionsBuilder {
         self.headers = headers;
         self
     }
-
-    /// Inserts the authentication into the options.
-    pub fn authenticate(mut self, authentication: Box<dyn Authenticate>) -> Self {
-        self.authentication = Some(authentication);
-        self
-    }
 }
 
 /// Options that can be passed into a new client
@@ -103,7 +88,7 @@ pub struct Options {
     pub(crate) headers: Vec<(String, String)>,
 
     // Authentication
-    pub(crate) authentication: Box<dyn Authenticate>,
+    pub(crate) authentication: Option<Box<dyn Authenticate>>,
 }
 
 impl Clone for Options {
@@ -113,7 +98,7 @@ impl Clone for Options {
             num_retries: self.num_retries,
             logging_enabled: self.logging_enabled,
             headers: self.headers.clone(),
-            authentication: self.authentication.clone_box(),
+            authentication: self.authentication.as_ref().map(|x| x.clone_box()),
         }
     }
 }

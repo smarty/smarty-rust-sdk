@@ -4,20 +4,13 @@ pub mod lookup;
 
 #[cfg(test)]
 mod tests {
-    use crate::sdk::authentication::SecretKeyCredential;
     use crate::sdk::options::OptionsBuilder;
     use crate::us_reverse_geo_api::client::USReverseGeoClient;
     use crate::us_reverse_geo_api::lookup::Lookup;
 
     #[test]
     fn client_test() {
-        let client = USReverseGeoClient::new(
-            OptionsBuilder::new()
-                .authenticate(SecretKeyCredential::new("".to_string(), "".to_string()))
-                .build()
-                .unwrap(),
-        )
-        .unwrap();
+        let client = USReverseGeoClient::new(OptionsBuilder::new(None).build()).unwrap();
 
         assert_eq!(
             client.client.url.to_string(),

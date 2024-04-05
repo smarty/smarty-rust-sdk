@@ -1,4 +1,4 @@
-use crate::sdk::error::SDKError;
+use crate::sdk::error::SmartyError;
 use reqwest_middleware::RequestBuilder;
 use serde::de::DeserializeOwned;
 use serde_repr::{Deserialize_repr, Serialize_repr};
@@ -36,40 +36,26 @@ impl Display for CoordinateLicense {
     }
 }
 
-pub(crate) async fn send_request<C>(request: RequestBuilder) -> Result<C, SDKError>
+pub(crate) async fn send_request<C>(request: RequestBuilder) -> Result<C, SmartyError>
 where
     C: DeserializeOwned,
 {
-    let response = match request.send().await {
-        Ok(response) => response,
-        Err(error) => {
-            return Err(SDKError {
-                code: None,
-                detail: Some(format!("{:?}", error)),
-            });
-        }
-    };
+    let response = request.send().await.map_err(|e| match e {
+        reqwest_middleware::Error::Middleware(e) => SmartyError::from(e),
+        reqwest_middleware::Error::Reqwest(e) => SmartyError::from(e),
+    })?;
 
     if !response.status().is_success() {
         let status_code = response.status();
-        let body = match response.text().await {
-            Ok(body) => body,
-            Err(_) => "Could not read body for response".to_string(),
-        };
+        let body = response.text().await?;
 
-        return Err(SDKError {
-            code: Some(status_code.as_u16()),
-            detail: Some(body),
+        return Err(SmartyError::HttpError {
+            code: status_code,
+            detail: body,
         });
     }
 
-    match response.json::<C>().await {
-        Ok(candidates) => Ok(candidates),
-        Err(err) => Err(SDKError {
-            code: None,
-            detail: Some(format!("{:?}", err)),
-        }),
-    }
+    Ok(response.json::<C>().await?)
 }
 
 /// This is only used for Serializing for post
@@ -78,35 +64,14 @@ pub(crate) fn is_zero(num: &i64) -> bool {
     *num == 0
 }
 
-pub(crate) fn has_param(name: String, param: String) -> Option<(String, String)> {
-    if param != String::default() {
-        Some((name, param))
-    } else {
-        None
-    }
-}
-
-pub(crate) fn has_i32_param(name: String, param: i32, default: i32) -> Option<(String, String)> {
-    if param == default {
-        None
-    } else {
+pub(crate) fn has_param<P: PartialEq + Display + Default>(
+    name: String,
+    param: P,
+) -> Option<(String, String)> {
+    if param != P::default() {
         Some((name, param.to_string()))
-    }
-}
-
-pub(crate) fn has_f64_param(name: String, param: f64, default: f64) -> Option<(String, String)> {
-    if param == default {
-        None
     } else {
-        Some((name, param.to_string()))
-    }
-}
-
-pub(crate) fn has_bool_param(name: String, param: bool, default: bool) -> Option<(String, String)> {
-    if param == default {
         None
-    } else {
-        Some((name, param.to_string()))
     }
 }
 
@@ -152,10 +117,7 @@ mod tests {
     fn client_test() {
         let client = Client::new(
             "https://www.smarty.com".parse().unwrap(),
-            OptionsBuilder::new()
-                .authenticate(SecretKeyCredential::new("".to_string(), "".to_string()))
-                .build()
-                .unwrap(),
+            OptionsBuilder::new(None).build(),
             "docs",
         )
         .unwrap();

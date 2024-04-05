@@ -5,7 +5,6 @@ pub mod candidate;
 
 #[cfg(test)]
 mod tests {
-    use crate::sdk::authentication::SecretKeyCredential;
     use crate::sdk::batch::Batch;
     use crate::sdk::options::OptionsBuilder;
     use crate::us_street_api::client::USStreetAddressClient;
@@ -13,13 +12,7 @@ mod tests {
 
     #[test]
     fn client_test() {
-        let client = USStreetAddressClient::new(
-            OptionsBuilder::new()
-                .authenticate(SecretKeyCredential::new("".to_string(), "".to_string()))
-                .build()
-                .unwrap(),
-        )
-        .unwrap();
+        let client = USStreetAddressClient::new(OptionsBuilder::new(None).build()).unwrap();
 
         assert_eq!(
             client.client.url.to_string(),

@@ -1,22 +1,15 @@
-use std::error::Error;
-use std::fmt::{Display, Formatter};
+use hyper::StatusCode;
+use thiserror::Error;
 
-#[derive(Debug, Clone)]
-
-/// An error returned by a struct in the SDK.
-pub struct SDKError {
-    pub code: Option<u16>,
-    pub detail: Option<String>,
+/// An error returned by a smarty api.
+#[derive(Debug, Error)]
+pub enum SmartyError {
+    #[error("failed to process request")]
+    RequestProcess(#[from] reqwest::Error),
+    #[error("request middleware failed")]
+    Middleware(#[from] anyhow::Error),
+    #[error("failed to parse url")]
+    Parse(#[from] url::ParseError),
+    #[error("http error")]
+    HttpError { code: StatusCode, detail: String },
 }
-
-impl Display for SDKError {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "SDK Error: ErrorCode: {:?}\nDetails: {:?}",
-            self.code, self.detail
-        )
-    }
-}
-
-impl Error for SDKError {}

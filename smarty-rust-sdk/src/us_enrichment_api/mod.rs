@@ -4,17 +4,11 @@ pub mod results;
 
 #[cfg(test)]
 mod tests {
-    use crate::{
-        sdk::{authentication::SecretKeyCredential, options::OptionsBuilder},
-        us_enrichment_api::client::USEnrichmentClient,
-    };
+    use crate::{sdk::options::OptionsBuilder, us_enrichment_api::client::USEnrichmentClient};
 
     #[test]
     fn client_test() {
-        let options = OptionsBuilder::new()
-            .authenticate(SecretKeyCredential::new("".to_string(), "".to_string()))
-            .build()
-            .unwrap();
+        let options = OptionsBuilder::new(None).build();
         let client = USEnrichmentClient::new(options).unwrap();
 
         assert_eq!(

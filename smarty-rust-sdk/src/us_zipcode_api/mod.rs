@@ -7,7 +7,6 @@ pub mod candidate;
 // Tests
 #[cfg(test)]
 mod tests {
-    use crate::sdk::authentication::SecretKeyCredential;
     use crate::sdk::batch::Batch;
     use crate::sdk::options::OptionsBuilder;
     use crate::us_zipcode_api::client::USZipcodeClient;
@@ -15,10 +14,7 @@ mod tests {
 
     #[test]
     fn client_test() {
-        let options = OptionsBuilder::new()
-            .authenticate(SecretKeyCredential::new("".to_string(), "".to_string()))
-            .build()
-            .unwrap();
+        let options = OptionsBuilder::new(None).build();
         let client = USZipcodeClient::new(options).unwrap();
 
         assert_eq!(

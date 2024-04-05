@@ -4,20 +4,13 @@ pub mod suggestion;
 
 #[cfg(test)]
 mod tests {
-    use crate::sdk::authentication::SecretKeyCredential;
     use crate::sdk::options::OptionsBuilder;
     use crate::us_autocomplete_api::client::USAutocompleteClient;
     use crate::us_autocomplete_api::lookup::Lookup;
 
     #[test]
     fn client_test() {
-        let client = USAutocompleteClient::new(
-            OptionsBuilder::new()
-                .authenticate(SecretKeyCredential::new("".to_string(), "".to_string()))
-                .build()
-                .unwrap(),
-        )
-        .unwrap();
+        let client = USAutocompleteClient::new(OptionsBuilder::new(None).build()).unwrap();
 
         assert_eq!(
             client.client.url.to_string(),

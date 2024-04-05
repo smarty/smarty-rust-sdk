@@ -1,5 +1,6 @@
-use crate::sdk::error::SDKError;
 use crate::sdk::MAX_BATCH_SIZE;
+
+use thiserror::Error;
 
 #[derive(Clone)]
 /// A storage for lookups.
@@ -14,14 +15,15 @@ impl<T> Default for Batch<T> {
     }
 }
 
+#[derive(Error, Debug)]
+#[error("Batch is full")]
+pub struct BatchError;
+
 impl<T> Batch<T> {
     /// Pushes a lookup into the batch, returns an SDKError if the batch is full.
-    pub fn push(&mut self, lookup: T) -> Result<(), SDKError> {
+    pub fn push(&mut self, lookup: T) -> Result<(), BatchError> {
         if self.is_full() {
-            return Err(SDKError {
-                code: None,
-                detail: Some(format!("Batch is full (max {})", MAX_BATCH_SIZE)),
-            });
+            return Err(BatchError);
         }
 
         self.lookups.push(lookup);

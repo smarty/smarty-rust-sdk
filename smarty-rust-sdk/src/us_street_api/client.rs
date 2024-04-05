@@ -4,7 +4,7 @@ use reqwest::Method;
 use smarty_rust_proc_macro::smarty_api;
 use url::{ParseError, Url};
 
-use crate::sdk::error::SDKError;
+use crate::sdk::error::SmartyError;
 use crate::sdk::options::Options;
 use crate::sdk::send_request;
 use crate::us_street_api::candidate::Candidates;
