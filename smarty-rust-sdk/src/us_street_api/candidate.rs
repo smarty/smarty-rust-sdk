@@ -10,7 +10,7 @@ pub struct Candidate {
     pub input_id: String,
     pub input_index: i64,
     pub candidate_index: i64,
-    pub adressee: String,
+    pub addressee: String,
     pub delivery_line_1: String,
     pub delivery_line_2: String,
     pub last_line: String,
