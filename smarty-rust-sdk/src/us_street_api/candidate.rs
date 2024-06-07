@@ -25,8 +25,8 @@ pub struct Candidate {
 #[serde(default)]
 pub struct Components {
     pub primary_number: String,
-    pub street_prediction: String,
     pub street_name: String,
+    pub street_predirection: String,
     pub street_postdirection: String,
     pub street_suffix: String,
     pub secondary_number: String,
