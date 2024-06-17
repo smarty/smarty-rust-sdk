@@ -1,3 +1,5 @@
+use reqwest::Proxy;
+
 use crate::sdk::authentication::Authenticate;
 
 /// A builder for the options
@@ -17,6 +19,8 @@ pub struct OptionsBuilder {
     logging_enabled: bool,
     headers: Vec<(String, String)>,
     authentication: Option<Box<dyn Authenticate>>,
+
+    proxy: Option<Proxy>,
 }
 
 // Allowing this because it is a builder pattern
@@ -30,6 +34,8 @@ impl OptionsBuilder {
             logging_enabled: false,
             headers: vec![],
             authentication,
+
+            proxy: None,
         }
     }
 
@@ -42,6 +48,8 @@ impl OptionsBuilder {
             logging_enabled: self.logging_enabled,
             headers: self.headers,
             authentication: self.authentication,
+
+            proxy: self.proxy,
         }
     }
 
@@ -68,6 +76,12 @@ impl OptionsBuilder {
         self.headers = headers;
         self
     }
+
+    /// Adds a custom proxy for the request to point to.
+    pub fn with_proxy(mut self, proxy: Proxy) -> Self {
+        self.proxy = Some(proxy);
+        self
+    }
 }
 
 /// Options that can be passed into a new client
@@ -89,6 +103,9 @@ pub struct Options {
 
     // Authentication
     pub(crate) authentication: Option<Box<dyn Authenticate>>,
+
+    // Proxy
+    pub(crate) proxy: Option<Proxy>,
 }
 
 impl Clone for Options {
@@ -99,6 +116,7 @@ impl Clone for Options {
             logging_enabled: self.logging_enabled,
             headers: self.headers.clone(),
             authentication: self.authentication.as_ref().map(|x| x.clone_box()),
+            proxy: self.proxy.clone(),
         }
     }
 }

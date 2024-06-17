@@ -3,9 +3,9 @@ use crate::sdk::options::Options;
 use crate::sdk::VERSION;
 use reqwest::header::USER_AGENT;
 use reqwest_middleware::{ClientBuilder, ClientWithMiddleware, RequestBuilder};
-use url::{ParseError, Url};
+use url::Url;
 
-use super::retry_strategy::SmartyRetryMiddleware;
+use super::{error::SmartyError, retry_strategy::SmartyRetryMiddleware};
 
 /// The base client for all of Smarty's rust sdk
 pub(crate) struct Client {
@@ -19,11 +19,21 @@ impl Client {
         base_url: Url,
         options: Options,
         api_path: &str,
-    ) -> Result<Client, ParseError> {
+    ) -> Result<Client, SmartyError> {
         let url = &mut base_url.join(api_path)?;
 
-        let mut client_builder = ClientBuilder::new(reqwest::Client::new())
-            .with(SmartyRetryMiddleware::new(options.num_retries));
+        let mut reqwest_client_builder = reqwest::ClientBuilder::new();
+
+        if let Some(proxy) = options.proxy.clone() {
+            reqwest_client_builder = reqwest_client_builder.proxy(proxy);
+        }
+
+        let mut client_builder = ClientBuilder::new(
+            reqwest_client_builder
+                .build()
+                .map_err(SmartyError::RequestProcess)?,
+        )
+        .with(SmartyRetryMiddleware::new(options.num_retries));
 
         if options.logging_enabled {
             client_builder = client_builder.with(LoggingMiddleware);
