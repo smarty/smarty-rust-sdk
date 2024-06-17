@@ -7,7 +7,7 @@ use crate::us_enrichment_api::results::EnrichmentResponse;
 use reqwest::Method;
 use serde::de::DeserializeOwned;
 use smarty_rust_proc_macro::smarty_api;
-use url::{ParseError, Url};
+use url::Url;
 
 #[smarty_api(
     api_path = "lookup",

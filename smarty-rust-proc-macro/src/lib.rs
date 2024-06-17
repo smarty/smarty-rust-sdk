@@ -1,3 +1,5 @@
+#![allow(clippy::manual_unwrap_or_default)]
+
 extern crate darling;
 extern crate proc_macro;
 
@@ -106,12 +108,12 @@ fn impl_smarty_api_macro(attrs: &MacroArgs, ast: &mut syn::DeriveInput) -> Token
 
     impl #name {
         /// Creates a new client with the given options
-        pub fn new(options: Options) -> Result<Self, ParseError> {
+        pub fn new(options: Options) -> Result<Self, SmartyError> {
             Self::new_custom_base_url(#default_url.parse()?, options)
         }
 
         /// Creates a new client with the given options that points to a different url.
-        pub fn new_custom_base_url(base_url: Url, options: Options) -> Result<Self, ParseError> {
+        pub fn new_custom_base_url(base_url: Url, options: Options) -> Result<Self, SmartyError> {
             Ok(Self {client: Client::new(base_url, options, #api_path)?})
         }
     }

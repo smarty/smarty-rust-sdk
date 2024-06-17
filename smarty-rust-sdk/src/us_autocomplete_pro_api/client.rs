@@ -6,7 +6,7 @@ use crate::us_autocomplete_pro_api::lookup::Lookup;
 use crate::us_autocomplete_pro_api::suggestion::SuggestionListing;
 use reqwest::Method;
 use smarty_rust_proc_macro::smarty_api;
-use url::{ParseError, Url};
+use url::Url;
 
 #[smarty_api(
     api_path = "lookup",
