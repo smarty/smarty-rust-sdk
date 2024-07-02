@@ -12,6 +12,8 @@ pub struct Suggestion {
     pub street: String,
     pub locality: String,
     pub administrative_area: String,
+    pub administrative_area_short: String,
+    pub administrative_area_long: String,
     pub postal_code: String,
     pub country_iso3: String,
 
