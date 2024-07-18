@@ -7,7 +7,6 @@ use crate::us_zipcode_api::candidate::ZipcodeResult;
 use crate::us_zipcode_api::lookup::Lookup;
 use reqwest::Method;
 use smarty_rust_proc_macro::smarty_api;
-use url::Url;
 
 #[smarty_api(
     default_url = "https://us-zipcode.api.smarty.com/",

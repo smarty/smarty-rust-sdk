@@ -1,4 +1,5 @@
 use reqwest::Proxy;
+use url::Url;
 
 use crate::sdk::authentication::Authenticate;
 
@@ -20,6 +21,8 @@ pub struct OptionsBuilder {
     headers: Vec<(String, String)>,
     authentication: Option<Box<dyn Authenticate>>,
 
+    url: Option<Url>,
+
     proxy: Option<Proxy>,
 }
 
@@ -35,6 +38,8 @@ impl OptionsBuilder {
             headers: vec![],
             authentication,
 
+            url: None,
+
             proxy: None,
         }
     }
@@ -48,6 +53,8 @@ impl OptionsBuilder {
             logging_enabled: self.logging_enabled,
             headers: self.headers,
             authentication: self.authentication,
+
+            url: self.url,
 
             proxy: self.proxy,
         }
@@ -74,6 +81,12 @@ impl OptionsBuilder {
     /// Adds a set of custom headers to your request.
     pub fn with_headers(mut self, headers: Vec<(String, String)>) -> Self {
         self.headers = headers;
+        self
+    }
+
+    /// Sets the base url that the request should use.
+    pub fn with_url(mut self, url: Url) -> Self {
+        self.url = Some(url);
         self
     }
 
@@ -104,6 +117,9 @@ pub struct Options {
     // Authentication
     pub(crate) authentication: Option<Box<dyn Authenticate>>,
 
+    // Url
+    pub(crate) url: Option<Url>,
+
     // Proxy
     pub(crate) proxy: Option<Proxy>,
 }
@@ -116,6 +132,7 @@ impl Clone for Options {
             logging_enabled: self.logging_enabled,
             headers: self.headers.clone(),
             authentication: self.authentication.as_ref().map(|x| x.clone_box()),
+            url: self.url.clone(),
             proxy: self.proxy.clone(),
         }
     }
