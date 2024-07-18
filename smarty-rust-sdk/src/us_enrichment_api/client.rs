@@ -29,10 +29,13 @@ impl USEnrichmentClient {
     ) -> Result<(), SmartyError> {
         let mut url = self.client.url.clone();
         url = url.join(&format!(
-            "/lookup/{}/property/{}",
+            "/lookup/{}/{}/{}",
             lookup.smarty_key,
-            R::lookup_type()
+            R::lookup_type(),
+            R::lookup_subtype(),
         ))?;
+
+        println!("URL : {}", url);
 
         let mut req = self.client.reqwest_client.request(Method::GET, url);
         req = self.client.build_request(req);
