@@ -5,7 +5,6 @@ use crate::sdk::send_request;
 use crate::us_extract_api::lookup::Lookup;
 use reqwest::Method;
 use smarty_rust_proc_macro::smarty_api;
-use url::Url;
 
 #[smarty_api(
     api_path = "",

@@ -2,7 +2,6 @@ use crate::sdk::batch::Batch;
 use crate::sdk::client::Client;
 use reqwest::Method;
 use smarty_rust_proc_macro::smarty_api;
-use url::Url;
 
 use crate::sdk::error::SmartyError;
 use crate::sdk::options::Options;
