@@ -75,6 +75,13 @@ pub struct Components {
     pub post_box: String,
     pub post_box_type: String,
     pub post_box_number: String,
+    pub additional_content: String,
+    pub delivery_installation: String,
+    pub delivery_installation_type: String,
+    pub delivery_installation_qualifier_name: String,
+    pub route: String,
+    pub route_number: String,
+    pub route_type: String,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
