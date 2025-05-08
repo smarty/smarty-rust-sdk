@@ -34,6 +34,7 @@ pub struct RootLevel {
 pub struct Components {
     pub super_administrative_area: String,
     pub administrative_area: String,
+    pub administrative_area_iso2: String,
     pub administrative_area_short: String,
     pub administrative_area_long: String,
     pub sub_administrative_area: String,
@@ -41,7 +42,7 @@ pub struct Components {
     pub dependent_locality: String,
     pub dependent_locality_name: String,
     pub double_dependent_locality: String,
-    pub country_iso3: String,
+    pub country_iso_3: String,
     pub locality: String,
     pub postal_code: String,
     pub postal_code_short: String,
