@@ -38,6 +38,8 @@ pub struct Lookup {
     #[serde(rename = "format")]
     pub format_output: OutputFormat,
 
+    pub county_source: CountySource,
+
     #[serde(skip_serializing)]
     pub results: Candidates,
 }
@@ -59,6 +61,7 @@ impl Default for Lookup {
 
             match_strategy: Default::default(),
             format_output: Default::default(),
+            county_source: Default::default(),
             results: vec![],
         }
     }
@@ -90,6 +93,7 @@ impl Lookup {
             has_param("candidates".to_string(), max_candidates_string),
             has_param("match".to_string(), self.match_strategy.to_string()),
             has_param("format".to_string(), self.format_output.to_string()),
+            has_param("county_source".to_string(), self.county_source.to_string()),
         ]
         .iter()
         .filter_map(Option::clone)
@@ -137,6 +141,27 @@ impl Display for OutputFormat {
             }
             OutputFormat::ProjectUsa => {
                 write!(f, "project-usa")
+            }
+        }
+    }
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum CountySource {
+    #[default]
+    Postal,
+    Geographic,
+}
+
+impl Display for CountySource {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            CountySource::Postal => {
+                write!(f, "postal")
+            }
+            CountySource::Geographic => {
+                write!(f, "geographic")
             }
         }
     }
