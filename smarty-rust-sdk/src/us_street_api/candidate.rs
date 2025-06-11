@@ -83,4 +83,29 @@ pub struct Analysis {
     pub suitelink_match: bool,
     pub ews_match: bool,
     pub enhanced_match: String,
+    pub components: ComponentAnalysis,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct MatchInfo {
+    pub status: String,
+    pub change: Vec<String>,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ComponentAnalysis {
+    pub primary_number: MatchInfo,
+    pub street_predirection: MatchInfo,
+    pub street_name: MatchInfo,
+    pub street_postdirection: MatchInfo,
+    pub street_suffix: MatchInfo,
+    pub secondary_number: MatchInfo,
+    pub secondary_designator: MatchInfo,
+    pub extra_secondary_number: MatchInfo,
+    pub extra_secondary_designator: MatchInfo,
+    pub city_name: MatchInfo,
+    pub state_abbreviation: MatchInfo,
+    pub zipcode: MatchInfo,
+    pub plus4_code: MatchInfo,
+    pub urbanization: MatchInfo,
 }
