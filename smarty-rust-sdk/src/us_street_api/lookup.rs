@@ -38,7 +38,7 @@ pub struct Lookup {
     #[serde(rename = "format")]
     pub format_output: OutputFormat,
 
-    pub county_source: CountySource,
+    pub county_source: Option<CountySource>,
 
     #[serde(skip_serializing)]
     pub results: Candidates,
@@ -79,7 +79,7 @@ impl Lookup {
             max_candidates_string = 5.to_string();
         }
 
-        vec![
+        let mut res = vec![
             has_param("street".to_string(), self.street),
             has_param("street2".to_string(), self.street2),
             has_param("secondary".to_string(), self.secondary),
@@ -93,11 +93,13 @@ impl Lookup {
             has_param("candidates".to_string(), max_candidates_string),
             has_param("match".to_string(), self.match_strategy.to_string()),
             has_param("format".to_string(), self.format_output.to_string()),
-            has_param("county_source".to_string(), self.county_source.to_string()),
-        ]
-        .iter()
-        .filter_map(Option::clone)
-        .collect::<Vec<_>>()
+        ];
+
+        if let Some(source) = self.county_source {
+            res.push(Some(("country_source".to_string(), source.to_string())));
+        }
+
+        res.iter().filter_map(Option::clone).collect::<Vec<_>>()
     }
 }
 
