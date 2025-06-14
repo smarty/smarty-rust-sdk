@@ -1,4 +1,5 @@
 use crate::sdk::error::SmartyError;
+use reqwest::Response;
 use reqwest_middleware::RequestBuilder;
 use serde::de::DeserializeOwned;
 use serde_repr::{Deserialize_repr, Serialize_repr};
@@ -36,15 +37,16 @@ impl Display for CoordinateLicense {
     }
 }
 
-pub(crate) async fn send_request<C>(request: RequestBuilder) -> Result<C, SmartyError>
-where
-    C: DeserializeOwned,
-{
-    let response = request.send().await.map_err(|e| match e {
+pub(crate) async fn send_request_full(request: RequestBuilder) -> Result<Response, SmartyError> {
+    request.send().await.map_err(|e| match e {
         reqwest_middleware::Error::Middleware(e) => SmartyError::from(e),
         reqwest_middleware::Error::Reqwest(e) => SmartyError::from(e),
-    })?;
+    })
+}
 
+pub(crate) async fn parse_response_json<C: DeserializeOwned>(
+    response: Response,
+) -> Result<C, SmartyError> {
     if !response.status().is_success() {
         let status_code = response.status();
         let body = response.text().await?;
@@ -56,6 +58,13 @@ where
     }
 
     Ok(response.json::<C>().await?)
+}
+
+pub(crate) async fn send_request<C: DeserializeOwned>(
+    request: RequestBuilder,
+) -> Result<C, SmartyError> {
+    let response = send_request_full(request).await?;
+    parse_response_json(response).await
 }
 
 /// This is only used for Serializing for post
