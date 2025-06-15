@@ -75,62 +75,33 @@ pub struct GeoReferenceAttributes {
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CensusBlock {
-    pub accuracy: CensusGeoIdAccuracy,
+    pub accuracy: String,
     pub geoid: String,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub enum CensusGeoIdAccuracy {
-    #[default]
-    #[serde(rename = "block")]
-    Block,
-    #[serde(rename = "tract")]
-    Tract,
-    #[serde(rename = "county")]
-    County,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub enum GeocodeAccuracy {
-    #[default]
-    #[serde(rename = "inferred")]
-    Inferred,
-    #[serde(rename = "exact")]
-    Exact,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CensusCountyDivision {
-    accuracy: GeocodeAccuracy,
-    code: String,
-    name: String,
+    pub accuracy: String,
+    pub code: String,
+    pub name: String,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CensusTract {
-    code: String,
+    pub code: String,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CoreBasedStatArea {
-    code: String,
-    name: String,
+    pub code: String,
+    pub name: String,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Place {
-    accuracy: GeocodeAccuracy,
-    code: String,
-    name: String,
+    pub accuracy: String,
+    pub code: String,
+    pub name: String,
     #[serde(rename = "type")]
-    type_: PlaceType,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub enum PlaceType {
-    #[default]
-    #[serde(rename = "unincorporated")]
-    Unincorperated,
-    #[serde(rename = "incorperated")]
-    Incorperated,
+    pub place_type: String,
 }
