@@ -1,4 +1,4 @@
-use crate::us_enrichment_api::results::EnrichmentResponse;
+use crate::us_enrichment_api::response::EnrichmentResponse;
 
 #[derive(Clone, Default)]
 pub struct EnrichmentLookup<R: EnrichmentResponse> {

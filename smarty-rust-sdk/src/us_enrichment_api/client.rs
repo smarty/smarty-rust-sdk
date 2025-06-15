@@ -3,9 +3,10 @@ use crate::sdk::error::SmartyError;
 use crate::sdk::options::Options;
 use crate::sdk::{parse_response_json, send_request_full};
 use crate::us_enrichment_api::lookup::EnrichmentLookup;
-use crate::us_enrichment_api::results::EnrichmentResponse;
 use reqwest::Method;
 use smarty_rust_proc_macro::smarty_api;
+
+use super::response::EnrichmentResponse;
 
 #[smarty_api(
     api_path = "lookup",
