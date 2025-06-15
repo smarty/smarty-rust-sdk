@@ -117,7 +117,7 @@ fn retry_success(res: &Response) -> RetryResult {
         | StatusCode::SERVICE_UNAVAILABLE
         | StatusCode::GATEWAY_TIMEOUT => RetryResult::Transient,
         StatusCode::TOO_MANY_REQUESTS => {
-            return match res.headers().get(RETRY_AFTER) {
+            match res.headers().get(RETRY_AFTER) {
                 Some(time) => {
                     if let Ok(time) = time.to_str() {
                         if let Ok(time) = time.parse::<u64>() {

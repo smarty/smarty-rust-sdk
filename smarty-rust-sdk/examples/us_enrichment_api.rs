@@ -41,10 +41,6 @@ async fn lookup<R: EnrichmentResponse>(key: u32) -> Result<(), Box<dyn Error>> {
     );
 
     let options = OptionsBuilder::new(Some(authentication))
-        // The appropriate license values to be used for your subscriptions
-        // can be found on the Subscriptions page of the account dashboard.
-        // https://www.smartystreets.com/docs/cloud/licensing
-        .with_license(&format!("us-property-data-{}-cloud", R::lookup_type()))
         .with_logging()
         .build();
 

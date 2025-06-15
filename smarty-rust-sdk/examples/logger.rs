@@ -42,10 +42,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     // Create the options from it's builder pattern
     let options = OptionsBuilder::new(Some(authentication))
-        // The appropriate license values to be used for your subscriptions
-        // can be found on the Subscriptions page the account dashboard.
-        // https://www.smartystreets.com/docs/cloud/licensing
-        .with_license("us-core-cloud")
         .with_logging()
         .with_retries(2)
         .build();
