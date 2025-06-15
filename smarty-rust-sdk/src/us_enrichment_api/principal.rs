@@ -14,7 +14,7 @@ pub struct PrincipalResponse {
 
 impl EnrichmentResponse for PrincipalResponse {
     fn lookup_type() -> &'static str {
-        "principal"
+        "property/principal"
     }
 }
 

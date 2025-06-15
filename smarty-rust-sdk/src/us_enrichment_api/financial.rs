@@ -14,7 +14,7 @@ pub struct FinancialResponse {
 
 impl EnrichmentResponse for FinancialResponse {
     fn lookup_type() -> &'static str {
-        "financial"
+        "property/financial"
     }
 }
 
