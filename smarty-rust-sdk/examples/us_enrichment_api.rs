@@ -1,10 +1,16 @@
 use smarty_rust_sdk::sdk::authentication::SecretKeyCredential;
 use smarty_rust_sdk::sdk::options::OptionsBuilder;
-use smarty_rust_sdk::us_enrichment_api::client::USEnrichmentClient;
+
+use smarty_rust_sdk::us_enrichment_api::client::*;
+use smarty_rust_sdk::us_enrichment_api::financial::*;
+use smarty_rust_sdk::us_enrichment_api::geo::*;
+use smarty_rust_sdk::us_enrichment_api::principal::*;
+
 use smarty_rust_sdk::us_enrichment_api::lookup::EnrichmentLookup;
-use smarty_rust_sdk::us_enrichment_api::results::{
-    EnrichmentResponse, FinancialResponse, PrincipalResponse,
-};
+use smarty_rust_sdk::us_enrichment_api::response::EnrichmentResponse;
+use smarty_rust_sdk::us_enrichment_api::secondary::SecondaryCountResponse;
+use smarty_rust_sdk::us_enrichment_api::secondary::SecondaryResponse;
+
 use std::error::Error;
 
 #[tokio::main]
@@ -13,12 +19,21 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     lookup::<FinancialResponse>(key).await?;
     lookup::<PrincipalResponse>(key).await?;
+    lookup::<GeoReferenceResponse>(key).await?;
+    lookup::<GeoReference2010Response>(key).await?;
+    lookup::<GeoReference2020Response>(key).await?;
+    lookup::<SecondaryResponse>(key).await?;
+    lookup::<SecondaryCountResponse>(key).await?;
 
     Ok(())
 }
 
 async fn lookup<R: EnrichmentResponse>(key: u32) -> Result<(), Box<dyn Error>> {
-    let mut lookup = EnrichmentLookup::<R>::new(key);
+    let mut lookup = EnrichmentLookup::<R> {
+        smarty_key: key,
+        etag: "".to_string(),
+        ..Default::default()
+    };
 
     let authentication = SecretKeyCredential::new(
         std::env::var("SMARTY_AUTH_ID").expect("Missing SMARTY_AUTH_ID env variable"),
