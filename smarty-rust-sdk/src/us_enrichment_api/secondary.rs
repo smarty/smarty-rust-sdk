@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use super::response::EnrichmentResponse;
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(default)]
 pub struct SecondaryResponse {
     pub smarty_key: String,
     pub root_address: RootAddress,
@@ -17,6 +18,7 @@ impl EnrichmentResponse for SecondaryResponse {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(default)]
 pub struct RootAddress {
     pub secondary_count: i64,
     pub smarty_key: String,
@@ -31,6 +33,7 @@ pub struct RootAddress {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(default)]
 pub struct Alias {
     pub smarty_key: String,
     pub primary_number: String,
@@ -44,6 +47,7 @@ pub struct Alias {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(default)]
 pub struct Secondary {
     pub smarty_key: String,
     pub secondary_designator: String,
@@ -52,6 +56,7 @@ pub struct Secondary {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(default)]
 pub struct SecondaryCountResponse {
     pub smarty_key: String,
     pub count: i64,

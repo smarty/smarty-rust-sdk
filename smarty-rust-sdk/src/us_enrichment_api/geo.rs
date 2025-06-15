@@ -7,6 +7,7 @@ use std::ops::DerefMut;
 use super::response::EnrichmentResponse;
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(default)]
 pub struct GeoReferenceResponse {
     pub smarty_key: String,
     pub data_set_name: String,
@@ -21,6 +22,7 @@ impl EnrichmentResponse for GeoReferenceResponse {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(default)]
 pub struct GeoReference2010Response(pub GeoReferenceResponse);
 
 impl Deref for GeoReference2010Response {
@@ -43,6 +45,7 @@ impl EnrichmentResponse for GeoReference2010Response {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(default)]
 pub struct GeoReference2020Response(pub GeoReferenceResponse);
 
 impl Deref for GeoReference2020Response {
@@ -65,6 +68,7 @@ impl EnrichmentResponse for GeoReference2020Response {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(default)]
 pub struct GeoReferenceAttributes {
     pub census_block: CensusBlock,
     pub census_county_division: CensusCountyDivision,
@@ -74,12 +78,14 @@ pub struct GeoReferenceAttributes {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CensusBlock {
     pub accuracy: String,
     pub geoid: String,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CensusCountyDivision {
     pub accuracy: String,
     pub code: String,
@@ -87,17 +93,20 @@ pub struct CensusCountyDivision {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CensusTract {
     pub code: String,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CoreBasedStatArea {
     pub code: String,
     pub name: String,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(default)]
 pub struct Place {
     pub accuracy: String,
     pub code: String,
