@@ -54,8 +54,10 @@ impl Client {
         if let Some(auth) = &self.options.authentication {
             builder = auth.authenticate(builder);
         }
-
-        builder = builder.query(&[("license".to_string(), self.options.license.clone())]);
+        
+        if !self.options.license.is_empty() {
+            builder = builder.query(&[("license".to_string(), self.options.license.clone())]);   
+        }
 
         for (header_key, header_value) in self.options.headers.clone() {
             builder = builder.header(header_key, header_value);
