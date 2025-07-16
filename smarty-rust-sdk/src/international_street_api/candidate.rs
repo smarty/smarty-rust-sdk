@@ -83,6 +83,7 @@ pub struct Components {
     pub route: String,
     pub route_number: String,
     pub route_type: String,
+    pub use_indicator: String,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]

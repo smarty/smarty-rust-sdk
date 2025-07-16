@@ -79,7 +79,7 @@ mod tests {
                 "building": "41", "building_leading_type": "42", "building_name": "43",
                 "building_trailing_type": "44", "sub_building_type": "45", "sub_building_number": "46",
                 "sub_building_name": "47", "sub_building": "48", "level_type": "48.1", "level_number": "48.2",
-                "post_box": "49", "post_box_type": "50", "post_box_number": "51"
+                "post_box": "49", "post_box_type": "50", "post_box_number": "51", "use_indicator": "52"
             },
             "metadata": {
                 "latitude": 52.0, "longitude": 53.0,
@@ -114,7 +114,7 @@ mod tests {
                         "post_box": "109", "post_box_type": "110", "post_box_number": "111",
                         "additional_content": "112", "delivery_installation": "113",
                         "delivery_installation_type": "114", "delivery_installation_qualifier_name": "115",
-                        "route": "116", "route_number": "117", "route_type": "118"
+                        "route": "116", "route_number": "117", "route_type": "118", "use_indicator": "119"
                     }
                 }
             }
@@ -181,6 +181,7 @@ mod tests {
         assert_eq!(candidate.components.post_box, "49");
         assert_eq!(candidate.components.post_box_type, "50");
         assert_eq!(candidate.components.post_box_number, "51");
+        assert_eq!(candidate.components.use_indicator, "52");
         assert_eq!(candidate.metadata.latitude, 52.0);
         assert_eq!(candidate.metadata.longitude, 53.0);
         assert_eq!(candidate.metadata.geocode_precision, "54");
@@ -252,5 +253,6 @@ mod tests {
         assert_eq!(candidate.analysis.changes.components.route, "116");
         assert_eq!(candidate.analysis.changes.components.route_number, "117");
         assert_eq!(candidate.analysis.changes.components.route_type, "118");
+        assert_eq!(candidate.analysis.changes.components.use_indicator, "119");
     }
 }
