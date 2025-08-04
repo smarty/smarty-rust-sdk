@@ -7,6 +7,7 @@ pub mod financial;
 pub mod geo;
 pub mod principal;
 pub mod secondary;
+pub mod risk;
 
 #[cfg(test)]
 mod tests {

@@ -10,6 +10,7 @@ use smarty_rust_sdk::us_enrichment_api::lookup::EnrichmentLookup;
 use smarty_rust_sdk::us_enrichment_api::response::EnrichmentResponse;
 use smarty_rust_sdk::us_enrichment_api::secondary::SecondaryCountResponse;
 use smarty_rust_sdk::us_enrichment_api::secondary::SecondaryResponse;
+use smarty_rust_sdk::us_enrichment_api::risk::RiskResponse;
 
 use std::error::Error;
 
@@ -24,6 +25,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     lookup::<GeoReference2020Response>(key).await?;
     lookup::<SecondaryResponse>(key).await?;
     lookup::<SecondaryCountResponse>(key).await?;
+    lookup::<RiskResponse>(key).await?;
 
     Ok(())
 }
