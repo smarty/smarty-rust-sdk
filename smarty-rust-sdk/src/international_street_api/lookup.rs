@@ -17,6 +17,7 @@ pub struct Lookup {
     pub locality: String,
     pub administrative_area: String,
     pub postal_code: String,
+    pub features: String,
 
     pub results: Vec<Candidate>,
 }
@@ -37,6 +38,7 @@ impl Default for Lookup {
             locality: String::default(),
             administrative_area: String::default(),
             postal_code: String::default(),
+            features: String::default(),
             results: vec![],
         }
     }
@@ -57,6 +59,7 @@ impl Lookup {
             has_param("locality".to_string(), self.locality),
             has_param("administrative_area".to_string(), self.administrative_area),
             has_param("postal_code".to_string(), self.postal_code),
+            has_param("features".to_string(), self.features),
         ]
         .iter()
         .filter_map(Option::clone)

@@ -93,6 +93,7 @@ pub struct Metadata {
     pub geocode_precision: String,
     pub max_geocode_precision: String,
     pub address_format: String,
+    pub occupant_use: String,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
