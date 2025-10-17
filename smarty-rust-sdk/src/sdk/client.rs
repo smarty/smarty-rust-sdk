@@ -68,8 +68,8 @@ impl Client {
             format!("smarty (sdk:rust@{})", VERSION),
         );
 
-        if !self.options.custom_queries.is_none() {
-            for (key, value) in self.options.custom_queries.clone().unwrap() {
+        if let Some(queries) = self.options.custom_queries.clone() {
+            for (key, value) in queries {
                 builder = builder.query(&[(key, value)]);
             }
         }
