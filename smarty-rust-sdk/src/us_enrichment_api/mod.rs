@@ -1,6 +1,13 @@
 pub mod client;
 pub mod lookup;
-pub mod results;
+
+pub mod response;
+
+pub mod financial;
+pub mod geo;
+pub mod principal;
+pub mod secondary;
+pub mod risk;
 
 #[cfg(test)]
 mod tests {

@@ -1,3 +1,4 @@
+use std::{collections::HashMap};
 use reqwest::Proxy;
 use url::Url;
 
@@ -20,6 +21,7 @@ pub struct OptionsBuilder {
     logging_enabled: bool,
     headers: Vec<(String, String)>,
     authentication: Option<Box<dyn Authenticate>>,
+    custom_queries: Option<HashMap<String, String>>,
 
     url: Option<Url>,
 
@@ -37,6 +39,7 @@ impl OptionsBuilder {
             logging_enabled: false,
             headers: vec![],
             authentication,
+            custom_queries: None,
 
             url: None,
 
@@ -53,6 +56,7 @@ impl OptionsBuilder {
             logging_enabled: self.logging_enabled,
             headers: self.headers,
             authentication: self.authentication,
+            custom_queries: self.custom_queries,
 
             url: self.url,
 
@@ -95,6 +99,32 @@ impl OptionsBuilder {
         self.proxy = Some(proxy);
         self
     }
+
+    /// Adds a custom query to the request.
+    pub fn with_custom_query(mut self, key: &str, value: &str) -> Self {
+        self.custom_queries.get_or_insert_with(HashMap::new).insert(key.to_string(), value.to_string());
+        self
+    }
+
+    /// Appends a custom set of values to the existing query parameter.
+    pub fn with_custom_comma_separated_query(mut self, key: &str, value: &str) -> Self {
+        self.custom_queries
+            .get_or_insert_with(HashMap::new)
+            .entry(key.to_string())
+            .and_modify(|existing| {
+                if !existing.is_empty() {
+                    existing.push(',');
+                }
+                existing.push_str(value);
+            })
+            .or_insert_with(|| value.to_string());
+        self
+    }
+
+    /// Adds component analysis feature to the request.
+    pub fn with_component_analysis(self) -> Self {
+        self.with_custom_comma_separated_query("features", "component-analysis")
+    }
 }
 
 /// Options that can be passed into a new client
@@ -117,6 +147,9 @@ pub struct Options {
     // Authentication
     pub(crate) authentication: Option<Box<dyn Authenticate>>,
 
+    // Custom Queries
+    pub(crate) custom_queries: Option<HashMap<String, String>>,
+
     // Url
     pub(crate) url: Option<Url>,
 
@@ -132,6 +165,7 @@ impl Clone for Options {
             logging_enabled: self.logging_enabled,
             headers: self.headers.clone(),
             authentication: self.authentication.as_ref().map(|x| x.clone_box()),
+            custom_queries: self.custom_queries.clone(),
             url: self.url.clone(),
             proxy: self.proxy.clone(),
         }

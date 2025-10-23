@@ -34,6 +34,7 @@ pub struct RootLevel {
 pub struct Components {
     pub super_administrative_area: String,
     pub administrative_area: String,
+    pub administrative_area_iso2: String,
     pub administrative_area_short: String,
     pub administrative_area_long: String,
     pub sub_administrative_area: String,
@@ -41,7 +42,7 @@ pub struct Components {
     pub dependent_locality: String,
     pub dependent_locality_name: String,
     pub double_dependent_locality: String,
-    pub country_iso3: String,
+    pub country_iso_3: String,
     pub locality: String,
     pub postal_code: String,
     pub postal_code_short: String,
@@ -75,6 +76,13 @@ pub struct Components {
     pub post_box: String,
     pub post_box_type: String,
     pub post_box_number: String,
+    pub additional_content: String,
+    pub delivery_installation: String,
+    pub delivery_installation_type: String,
+    pub delivery_installation_qualifier_name: String,
+    pub route: String,
+    pub route_number: String,
+    pub route_type: String,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -85,6 +93,7 @@ pub struct Metadata {
     pub geocode_precision: String,
     pub max_geocode_precision: String,
     pub address_format: String,
+    pub occupant_use: String,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
