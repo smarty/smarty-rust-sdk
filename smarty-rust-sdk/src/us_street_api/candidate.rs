@@ -87,12 +87,14 @@ pub struct Analysis {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(default)]
 pub struct MatchInfo {
     pub status: String,
     pub change: Vec<String>,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ComponentAnalysis {
     pub primary_number: MatchInfo,
     pub street_predirection: MatchInfo,

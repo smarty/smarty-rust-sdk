@@ -42,7 +42,7 @@ us_reverse_geo_api:
 	RUST_LOG=trace cargo run --example us_reverse_geo_api
 
 us_street_api:
-	RUST_LOG=trace cargo run --example us_street_api
+	RUST_LOG=trace cargo run --example us_street_api && RUST_LOG=trace cargo run --example us_street_component_analysis
 
 us_zipcode_api:
 	RUST_LOG=trace cargo run --example us_zipcode_api
