@@ -73,7 +73,7 @@ mod tests {
         assert_eq!(candidate.administrative_area, "SP");
         assert_eq!(candidate.sub_administrative_area, "Greater Sao Paulo");
         assert_eq!(candidate.super_administrative_area, "Southeast");
-        assert_eq!(candidate.postal_code_short, "02516");
+        assert_eq!(candidate.postal_code, "02516");
         assert_eq!(candidate.postal_code_extra, "050");
     }
 }
