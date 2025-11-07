@@ -56,6 +56,9 @@ name = "international_street_api"
 name = "international_autocomplete_api"
 
 [[example]]
+name = "international_postal_code_api"
+
+[[example]]
 name = "logger"
 
 [[example]]

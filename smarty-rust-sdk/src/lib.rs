@@ -1,4 +1,5 @@
 pub mod international_autocomplete_api;
+pub mod international_postal_code_api;
 pub mod international_street_api;
 pub mod sdk;
 pub mod us_autocomplete_pro_api;
