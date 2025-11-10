@@ -26,6 +26,9 @@ clippy:
 international_autocomplete_api:
 	RUST_LOG=trace cargo run --example international_autocomplete_api
 
+international_postal_code_api:
+	RUST_LOG=trace cargo run --example international_postal_code_api
+
 international_street_api:
 	RUST_LOG=trace cargo run --example international_street_api
 
@@ -50,6 +53,6 @@ us_zipcode_api:
 us_enrichment_api:
 	RUST_LOG=trace cargo run --example us_enrichment_api
 
-examples: international_autocomplete_api international_street_api logger us_autocomplete_pro_api us_extract_api us_reverse_geo_api us_street_api us_zipcode_api
+examples: international_autocomplete_api international_postal_code_api international_street_api logger us_autocomplete_pro_api us_extract_api us_reverse_geo_api us_street_api us_zipcode_api
 
-.PHONY: clean test dependencies package examples clippy international_autocomplete_api international_street_api logger us_autocomplete_pro_api us_extract_api us_reverse_geo_api us_street_api us_zipcode_api us_enrichment_api
+.PHONY: clean test dependencies package examples clippy international_autocomplete_api international_postal_code_api international_street_api logger us_autocomplete_pro_api us_extract_api us_reverse_geo_api us_street_api us_zipcode_api us_enrichment_api
