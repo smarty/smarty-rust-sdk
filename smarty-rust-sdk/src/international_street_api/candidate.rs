@@ -91,6 +91,7 @@ pub struct Metadata {
     pub latitude: f64,
     pub longitude: f64,
     pub geocode_precision: String,
+    pub geocode_classification: String,
     pub max_geocode_precision: String,
     pub address_format: String,
     pub occupant_use: String,

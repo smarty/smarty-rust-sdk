@@ -83,6 +83,7 @@ mod tests {
             },
             "metadata": {
                 "latitude": 52.0, "longitude": 53.0,
+                "geocode_classification": "multiple-point-average",
                 "geocode_precision": "54", "max_geocode_precision": "55",
                 "address_format": "56"
             },
@@ -183,6 +184,7 @@ mod tests {
         assert_eq!(candidate.components.post_box_number, "51");
         assert_eq!(candidate.metadata.latitude, 52.0);
         assert_eq!(candidate.metadata.longitude, 53.0);
+        assert_eq!(candidate.metadata.geocode_classification, "multiple-point-average");
         assert_eq!(candidate.metadata.geocode_precision, "54");
         assert_eq!(candidate.metadata.max_geocode_precision, "55");
         assert_eq!(candidate.metadata.address_format, "56");
