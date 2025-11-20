@@ -2,7 +2,6 @@ use smarty_rust_sdk::sdk::authentication::SecretKeyCredential;
 use smarty_rust_sdk::sdk::options::OptionsBuilder;
 
 use smarty_rust_sdk::us_enrichment_api::client::*;
-use smarty_rust_sdk::us_enrichment_api::financial::*;
 use smarty_rust_sdk::us_enrichment_api::geo::*;
 use smarty_rust_sdk::us_enrichment_api::principal::*;
 
@@ -18,7 +17,6 @@ use std::error::Error;
 async fn main() -> Result<(), Box<dyn Error>> {
     let key = 7;
 
-    lookup::<FinancialResponse>(key).await?;
     lookup::<PrincipalResponse>(key).await?;
     lookup::<GeoReferenceResponse>(key).await?;
     lookup::<GeoReference2010Response>(key).await?;
@@ -36,7 +34,6 @@ async fn lookup<R: EnrichmentResponse>(key: u32) -> Result<(), Box<dyn Error>> {
         include: "".to_string(), // optional: only include these attributes in the returned data. e.g. "group_structural,sale_date"
         exclude: "".to_string(), // optional: exclude attributes from the returned data
         etag: "".to_string(),
-        features: "financial".to_string(),
         ..Default::default()
     };
 
