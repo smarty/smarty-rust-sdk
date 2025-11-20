@@ -33,7 +33,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
 async fn lookup<R: EnrichmentResponse>(key: u32) -> Result<(), Box<dyn Error>> {
     let mut lookup = EnrichmentLookup::<R> {
         smarty_key: key,
+        include: "".to_string(), // optional: only include these attributes in the returned data. e.g. "group_structural,sale_date"
+        exclude: "".to_string(), // optional: exclude attributes from the returned data
         etag: "".to_string(),
+        features: "financial".to_string(),
         ..Default::default()
     };
 

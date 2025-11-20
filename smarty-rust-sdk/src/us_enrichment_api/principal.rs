@@ -20,6 +20,54 @@ impl EnrichmentResponse for PrincipalResponse {
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(default)]
+pub struct FinancialHistoryEntry {
+    pub code_title_company: String,
+    pub document_type_description: String,
+    pub instrument_date: String,
+    pub interest_rate_type_2: String,
+    pub lender_address: String,
+    pub lender_address_2: String,
+    pub lender_city: String,
+    pub lender_city_2: String,
+    pub lender_code_2: String,
+    pub lender_first_name: String,
+    pub lender_first_name_2: String,
+    pub lender_last_name: String,
+    pub lender_last_name_2: String,
+    pub lender_name: String,
+    pub lender_name_2: String,
+    pub lender_seller_carry_back: String,
+    pub lender_seller_carry_back_2: String,
+    pub lender_state: String,
+    pub lender_state_2: String,
+    pub lender_zip: String,
+    pub lender_zip_2: String,
+    pub lender_zip_extended: String,
+    pub lender_zip_extended_2: String,
+    pub mortgage_amount: String,
+    pub mortgage_amount_2: String,
+    pub mortgage_due_date: String,
+    pub mortgage_due_date_2: String,
+    pub mortgage_interest_rate: String,
+    pub mortgage_interest_rate_type: String,
+    pub mortgage_lender_code: String,
+    pub mortgage_rate_2: String,
+    pub mortgage_recording_date: String,
+    pub mortgage_recording_date_2: String,
+    pub mortgage_term: String,
+    pub mortgage_term_2: String,
+    pub mortgage_term_type: String,
+    pub mortgage_term_type_2: String,
+    pub mortgage_type: String,
+    pub mortgage_type_2: String,
+    pub multi_parcel_flag: String,
+    pub name_title_company: String,
+    pub recording_date: String,
+    pub transfer_amount: String,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(default)]
 pub struct PrincipalAttributes {
     #[serde(rename = "1st_floor_sqft")]
     pub first_floor_sqft: String,
@@ -139,6 +187,7 @@ pub struct PrincipalAttributes {
     pub family_room: String,
     pub fence: String,
     pub fence_area: String,
+    pub financial_history: Vec<FinancialHistoryEntry>,
     pub fips_code: String,
     pub fire_resistance_code: String,
     pub fire_sprinklers_flag: String,
