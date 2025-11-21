@@ -3,7 +3,6 @@ pub mod lookup;
 
 pub mod response;
 
-pub mod financial;
 pub mod geo;
 pub mod principal;
 pub mod secondary;

@@ -40,6 +40,7 @@ impl USEnrichmentClient {
         }
 
         req = self.client.build_request(req);
+        req = req.query(&lookup.clone().into_param_array());
 
         println!("{req:?}");
 
