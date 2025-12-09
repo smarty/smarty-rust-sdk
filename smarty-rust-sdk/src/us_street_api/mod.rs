@@ -35,7 +35,7 @@ mod tests {
         let expected_result = vec![
             ("street".to_string(), "1600 Amphitheatre Pkwy".to_string()),
             ("lastline".to_string(), "Mountain View, CA".to_string()),
-            ("candidates".to_string(), 5.to_string()),
+            ("candidates".to_string(), 10.to_string()),
             ("match".to_string(), "enhanced".to_string()),
             ("format".to_string(), "default".to_string()),
         ];
@@ -56,7 +56,7 @@ mod tests {
         let expected_result = vec![
             ("street".to_string(), "1600 Amphitheatre Pkwy".to_string()),
             ("lastline".to_string(), "Mountain View, CA".to_string()),
-            ("candidates".to_string(), 5.to_string()),
+            ("candidates".to_string(), 10.to_string()),
             ("match".to_string(), "enhanced".to_string()),
             ("format".to_string(), "default".to_string()),
         ];
@@ -72,6 +72,28 @@ mod tests {
             expected_result
         );
         assert_eq!(batch.records().len(), 4);
+    }
+
+    #[test]
+    fn enhanced_match_default_candidates_test() {
+        // When max_candidates is not set (0) and match_strategy is Enhanced, should default to 1
+        let lookup = Lookup {
+            street: "1600 Amphitheatre Pkwy".to_string(),
+            last_line: "Mountain View, CA".to_string(),
+            max_candidates: 0,
+            match_strategy: MatchStrategy::Enhanced,
+            ..Default::default()
+        };
+
+        let expected_result = vec![
+            ("street".to_string(), "1600 Amphitheatre Pkwy".to_string()),
+            ("lastline".to_string(), "Mountain View, CA".to_string()),
+            ("candidates".to_string(), 1.to_string()),
+            ("match".to_string(), "enhanced".to_string()),
+            ("format".to_string(), "default".to_string()),
+        ];
+
+        assert_eq!(lookup.into_param_array(), expected_result);
     }
 
     #[test]

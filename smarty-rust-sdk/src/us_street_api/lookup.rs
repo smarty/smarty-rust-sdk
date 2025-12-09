@@ -69,15 +69,13 @@ impl Default for Lookup {
 
 impl Lookup {
     pub(crate) fn into_param_array(self) -> Vec<(String, String)> {
-        let mut max_candidates_string = self.max_candidates.to_string();
-
-        if self.max_candidates <= 0 {
-            max_candidates_string = String::default();
-        }
-
-        if self.match_strategy == MatchStrategy::Enhanced {
-            max_candidates_string = 5.to_string();
-        }
+        let max_candidates_string = if self.max_candidates > 0 {
+            self.max_candidates.to_string()
+        } else if self.match_strategy == MatchStrategy::Enhanced {
+            1.to_string()
+        } else {
+            String::default()
+        };
 
         let mut res = vec![
             has_param("street".to_string(), self.street),
