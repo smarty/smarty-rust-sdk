@@ -7,6 +7,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Edit(*)
 - Write(*)
 - Bash(rm:*)
+- Bash(git add:*)
+- Bash(git commit:*)
+- Bash(git diff:*)
+- Bash(git log:*)
+- Bash(git status:*)
+- Bash(git checkout:*)
+- Bash(git branch:*)
+- Bash(git push:*)
+- Bash(git pull:*)
+- Bash(git fetch:*)
+- Bash(git merge:*)
+- Bash(git rebase:*)
+- Bash(git stash:*)
 
 ## Build Commands
 
