@@ -4,7 +4,7 @@ extern crate tokio;
 
 use smarty_rust_sdk::international_street_api::client::InternationalStreetClient;
 use smarty_rust_sdk::international_street_api::lookup::Lookup;
-use smarty_rust_sdk::sdk::authentication::SecretKeyCredential;
+use smarty_rust_sdk::sdk::authentication::BasicAuthCredential;
 use smarty_rust_sdk::sdk::options::OptionsBuilder;
 use std::error::Error;
 
@@ -22,7 +22,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         ..Default::default()
     };
 
-    let authentication = SecretKeyCredential::new(
+    let authentication = BasicAuthCredential::new(
         std::env::var("SMARTY_AUTH_ID").expect("Missing SMARTY_AUTH_ID env variable"),
         std::env::var("SMARTY_AUTH_TOKEN").expect("Missing SMARTY_AUTH_TOKEN env variable"),
     );

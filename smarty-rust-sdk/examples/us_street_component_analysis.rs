@@ -4,7 +4,7 @@ extern crate tokio;
 
 use smarty_rust_sdk::us_street_api::lookup::{Lookup, MatchStrategy};
 
-use smarty_rust_sdk::sdk::authentication::SecretKeyCredential;
+use smarty_rust_sdk::sdk::authentication::BasicAuthCredential;
 use smarty_rust_sdk::sdk::batch::Batch;
 use smarty_rust_sdk::sdk::options::OptionsBuilder;
 use smarty_rust_sdk::us_street_api::client::USStreetAddressClient;
@@ -23,7 +23,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let mut batch = Batch::default();
     batch.push(lookup)?;
 
-    let authentication = SecretKeyCredential::new(
+    let authentication = BasicAuthCredential::new(
         std::env::var("SMARTY_AUTH_ID").expect("Missing SMARTY_AUTH_ID env variable"),
         std::env::var("SMARTY_AUTH_TOKEN").expect("Missing SMARTY_AUTH_TOKEN env variable"),
     );
