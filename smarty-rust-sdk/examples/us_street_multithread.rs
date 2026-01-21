@@ -2,7 +2,7 @@ use std::io::Write;
 use std::{error::Error, sync::Arc};
 
 use smarty_rust_sdk::{
-    sdk::{authentication::SecretKeyCredential, batch::Batch, options::OptionsBuilder},
+    sdk::{authentication::BasicAuthCredential, batch::Batch, options::OptionsBuilder},
     us_street_api::{
         client::USStreetAddressClient,
         lookup::{Lookup, MatchStrategy},
@@ -36,7 +36,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     env_logger::init();
 
-    let authentication = SecretKeyCredential::new(
+    let authentication = BasicAuthCredential::new(
         std::env::var("SMARTY_AUTH_ID").expect("Missing SMARTY_AUTH_ID env variable"),
         std::env::var("SMARTY_AUTH_TOKEN").expect("Missing SMARTY_AUTH_TOKEN env variable"),
     );
