@@ -35,9 +35,8 @@ mod tests {
         let expected_result = vec![
             ("street".to_string(), "1600 Amphitheatre Pkwy".to_string()),
             ("lastline".to_string(), "Mountain View, CA".to_string()),
-            ("candidates".to_string(), 5.to_string()),
+            ("candidates".to_string(), "10".to_string()),
             ("match".to_string(), "enhanced".to_string()),
-            ("format".to_string(), "default".to_string()),
         ];
 
         assert_eq!(lookup.into_param_array(), expected_result);
@@ -56,9 +55,8 @@ mod tests {
         let expected_result = vec![
             ("street".to_string(), "1600 Amphitheatre Pkwy".to_string()),
             ("lastline".to_string(), "Mountain View, CA".to_string()),
-            ("candidates".to_string(), 5.to_string()),
+            ("candidates".to_string(), "10".to_string()),
             ("match".to_string(), "enhanced".to_string()),
-            ("format".to_string(), "default".to_string()),
         ];
 
         let mut batch = Batch::default();
@@ -307,5 +305,75 @@ mod tests {
 
         assert_eq!(ca.urbanization.status, "unconfirmed");
         assert!(ca.urbanization.change.is_empty());
+    }
+
+    #[test]
+    fn default_match_strategy_is_enhanced() {
+        let lookup = Lookup::default();
+        let params = lookup.into_param_array();
+
+        assert!(params.contains(&("match".to_string(), "enhanced".to_string())));
+        assert!(params.contains(&("candidates".to_string(), "5".to_string())));
+    }
+
+    #[test]
+    fn explicit_match_strict_produces_no_match_or_candidates() {
+        let lookup = Lookup {
+            match_strategy: MatchStrategy::Strict,
+            ..Default::default()
+        };
+        let params = lookup.into_param_array();
+
+        assert!(params.is_empty());
+    }
+
+    #[test]
+    fn explicit_match_strict_with_candidates() {
+        let lookup = Lookup {
+            match_strategy: MatchStrategy::Strict,
+            max_candidates: 3,
+            ..Default::default()
+        };
+        let params = lookup.into_param_array();
+
+        assert_eq!(params, vec![("candidates".to_string(), "3".to_string())]);
+    }
+
+    #[test]
+    fn match_invalid_is_serialized() {
+        let lookup = Lookup {
+            match_strategy: MatchStrategy::Invalid,
+            ..Default::default()
+        };
+        let params = lookup.into_param_array();
+
+        assert!(params.contains(&("match".to_string(), "invalid".to_string())));
+    }
+
+    #[test]
+    fn street_field_with_default_match_strategy() {
+        let lookup = Lookup {
+            street: "123 Main St".to_string(),
+            ..Default::default()
+        };
+        let params = lookup.into_param_array();
+
+        assert!(params.contains(&("street".to_string(), "123 Main St".to_string())));
+        assert!(params.contains(&("match".to_string(), "enhanced".to_string())));
+        assert!(params.contains(&("candidates".to_string(), "5".to_string())));
+    }
+
+    #[test]
+    fn output_format_project_usa_with_default_match() {
+        use crate::us_street_api::lookup::OutputFormat;
+        let lookup = Lookup {
+            format_output: OutputFormat::ProjectUsa,
+            ..Default::default()
+        };
+        let params = lookup.into_param_array();
+
+        assert!(params.contains(&("format".to_string(), "project-usa".to_string())));
+        assert!(params.contains(&("match".to_string(), "enhanced".to_string())));
+        assert!(params.contains(&("candidates".to_string(), "5".to_string())));
     }
 }

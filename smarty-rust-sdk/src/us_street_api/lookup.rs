@@ -57,7 +57,7 @@ impl Default for Lookup {
             addressee: String::default(),
             urbanization: String::default(),
             input_id: String::default(),
-            max_candidates: 1,
+            max_candidates: 0,
 
             match_strategy: Default::default(),
             format_output: Default::default(),
@@ -69,15 +69,21 @@ impl Default for Lookup {
 
 impl Lookup {
     pub(crate) fn into_param_array(self) -> Vec<(String, String)> {
-        let mut max_candidates_string = self.max_candidates.to_string();
+        // Determine candidates string based on match strategy and explicit max_candidates
+        let candidates_string = if self.max_candidates > 0 {
+            self.max_candidates.to_string()
+        } else if self.match_strategy == MatchStrategy::Enhanced {
+            "5".to_string()
+        } else {
+            String::default()
+        };
 
-        if self.max_candidates <= 0 {
-            max_candidates_string = String::default();
-        }
-
-        if self.match_strategy == MatchStrategy::Enhanced {
-            max_candidates_string = 5.to_string();
-        }
+        // Only include match parameter if strategy is not Strict
+        let match_string = if self.match_strategy != MatchStrategy::Strict {
+            self.match_strategy.to_string()
+        } else {
+            String::default()
+        };
 
         let mut res = vec![
             has_param("street".to_string(), self.street),
@@ -90,8 +96,8 @@ impl Lookup {
             has_param("addressee".to_string(), self.addressee),
             has_param("urbanization".to_string(), self.urbanization),
             has_param("input_id".to_string(), self.input_id),
-            has_param("candidates".to_string(), max_candidates_string),
-            has_param("match".to_string(), self.match_strategy.to_string()),
+            has_param("candidates".to_string(), candidates_string),
+            has_param("match".to_string(), match_string),
             has_param("format".to_string(), self.format_output.to_string()),
         ];
 
@@ -106,9 +112,9 @@ impl Lookup {
 #[derive(Default, Debug, Clone, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum MatchStrategy {
-    #[default]
     Strict,
     Invalid,
+    #[default]
     Enhanced,
 }
 
@@ -139,7 +145,7 @@ impl Display for OutputFormat {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
             OutputFormat::FormatDefault => {
-                write!(f, "default")
+                write!(f, "")
             }
             OutputFormat::ProjectUsa => {
                 write!(f, "project-usa")
