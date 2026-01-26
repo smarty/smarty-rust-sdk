@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use crate::sdk::client::Client;
 use crate::sdk::error::SmartyError;
 use crate::sdk::options::Options;
@@ -26,12 +28,23 @@ impl USEnrichmentClient {
         &self,
         lookup: &mut EnrichmentLookup<R>,
     ) -> Result<(), SmartyError> {
+        // Validate that address search has at least one address field
+        if lookup.is_address_search() && !lookup.has_address_fields() {
+            return Err(SmartyError::ValidationError(
+                "address search requires at least one address field (street, city, state, zipcode, or freeform)".to_string()
+            ));
+        }
+
         let mut url = self.client.url.clone();
-        url = url.join(&format!(
-            "/lookup/{}/{}",
-            lookup.smarty_key,
-            R::lookup_type()
-        ))?;
+
+        // Use "search" path for address-based lookups, smarty_key for key-based lookups
+        let key_or_search: Cow<str> = if lookup.is_address_search() {
+            "search".into()
+        } else {
+            lookup.smarty_key.to_string().into()
+        };
+
+        url = url.join(&format!("/lookup/{}/{}", key_or_search, R::lookup_type()))?;
 
         let mut req = self.client.reqwest_client.request(Method::GET, url);
 
