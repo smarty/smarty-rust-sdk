@@ -22,7 +22,7 @@ impl Lookup {
             has_param("postal_code".to_string(), self.postal_code),
         ]
         .into_iter()
-        .filter_map(std::convert::identity)
+        .flatten()
         .collect()
     }
 }

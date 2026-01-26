@@ -17,13 +17,13 @@ impl<R: EnrichmentResponse> EnrichmentLookup<R> {
     }
 
     pub(crate) fn into_param_array(self) -> Vec<(String, String)> {
-        vec![
+        [
             has_param("include".to_string(), self.include),
             has_param("exclude".to_string(), self.exclude),
             has_param("features".to_string(), self.features),
         ]
-        .iter()
-        .filter_map(Option::clone)
-        .collect::<Vec<_>>()
+        .into_iter()
+        .flatten()
+        .collect()
     }
 }

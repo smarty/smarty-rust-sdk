@@ -3,7 +3,7 @@ use crate::us_street_api::candidate::Candidates;
 use serde::Serialize;
 use std::fmt::{Display, Formatter};
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Default, Debug, Clone, PartialEq, Serialize)]
 #[serde(default)]
 pub struct Lookup {
     #[serde(skip_serializing_if = "String::is_empty")]
@@ -44,28 +44,6 @@ pub struct Lookup {
     pub results: Candidates,
 }
 
-impl Default for Lookup {
-    fn default() -> Self {
-        Lookup {
-            street: String::default(),
-            street2: String::default(),
-            secondary: String::default(),
-            city: String::default(),
-            state: String::default(),
-            zipcode: String::default(),
-            last_line: String::default(),
-            addressee: String::default(),
-            urbanization: String::default(),
-            input_id: String::default(),
-            max_candidates: 0,
-
-            match_strategy: Default::default(),
-            format_output: Default::default(),
-            county_source: Default::default(),
-            results: vec![],
-        }
-    }
-}
 
 impl Lookup {
     pub(crate) fn into_param_array(self) -> Vec<(String, String)> {
