@@ -12,4 +12,6 @@ pub enum SmartyError {
     Parse(#[from] url::ParseError),
     #[error("http error")]
     HttpError { code: StatusCode, detail: String },
+    #[error("validation error: {0}")]
+    ValidationError(String),
 }
