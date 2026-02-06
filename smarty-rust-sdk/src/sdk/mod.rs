@@ -103,6 +103,8 @@ mod tests {
     use crate::sdk::batch::Batch;
     use crate::sdk::client::Client;
     use crate::sdk::options::OptionsBuilder;
+    use crate::sdk::VERSION;
+    use reqwest::header::USER_AGENT;
 
     #[test]
     fn batch_test() {
@@ -132,5 +134,115 @@ mod tests {
         .unwrap();
 
         assert_eq!(client.url.to_string(), "https://www.smarty.com/docs");
+    }
+
+    fn build_request_headers(
+        options: OptionsBuilder,
+    ) -> reqwest::header::HeaderMap {
+        let client = Client::new(
+            "https://www.smarty.com".parse().unwrap(),
+            options.build(),
+            "test",
+        )
+        .unwrap();
+        let reqwest_client =
+            reqwest_middleware::ClientBuilder::new(reqwest::Client::new()).build();
+        let builder = reqwest_client.get("https://www.smarty.com/test");
+        let built = client.build_request(builder).build().unwrap();
+        built.headers().clone()
+    }
+
+    #[test]
+    fn default_user_agent_header() {
+        let headers = build_request_headers(OptionsBuilder::new(None));
+        let ua = headers.get(USER_AGENT).unwrap().to_str().unwrap();
+
+        assert_eq!(ua, format!("smarty (sdk:rust@{})", VERSION));
+    }
+
+    #[test]
+    fn appended_user_agent_header() {
+        let options = OptionsBuilder::new(None).with_appended_header(
+            USER_AGENT.as_str(),
+            "my-app/1.0",
+            " ",
+        );
+        let headers = build_request_headers(options);
+        let ua = headers.get(USER_AGENT).unwrap().to_str().unwrap();
+
+        assert_eq!(
+            ua,
+            format!("smarty (sdk:rust@{}) my-app/1.0", VERSION)
+        );
+    }
+
+    #[test]
+    fn appended_user_agent_multiple_values() {
+        let options = OptionsBuilder::new(None)
+            .with_appended_header(USER_AGENT.as_str(), "my-app/1.0", " ")
+            .with_appended_header(USER_AGENT.as_str(), "other/2.0", " ");
+        let headers = build_request_headers(options);
+        let ua = headers.get(USER_AGENT).unwrap().to_str().unwrap();
+
+        assert_eq!(
+            ua,
+            format!("smarty (sdk:rust@{}) my-app/1.0 other/2.0", VERSION)
+        );
+    }
+
+    #[test]
+    fn appended_custom_header() {
+        let options = OptionsBuilder::new(None)
+            .with_appended_header("x-custom", "val1", ", ")
+            .with_appended_header("x-custom", "val2", ", ");
+        let headers = build_request_headers(options);
+        let custom = headers.get("x-custom").unwrap().to_str().unwrap();
+
+        assert_eq!(custom, "val1, val2");
+    }
+
+    #[test]
+    fn regular_header_not_appended() {
+        let options = OptionsBuilder::new(None).with_headers(vec![
+            ("x-regular".to_string(), "value1".to_string()),
+            ("x-regular".to_string(), "value2".to_string()),
+        ]);
+        let headers = build_request_headers(options);
+        let values: Vec<&str> = headers
+            .get_all("x-regular")
+            .iter()
+            .map(|v| v.to_str().unwrap())
+            .collect();
+
+        assert_eq!(values, vec!["value1", "value2"]);
+    }
+
+    #[test]
+    fn mixed_regular_and_appended_headers() {
+        let options = OptionsBuilder::new(None)
+            .with_headers(vec![("x-regular".to_string(), "regular-val".to_string())])
+            .with_appended_header(USER_AGENT.as_str(), "my-app/1.0", " ");
+        let headers = build_request_headers(options);
+
+        let ua = headers.get(USER_AGENT).unwrap().to_str().unwrap();
+        assert_eq!(
+            ua,
+            format!("smarty (sdk:rust@{}) my-app/1.0", VERSION)
+        );
+
+        let regular = headers.get("x-regular").unwrap().to_str().unwrap();
+        assert_eq!(regular, "regular-val");
+    }
+
+    #[test]
+    fn appended_header_with_custom_separator() {
+        let options = OptionsBuilder::new(None)
+            .with_appended_header("x-joined", "a", ";")
+            .with_appended_header("x-joined", "b", ";")
+            .with_appended_header("x-joined", "c", ";");
+        let headers = build_request_headers(options);
+        let joined = headers.get("x-joined").unwrap().to_str().unwrap();
+
+        assert_eq!(joined, "a;b;c");
     }
 }

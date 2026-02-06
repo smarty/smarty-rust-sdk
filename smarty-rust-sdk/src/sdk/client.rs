@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::sdk::logging::LoggingMiddleware;
 use crate::sdk::options::Options;
 use crate::sdk::VERSION;
@@ -59,14 +61,31 @@ impl Client {
             builder = builder.query(&[("license".to_string(), self.options.license.clone())]);
         }
 
+        // Collect appended header values by key, then join with separator
+        let mut appended: HashMap<String, Vec<String>> = HashMap::new();
         for (header_key, header_value) in self.options.headers.clone() {
-            builder = builder.header(header_key, header_value);
+            if self.options.append_headers.contains_key(&header_key) {
+                appended.entry(header_key).or_default().push(header_value);
+            } else {
+                builder = builder.header(header_key, header_value);
+            }
         }
 
-        builder = builder.header(
-            USER_AGENT.to_string(),
-            format!("smarty (sdk:rust@{})", VERSION),
-        );
+        let ua_key = USER_AGENT.to_string();
+        let base_ua = format!("smarty (sdk:rust@{})", VERSION);
+        if let Some(ua_values) = appended.remove(&ua_key) {
+            let separator = &self.options.append_headers[&ua_key];
+            let mut all_values = vec![base_ua];
+            all_values.extend(ua_values);
+            builder = builder.header(&ua_key, all_values.join(separator));
+        } else {
+            builder = builder.header(&ua_key, base_ua);
+        }
+
+        for (key, values) in appended {
+            let separator = &self.options.append_headers[&key];
+            builder = builder.header(key, values.join(separator));
+        }
 
         if let Some(queries) = self.options.custom_queries.clone() {
             for (key, value) in queries {
