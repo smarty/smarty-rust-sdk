@@ -20,6 +20,7 @@ pub struct OptionsBuilder {
     num_retries: u64,
     logging_enabled: bool,
     headers: Vec<(String, String)>,
+    append_headers: HashMap<String, String>,
     authentication: Option<Box<dyn Authenticate>>,
     custom_queries: Option<HashMap<String, String>>,
 
@@ -38,6 +39,7 @@ impl OptionsBuilder {
             num_retries: 10,
             logging_enabled: false,
             headers: vec![],
+            append_headers: HashMap::new(),
             authentication,
             custom_queries: None,
 
@@ -55,6 +57,7 @@ impl OptionsBuilder {
             num_retries: self.num_retries,
             logging_enabled: self.logging_enabled,
             headers: self.headers,
+            append_headers: self.append_headers,
             authentication: self.authentication,
             custom_queries: self.custom_queries,
 
@@ -85,6 +88,14 @@ impl OptionsBuilder {
     /// Adds a set of custom headers to your request.
     pub fn with_headers(mut self, headers: Vec<(String, String)>) -> Self {
         self.headers = headers;
+        self
+    }
+
+    /// Appends the provided value to the existing header value using the specified separator,
+    /// rather than adding a separate header value. This is useful for single-value headers like User-Agent.
+    pub fn with_appended_header(mut self, key: &str, value: &str, separator: &str) -> Self {
+        self.append_headers.insert(key.to_string(), separator.to_string());
+        self.headers.push((key.to_string(), value.to_string()));
         self
     }
 
@@ -144,6 +155,9 @@ pub struct Options {
     // Custom Headers
     pub(crate) headers: Vec<(String, String)>,
 
+    // Appended Headers (key -> separator)
+    pub(crate) append_headers: HashMap<String, String>,
+
     // Authentication
     pub(crate) authentication: Option<Box<dyn Authenticate>>,
 
@@ -164,6 +178,7 @@ impl Clone for Options {
             num_retries: self.num_retries,
             logging_enabled: self.logging_enabled,
             headers: self.headers.clone(),
+            append_headers: self.append_headers.clone(),
             authentication: self.authentication.as_ref().map(|x| x.clone_box()),
             custom_queries: self.custom_queries.clone(),
             url: self.url.clone(),
