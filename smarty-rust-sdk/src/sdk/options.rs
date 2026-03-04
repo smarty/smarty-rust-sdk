@@ -137,8 +137,8 @@ impl OptionsBuilder {
         self.with_custom_comma_separated_query("features", "component-analysis")
     }
 
-    /// Adds IANA timezone feature to the request.
-    pub fn with_iana_timezone(self) -> Self {
+    /// Adds IANA time zone feature to the request.
+    pub fn with_iana_time_zone(self) -> Self {
         self.with_custom_comma_separated_query("features", "iana-timezone")
     }
 }
@@ -148,17 +148,17 @@ mod tests {
     use super::OptionsBuilder;
 
     #[test]
-    fn with_iana_timezone_sets_feature() {
-        let options = OptionsBuilder::new(None).with_iana_timezone().build();
+    fn with_iana_time_zone_sets_feature() {
+        let options = OptionsBuilder::new(None).with_iana_time_zone().build();
         let queries = options.custom_queries.unwrap();
         assert_eq!(queries.get("features").unwrap(), "iana-timezone");
     }
 
     #[test]
-    fn with_iana_timezone_appends_to_component_analysis() {
+    fn with_iana_time_zone_appends_to_component_analysis() {
         let options = OptionsBuilder::new(None)
             .with_component_analysis()
-            .with_iana_timezone()
+            .with_iana_time_zone()
             .build();
         let queries = options.custom_queries.unwrap();
         assert_eq!(
