@@ -136,6 +136,36 @@ impl OptionsBuilder {
     pub fn with_component_analysis(self) -> Self {
         self.with_custom_comma_separated_query("features", "component-analysis")
     }
+
+    /// with_iana_time_zone turns on the IANA timezone feature for the request.
+    pub fn with_iana_time_zone(self) -> Self {
+        self.with_custom_comma_separated_query("features", "iana-timezone")
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::OptionsBuilder;
+
+    #[test]
+    fn with_iana_time_zone_sets_feature() {
+        let options = OptionsBuilder::new(None).with_iana_time_zone().build();
+        let queries = options.custom_queries.unwrap();
+        assert_eq!(queries.get("features").unwrap(), "iana-timezone");
+    }
+
+    #[test]
+    fn with_iana_time_zone_appends_to_component_analysis() {
+        let options = OptionsBuilder::new(None)
+            .with_component_analysis()
+            .with_iana_time_zone()
+            .build();
+        let queries = options.custom_queries.unwrap();
+        assert_eq!(
+            queries.get("features").unwrap(),
+            "component-analysis,iana-timezone"
+        );
+    }
 }
 
 /// Options that can be passed into a new client

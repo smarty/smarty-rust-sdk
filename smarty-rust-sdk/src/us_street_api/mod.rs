@@ -119,6 +119,9 @@ mod tests {
                 "time_zone": "Pacific",
                 "utc_offset": -8.0,
                 "dst": true,
+                "iana_time_zone": "America/Los_Angeles",
+                "iana_utc_offset": -8.0,
+                "iana_dst": true,
                 "ews_match": false
             },
             "analysis": {
@@ -245,6 +248,9 @@ mod tests {
         assert_eq!(m.time_zone, "Pacific");
         assert_eq!(m.utc_offset, -8.0);
         assert!(m.dst);
+        assert_eq!(m.iana_time_zone, "America/Los_Angeles");
+        assert_eq!(m.iana_utc_offset, -8.0);
+        assert!(m.iana_dst);
         assert!(!m.ews_match);
 
         // Analysis

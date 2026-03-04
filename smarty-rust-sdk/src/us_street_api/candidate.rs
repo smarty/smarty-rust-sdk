@@ -65,6 +65,9 @@ pub struct Metadata {
     pub time_zone: String,
     pub utc_offset: f32,
     pub dst: bool,
+    pub iana_time_zone: String,
+    pub iana_utc_offset: f32,
+    pub iana_dst: bool,
     pub ews_match: bool,
 }
 
