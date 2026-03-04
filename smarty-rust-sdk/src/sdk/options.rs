@@ -137,7 +137,7 @@ impl OptionsBuilder {
         self.with_custom_comma_separated_query("features", "component-analysis")
     }
 
-    /// Adds IANA time zone feature to the request.
+    /// with_iana_time_zone turns on the IANA timezone feature for the request.
     pub fn with_iana_time_zone(self) -> Self {
         self.with_custom_comma_separated_query("features", "iana-timezone")
     }
