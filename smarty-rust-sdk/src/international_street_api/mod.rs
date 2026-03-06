@@ -6,11 +6,38 @@ pub mod lookup;
 #[cfg(test)]
 mod tests {
     use serde_json::from_str;
-    use crate::international_street_api::client::InternationalStreetClient;
+    use crate::international_street_api::client::{InternationalStreetClient, ensure_enough_info};
     use crate::international_street_api::lookup::Lookup;
+    use crate::sdk::error::SmartyError;
     use crate::sdk::options::OptionsBuilder;
     use crate::international_street_api::candidate::*;
 
+
+    #[test]
+    fn empty_lookup_missing_country() {
+        let lookup = Lookup::default();
+        let err = ensure_enough_info(&lookup).unwrap_err();
+        assert!(matches!(err, SmartyError::ValidationError(ref msg) if msg == "country field is required"));
+    }
+
+    #[test]
+    fn lookup_has_country_missing_freeform_and_address1() {
+        let lookup = Lookup { country: "CA".to_string(), ..Default::default() };
+        let err = ensure_enough_info(&lookup).unwrap_err();
+        assert!(matches!(err, SmartyError::ValidationError(ref msg) if msg == "either freeform or address1 is required"));
+    }
+
+    #[test]
+    fn lookup_valid_with_freeform() {
+        let lookup = Lookup { country: "CA".to_string(), freeform: "123 Main St".to_string(), ..Default::default() };
+        assert!(ensure_enough_info(&lookup).is_ok());
+    }
+
+    #[test]
+    fn lookup_valid_with_address1() {
+        let lookup = Lookup { country: "CA".to_string(), address1: "123 Main St".to_string(), ..Default::default() };
+        assert!(ensure_enough_info(&lookup).is_ok());
+    }
 
     #[test]
     fn client_test() {
