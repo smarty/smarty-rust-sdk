@@ -67,12 +67,6 @@ pub(crate) async fn send_request<C: DeserializeOwned>(
     parse_response_json(response).await
 }
 
-/// This is only used for Serializing for post
-#[allow(clippy::trivially_copy_pass_by_ref)]
-pub(crate) fn is_zero(num: &i64) -> bool {
-    *num == 0
-}
-
 pub(crate) fn has_param<P: PartialEq + Display + Default>(
     name: String,
     param: P,

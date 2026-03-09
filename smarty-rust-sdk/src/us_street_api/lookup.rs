@@ -1,67 +1,89 @@
-use crate::sdk::{has_param, is_zero};
+use crate::sdk::has_param;
 use crate::us_street_api::candidate::Candidates;
+use serde::ser::SerializeMap;
 use serde::Serialize;
 use std::fmt::{Display, Formatter};
 
-#[derive(Default, Debug, Clone, PartialEq, Serialize)]
-#[serde(default)]
+const DEFAULT_ENHANCED_CANDIDATES: i64 = 5;
+
+#[derive(Default, Debug, Clone, PartialEq)]
 pub struct Lookup {
-    #[serde(skip_serializing_if = "String::is_empty")]
     pub street: String,
-    #[serde(skip_serializing_if = "String::is_empty")]
     pub street2: String,
-    #[serde(skip_serializing_if = "String::is_empty")]
     pub secondary: String,
-    #[serde(skip_serializing_if = "String::is_empty")]
     pub city: String,
-    #[serde(skip_serializing_if = "String::is_empty")]
     pub state: String,
-    #[serde(skip_serializing_if = "String::is_empty")]
     pub zipcode: String,
-    #[serde(rename = "lastline")]
-    #[serde(skip_serializing_if = "String::is_empty")]
-    pub last_line: String, // "lastline" in json
-    #[serde(skip_serializing_if = "String::is_empty")]
+    pub last_line: String,
     pub addressee: String,
-    #[serde(skip_serializing_if = "String::is_empty")]
     pub urbanization: String,
-    #[serde(skip_serializing_if = "String::is_empty")]
     pub input_id: String,
-
-    #[serde(rename = "candidates")]
-    #[serde(skip_serializing_if = "is_zero")]
-    pub max_candidates: i64, // Default Value: 1 // candidates in json
-
-    #[serde(rename = "match")]
-    pub match_strategy: MatchStrategy, // "match" in json
-
-    #[serde(rename = "format")]
+    pub max_candidates: i64,
+    pub match_strategy: MatchStrategy,
     pub format_output: OutputFormat,
-
     pub county_source: Option<CountySource>,
-
-    #[serde(skip_serializing)]
     pub results: Candidates,
+}
+
+impl Serialize for Lookup {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let mut map = serializer.serialize_map(None)?;
+
+        if !self.street.is_empty() { map.serialize_entry("street", &self.street)?; }
+        if !self.street2.is_empty() { map.serialize_entry("street2", &self.street2)?; }
+        if !self.secondary.is_empty() { map.serialize_entry("secondary", &self.secondary)?; }
+        if !self.city.is_empty() { map.serialize_entry("city", &self.city)?; }
+        if !self.state.is_empty() { map.serialize_entry("state", &self.state)?; }
+        if !self.zipcode.is_empty() { map.serialize_entry("zipcode", &self.zipcode)?; }
+        if !self.last_line.is_empty() { map.serialize_entry("lastline", &self.last_line)?; }
+        if !self.addressee.is_empty() { map.serialize_entry("addressee", &self.addressee)?; }
+        if !self.urbanization.is_empty() { map.serialize_entry("urbanization", &self.urbanization)?; }
+        if !self.input_id.is_empty() { map.serialize_entry("input_id", &self.input_id)?; }
+
+        let candidates = self.effective_candidates();
+        if candidates > 0 {
+            map.serialize_entry("candidates", &candidates)?;
+        }
+
+        map.serialize_entry("match", &self.match_strategy)?;
+
+        let format_str = self.format_output.to_string();
+        if !format_str.is_empty() {
+            map.serialize_entry("format", &format_str)?;
+        }
+
+        if let Some(ref source) = self.county_source {
+            map.serialize_entry("county_source", source)?;
+        }
+
+        map.end()
+    }
 }
 
 
 impl Lookup {
-    pub(crate) fn into_param_array(self) -> Vec<(String, String)> {
-        // Determine candidates string based on match strategy and explicit max_candidates
-        let candidates_string = if self.max_candidates > 0 {
-            self.max_candidates.to_string()
+    fn effective_candidates(&self) -> i64 {
+        if self.max_candidates > 0 {
+            self.max_candidates
         } else if self.match_strategy == MatchStrategy::Enhanced {
-            "5".to_string()
+            DEFAULT_ENHANCED_CANDIDATES
+        } else {
+            0
+        }
+    }
+
+    pub(crate) fn into_param_array(self) -> Vec<(String, String)> {
+        let candidates = self.effective_candidates();
+        let candidates_string = if candidates > 0 {
+            candidates.to_string()
         } else {
             String::default()
         };
 
-        // Only include match parameter if strategy is not Strict
-        let match_string = if self.match_strategy != MatchStrategy::Strict {
-            self.match_strategy.to_string()
-        } else {
-            String::default()
-        };
+        let match_string = self.match_strategy.to_string();
 
         let mut res = vec![
             has_param("street".to_string(), self.street),

@@ -323,14 +323,14 @@ mod tests {
     }
 
     #[test]
-    fn explicit_match_strict_produces_no_match_or_candidates() {
+    fn explicit_match_strict_produces_match_strict() {
         let lookup = Lookup {
             match_strategy: MatchStrategy::Strict,
             ..Default::default()
         };
         let params = lookup.into_param_array();
 
-        assert!(params.is_empty());
+        assert_eq!(params, vec![("match".to_string(), "strict".to_string())]);
     }
 
     #[test]
@@ -342,7 +342,13 @@ mod tests {
         };
         let params = lookup.into_param_array();
 
-        assert_eq!(params, vec![("candidates".to_string(), "3".to_string())]);
+        assert_eq!(
+            params,
+            vec![
+                ("candidates".to_string(), "3".to_string()),
+                ("match".to_string(), "strict".to_string()),
+            ]
+        );
     }
 
     #[test]
@@ -382,4 +388,36 @@ mod tests {
         assert!(params.contains(&("match".to_string(), "enhanced".to_string())));
         assert!(params.contains(&("candidates".to_string(), "5".to_string())));
     }
+
+    #[test]
+    fn batch_json_includes_default_match_and_candidates() {
+        let lookup = Lookup::default();
+        let json = serde_json::to_value(&lookup).unwrap();
+        assert_eq!(json["match"], "enhanced");
+        assert_eq!(json["candidates"], 5);
+        assert!(json.get("format").is_none());
+    }
+
+    #[test]
+    fn batch_json_with_project_usa_format() {
+        use crate::us_street_api::lookup::OutputFormat;
+        let lookup = Lookup {
+            format_output: OutputFormat::ProjectUsa,
+            ..Default::default()
+        };
+        let json = serde_json::to_value(&lookup).unwrap();
+        assert_eq!(json["format"], "project-usa");
+    }
+
+    #[test]
+    fn batch_json_with_strict_match() {
+        let lookup = Lookup {
+            match_strategy: MatchStrategy::Strict,
+            ..Default::default()
+        };
+        let json = serde_json::to_value(&lookup).unwrap();
+        assert_eq!(json["match"], "strict");
+        assert!(json.get("candidates").is_none());
+    }
+
 }
