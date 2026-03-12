@@ -7,6 +7,8 @@ pub struct Lookup {
     pub search: String,
     pub address_id: String,
     pub max_results: i32,
+    pub max_group_results: i32,
+    pub geolocation: bool,
     pub include_only_locality: String,
     pub include_only_postal_code: String,
     pub results: SuggestionListing,
@@ -19,6 +21,8 @@ impl Default for Lookup {
             search: String::default(),
             address_id: String::default(),
             max_results: 5,
+            max_group_results: 100,
+            geolocation: false,
             include_only_locality: "".to_string(),
             include_only_postal_code: "".to_string(),
 
@@ -36,6 +40,8 @@ impl Lookup {
             has_param("search".to_string(), self.search),
             has_param("address_id".to_string(), self.address_id),
             has_param("max_results".to_string(), self.max_results.to_string()),
+            has_param("max_group_results".to_string(), self.max_group_results.to_string()),
+            if self.geolocation { Some(("geolocation".to_string(), "on".to_string())) } else { None },
             has_param(
                 "include_only_locality".to_string(),
                 self.include_only_locality,

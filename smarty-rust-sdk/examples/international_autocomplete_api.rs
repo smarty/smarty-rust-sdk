@@ -13,6 +13,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let lookup = &mut Lookup {
         country: "FRA".to_string(),
         search: "Louis".to_string(),
+        max_group_results: 10,
+        geolocation: true,
         include_only_locality: "Paris".to_string(),
         ..Default::default()
     };
