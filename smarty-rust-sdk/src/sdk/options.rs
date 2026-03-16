@@ -1,5 +1,5 @@
-use std::{collections::HashMap};
 use reqwest::Proxy;
+use std::collections::HashMap;
 use url::Url;
 
 use crate::sdk::authentication::Authenticate;
@@ -94,7 +94,8 @@ impl OptionsBuilder {
     /// Appends the provided value to the existing header value using the specified separator,
     /// rather than adding a separate header value. This is useful for single-value headers like User-Agent.
     pub fn with_appended_header(mut self, key: &str, value: &str, separator: &str) -> Self {
-        self.append_headers.insert(key.to_string(), separator.to_string());
+        self.append_headers
+            .insert(key.to_string(), separator.to_string());
         self.headers.push((key.to_string(), value.to_string()));
         self
     }
@@ -113,7 +114,9 @@ impl OptionsBuilder {
 
     /// Adds a custom query to the request.
     pub fn with_custom_query(mut self, key: &str, value: &str) -> Self {
-        self.custom_queries.get_or_insert_with(HashMap::new).insert(key.to_string(), value.to_string());
+        self.custom_queries
+            .get_or_insert_with(HashMap::new)
+            .insert(key.to_string(), value.to_string());
         self
     }
 
@@ -169,10 +172,10 @@ mod tests {
 }
 
 /// Options that can be passed into a new client
-/// <num_retries>: the number of retries that the client with run before giving up.
-/// <logging_enabled>: whether we should send logging data
-/// <headers>: Custom headers that you can pass in
-/// <authentication>: A authentication for Smarty
+/// `num_retries`: the number of retries that the client with run before giving up.
+/// `logging_enabled`: whether we should send logging data
+/// `headers`: Custom headers that you can pass in
+/// `authentication`: A authentication for Smarty
 pub struct Options {
     pub(crate) license: String,
 
