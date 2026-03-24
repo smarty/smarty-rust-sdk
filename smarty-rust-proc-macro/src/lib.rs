@@ -63,6 +63,7 @@ struct MacroArgs {
     custom_send: bool,
     #[darling(default)]
     result_handler: ResultHandler,
+    /// Requires a function of type `fn(&Lookup) -> SmartyError`
     #[darling(default)]
     verify_func: Option<Path>,
 }

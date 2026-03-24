@@ -17,7 +17,7 @@ use smarty_rust_proc_macro::smarty_api;
 )]
 pub struct InternationalStreetClient;
 
-pub fn ensure_enough_info(lookup: &Lookup) -> Result<(), SmartyError> {
+pub(crate) fn ensure_enough_info(lookup: &Lookup) -> Result<(), SmartyError> {
     if lookup.country.is_empty() {
         return Err(SmartyError::ValidationError(
             "country field is required".to_string(),
