@@ -63,6 +63,9 @@ struct MacroArgs {
     custom_send: bool,
     #[darling(default)]
     result_handler: ResultHandler,
+    /// Requires a function of type `fn(&Lookup) -> Result<(), SmartyError>`
+    #[darling(default)]
+    verify_func: Option<Path>,
 }
 
 // The main proc macro that allows someone to create a smarty api
@@ -114,15 +117,25 @@ fn impl_smarty_api_macro(attrs: &MacroArgs, ast: &mut syn::DeriveInput) -> Token
         }
     };
 
-    let lookup_handler = match attrs.result_handler.lookup {
-        true => {
-            quote! { self.handle_lookup_results(lookup, results); }
-        }
-        false => {
+    let (lookup_verification, batch_verification) = match attrs.verify_func.clone() {
+        Some(f) => (
             quote! {
-                lookup.results = candidates;
-            }
-        }
+                #f(lookup)?;
+            },
+            quote! {
+                for lookup in batch.records_mut() {
+                    #f(lookup)?;
+                }
+            },
+        ),
+        None => (quote! {}, quote! {}),
+    };
+
+    let lookup_handler = match attrs.result_handler.lookup {
+        true => quote! { self.handle_lookup_results(lookup, results); },
+        false => quote! {
+            lookup.results = candidates;
+        },
     };
 
     let lookup_method = attrs.lookup_style.get_lookup_method();
@@ -155,6 +168,7 @@ fn impl_smarty_api_macro(attrs: &MacroArgs, ast: &mut syn::DeriveInput) -> Token
                     /// order to build a request and send the message
                     /// to the server.
                     async fn send_lookup(&self, lookup: &mut #lookup_type) -> Result<(), SmartyError> {
+                        #lookup_verification
                         let mut req = self
                             .client
                             .reqwest_client
@@ -181,6 +195,8 @@ fn impl_smarty_api_macro(attrs: &MacroArgs, ast: &mut syn::DeriveInput) -> Token
                             return self.send_lookup(&mut batch.records_mut()[0]).await
                         }
 
+                        #batch_verification
+
                         let mut req = self.client.reqwest_client.request(#batch_method, self.client.url.clone());
                         req = self.client.build_request(req);
                         req = req.json(batch.records());
@@ -203,6 +219,7 @@ fn impl_smarty_api_macro(attrs: &MacroArgs, ast: &mut syn::DeriveInput) -> Token
                     /// order to build a request and send the message
                     /// to the server.
                     pub async fn send(&self, lookup: &mut #lookup_type) -> Result<(), SmartyError> {
+                        #lookup_verification
                         let mut req = self
                             .client
                             .reqwest_client
