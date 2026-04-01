@@ -16,6 +16,7 @@ pub struct Candidate {
     pub last_line: String,
     pub delivery_point_barcode: String,
     pub smarty_key: String,
+    pub smarty_key_ext: String,
     pub components: Components,
     pub metadata: Metadata,
     pub analysis: Analysis,
