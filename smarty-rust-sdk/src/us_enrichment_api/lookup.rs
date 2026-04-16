@@ -4,6 +4,7 @@ use crate::us_enrichment_api::response::EnrichmentResponse;
 #[derive(Clone, Default)]
 pub struct EnrichmentLookup<R: EnrichmentResponse> {
     pub smarty_key: u32,
+    pub business_id: String,
     pub include: String,
     pub exclude: String,
     pub etag: String,
@@ -41,7 +42,7 @@ impl<R: EnrichmentResponse> EnrichmentLookup<R> {
 
     /// Returns true if this is an address search lookup (no smarty_key provided)
     pub fn is_address_search(&self) -> bool {
-        self.smarty_key == 0
+        self.smarty_key == 0 && self.business_id.is_empty()
     }
 
     /// Returns true if any address fields are populated

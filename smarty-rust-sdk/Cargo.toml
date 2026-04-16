@@ -63,3 +63,6 @@ name = "logger"
 
 [[example]]
 name = "us_street_multithread"
+
+[[example]]
+name = "us_enrichment_business_api"

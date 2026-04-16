@@ -8,7 +8,7 @@ use crate::us_enrichment_api::lookup::EnrichmentLookup;
 use reqwest::Method;
 use smarty_rust_proc_macro::smarty_api;
 
-use super::response::EnrichmentResponse;
+use super::response::{EndpointPathKind, EnrichmentResponse};
 
 #[smarty_api(
     api_path = "lookup",
@@ -28,23 +28,39 @@ impl USEnrichmentClient {
         &self,
         lookup: &mut EnrichmentLookup<R>,
     ) -> Result<(), SmartyError> {
-        // Validate that address search has at least one address field
-        if lookup.is_address_search() && !lookup.has_address_fields() {
-            return Err(SmartyError::ValidationError(
-                "address search requires at least one address field (street, city, state, zipcode, or freeform)".to_string()
-            ));
-        }
-
         let mut url = self.client.url.clone();
 
-        // Use "search" path for address-based lookups, smarty_key for key-based lookups
-        let key_or_search: Cow<str> = if lookup.is_address_search() {
-            "search".into()
-        } else {
-            lookup.smarty_key.to_string().into()
+        url = match R::path_kind() {
+            EndpointPathKind::BusinessId => {
+                if lookup.business_id.is_empty() {
+                    return Err(SmartyError::ValidationError(
+                        "business detail lookup requires a business_id".to_string(),
+                    ));
+                }
+                url.join(&format!(
+                    "/lookup/{}/{}",
+                    R::lookup_type(),
+                    lookup.business_id
+                ))?
+            }
+            EndpointPathKind::Standard => {
+                if lookup.is_address_search() && !lookup.has_address_fields() {
+                    return Err(SmartyError::ValidationError(
+                        "address search requires at least one address field (street, city, state, zipcode, or freeform)".to_string()
+                    ));
+                }
+                let key_or_search: Cow<str> = if lookup.is_address_search() {
+                    "search".into()
+                } else {
+                    lookup.smarty_key.to_string().into()
+                };
+                url.join(&format!(
+                    "/lookup/{}/{}",
+                    key_or_search,
+                    R::lookup_type()
+                ))?
+            }
         };
-
-        url = url.join(&format!("/lookup/{}/{}", key_or_search, R::lookup_type()))?;
 
         let mut req = self.client.reqwest_client.request(Method::GET, url);
 
@@ -54,8 +70,6 @@ impl USEnrichmentClient {
 
         req = self.client.build_request(req);
         req = req.query(&lookup.clone().into_param_array());
-
-        println!("{req:?}");
 
         let response = send_request_full(req).await?;
 

@@ -3,6 +3,7 @@ pub mod lookup;
 
 pub mod response;
 
+pub mod business;
 pub mod geo;
 pub mod principal;
 pub mod secondary;
@@ -10,9 +11,11 @@ pub mod risk;
 
 #[cfg(test)]
 mod tests {
+    use crate::us_enrichment_api::business::{BusinessSummaryResponse, BusinessDetailResponse};
     use crate::us_enrichment_api::client::USEnrichmentClient;
     use crate::us_enrichment_api::lookup::EnrichmentLookup;
     use crate::us_enrichment_api::principal::PrincipalResponse;
+    use crate::us_enrichment_api::response::{EndpointPathKind, EnrichmentResponse};
     use crate::sdk::options::OptionsBuilder;
 
     #[test]
@@ -161,6 +164,110 @@ mod tests {
 
         assert!(!lookup.is_address_search());
         assert!(lookup.has_address_fields());
+    }
+
+    #[test]
+    fn business_summary_path_kind_is_standard() {
+        assert_eq!(BusinessSummaryResponse::path_kind(), EndpointPathKind::Standard);
+    }
+
+    #[test]
+    fn business_detail_path_kind_is_business_id() {
+        assert_eq!(BusinessDetailResponse::path_kind(), EndpointPathKind::BusinessId);
+    }
+
+    #[test]
+    fn principal_path_kind_is_standard() {
+        assert_eq!(PrincipalResponse::path_kind(), EndpointPathKind::Standard);
+    }
+
+    #[test]
+    fn business_summary_lookup_by_smarty_key() {
+        let lookup: EnrichmentLookup<BusinessSummaryResponse> = EnrichmentLookup {
+            smarty_key: 1962995076,
+            ..Default::default()
+        };
+
+        assert!(!lookup.is_address_search());
+        assert!(lookup.business_id.is_empty());
+    }
+
+    #[test]
+    fn business_id_with_no_smarty_key_is_not_address_search() {
+        let lookup: EnrichmentLookup<BusinessSummaryResponse> = EnrichmentLookup {
+            business_id: "GEYTCMZSGU2TCMBZHE3DIOI".to_string(),
+            ..Default::default()
+        };
+
+        assert!(!lookup.is_address_search());
+    }
+
+    #[test]
+    fn business_detail_lookup() {
+        let lookup: EnrichmentLookup<BusinessDetailResponse> = EnrichmentLookup {
+            business_id: "GEYTCMZSGU2TCMBZHE3DIOI".to_string(),
+            ..Default::default()
+        };
+
+        assert!(!lookup.business_id.is_empty());
+    }
+
+    #[test]
+    fn business_summary_address_search() {
+        let lookup: EnrichmentLookup<BusinessSummaryResponse> = EnrichmentLookup {
+            freeform: "123 Main St, Denver CO".to_string(),
+            ..Default::default()
+        };
+
+        assert!(lookup.is_address_search());
+        assert!(lookup.has_address_fields());
+
+        let expected_params = vec![
+            ("freeform".to_string(), "123 Main St, Denver CO".to_string()),
+        ];
+
+        assert_eq!(lookup.into_param_array(), expected_params);
+    }
+
+    #[test]
+    fn business_summary_response_deserialize() {
+        let json = r#"[{
+            "smarty_key": "123",
+            "data_set_name": "business",
+            "businesses": [
+                {"company_name": "Acme Corp", "business_id": "ABC123"},
+                {"company_name": "Test Inc", "business_id": "DEF456"}
+            ]
+        }]"#;
+
+        let results: Vec<BusinessSummaryResponse> = serde_json::from_str(json).unwrap();
+        assert_eq!(results.len(), 1);
+        assert_eq!(results[0].smarty_key, "123");
+        assert_eq!(results[0].businesses.len(), 2);
+        assert_eq!(results[0].businesses[0].company_name, "Acme Corp");
+        assert_eq!(results[0].businesses[0].business_id, "ABC123");
+    }
+
+    #[test]
+    fn business_detail_response_deserialize() {
+        let json = r#"[{
+            "smarty_key": "7",
+            "data_set_name": "business",
+            "business_id": "7",
+            "attributes": {
+                "company_name": "Acme Corp",
+                "city_name": "Denver",
+                "state_abbreviation": "CO"
+            }
+        }]"#;
+
+        let results: Vec<BusinessDetailResponse> = serde_json::from_str(json).unwrap();
+        assert_eq!(results.len(), 1);
+        assert_eq!(results[0].smarty_key, "7");
+        assert_eq!(results[0].business_id, "7");
+        assert_eq!(results[0].attributes.company_name, "Acme Corp");
+        assert_eq!(results[0].attributes.city_name, "Denver");
+        assert_eq!(results[0].attributes.state_abbreviation, "CO");
     }
 
 }
