@@ -11,11 +11,12 @@ pub mod risk;
 
 #[cfg(test)]
 mod tests {
-    use crate::us_enrichment_api::business::{BusinessSummaryResponse, BusinessDetailResponse};
-    use crate::us_enrichment_api::client::USEnrichmentClient;
+    use crate::sdk::error::SmartyError;
+    use crate::sdk::options::OptionsBuilder;
+    use crate::us_enrichment_api::business::{BusinessDetailResponse, BusinessSummaryResponse};
+    use crate::us_enrichment_api::client::{build_business_detail_url, USEnrichmentClient};
     use crate::us_enrichment_api::lookup::{BusinessDetailLookup, EnrichmentLookup};
     use crate::us_enrichment_api::principal::PrincipalResponse;
-    use crate::sdk::options::OptionsBuilder;
 
     #[test]
     fn client_test() {
@@ -166,32 +167,12 @@ mod tests {
     }
 
     #[test]
-    fn business_summary_lookup_by_smarty_key() {
-        let lookup: EnrichmentLookup<BusinessSummaryResponse> = EnrichmentLookup {
-            smarty_key: 1962995076,
-            ..Default::default()
-        };
-
-        assert!(!lookup.is_address_search());
-    }
-
-    #[test]
-    fn business_detail_lookup() {
-        let lookup = BusinessDetailLookup {
-            business_id: "GEYTCMZSGU2TCMBZHE3DIOI".to_string(),
-            ..Default::default()
-        };
-
-        assert!(!lookup.business_id.is_empty());
-    }
-
-    #[test]
     fn business_detail_lookup_default() {
         let lookup = BusinessDetailLookup::default();
 
         assert!(lookup.business_id.is_empty());
         assert!(lookup.etag.is_empty());
-        assert!(lookup.results.is_empty());
+        assert!(lookup.result.is_none());
     }
 
     #[test]
@@ -249,24 +230,98 @@ mod tests {
 
     #[test]
     fn business_detail_response_deserialize() {
+        // Exercises a broader cross-section of BusinessDetailAttributes fields
+        // so a future type change on any of these breaks loudly rather than
+        // silently deserializing an empty string.
         let json = r#"[{
             "smarty_key": "7",
             "data_set_name": "business",
             "business_id": "7",
             "attributes": {
                 "company_name": "Acme Corp",
+                "company_name_secondary": "Acme Holdings",
                 "city_name": "Denver",
-                "state_abbreviation": "CO"
+                "state_abbreviation": "CO",
+                "zipcode": "80202",
+                "latitude": "39.7392",
+                "longitude": "-104.9903",
+                "ein": "12-3456789",
+                "phone": "3035551212",
+                "year_established": "1998",
+                "number_of_years_in_business": "27",
+                "location_employee_count": "42",
+                "fortune_1000_indicator": "N",
+                "minority_owned_indicator": "Y",
+                "female_owned_indicator": "N",
+                "primary_sic_code": "5812",
+                "naics_01_code": "722511",
+                "url": "https://example.com"
             }
         }]"#;
 
         let results: Vec<BusinessDetailResponse> = serde_json::from_str(json).unwrap();
         assert_eq!(results.len(), 1);
-        assert_eq!(results[0].smarty_key, "7");
-        assert_eq!(results[0].business_id, "7");
-        assert_eq!(results[0].attributes.company_name, "Acme Corp");
-        assert_eq!(results[0].attributes.city_name, "Denver");
-        assert_eq!(results[0].attributes.state_abbreviation, "CO");
+        let r = &results[0];
+        assert_eq!(r.smarty_key, "7");
+        assert_eq!(r.business_id, "7");
+        let a = &r.attributes;
+        assert_eq!(a.company_name, "Acme Corp");
+        assert_eq!(a.company_name_secondary, "Acme Holdings");
+        assert_eq!(a.city_name, "Denver");
+        assert_eq!(a.state_abbreviation, "CO");
+        assert_eq!(a.zipcode, "80202");
+        assert_eq!(a.latitude, "39.7392");
+        assert_eq!(a.longitude, "-104.9903");
+        assert_eq!(a.ein, "12-3456789");
+        assert_eq!(a.phone, "3035551212");
+        assert_eq!(a.year_established, "1998");
+        assert_eq!(a.number_of_years_in_business, "27");
+        assert_eq!(a.location_employee_count, "42");
+        assert_eq!(a.fortune_1000_indicator, "N");
+        assert_eq!(a.minority_owned_indicator, "Y");
+        assert_eq!(a.female_owned_indicator, "N");
+        assert_eq!(a.primary_sic_code, "5812");
+        assert_eq!(a.naics_01_code, "722511");
+        assert_eq!(a.url, "https://example.com");
     }
 
+    #[test]
+    fn build_business_detail_url_encodes_reserved_chars() {
+        let base = "https://us-enrichment.api.smarty.com/".parse().unwrap();
+
+        let url = build_business_detail_url(&base, "a/b?c#d").unwrap();
+        assert_eq!(
+            url.as_str(),
+            "https://us-enrichment.api.smarty.com/lookup/business/a%2Fb%3Fc%23d"
+        );
+
+        let plain = build_business_detail_url(&base, "GEYTCMZSGU2TCMBZHE3DIOI").unwrap();
+        assert_eq!(
+            plain.as_str(),
+            "https://us-enrichment.api.smarty.com/lookup/business/GEYTCMZSGU2TCMBZHE3DIOI"
+        );
+    }
+
+    #[tokio::test]
+    async fn send_business_detail_rejects_empty_business_id() {
+        let options = OptionsBuilder::new(None).build();
+        let client = USEnrichmentClient::new(options).unwrap();
+
+        let mut lookup = BusinessDetailLookup::default();
+        let err = client.send_business_detail(&mut lookup).await.unwrap_err();
+        assert!(matches!(err, SmartyError::ValidationError(_)));
+    }
+
+    #[tokio::test]
+    async fn send_business_detail_rejects_whitespace_business_id() {
+        let options = OptionsBuilder::new(None).build();
+        let client = USEnrichmentClient::new(options).unwrap();
+
+        let mut lookup = BusinessDetailLookup {
+            business_id: "   ".to_string(),
+            ..Default::default()
+        };
+        let err = client.send_business_detail(&mut lookup).await.unwrap_err();
+        assert!(matches!(err, SmartyError::ValidationError(_)));
+    }
 }

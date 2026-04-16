@@ -20,9 +20,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let client = USEnrichmentClient::new(options)?;
 
+    // Demo SmartyKey — substitute your own in production code.
     let smarty_key = 1962995076;
 
-    // Step 1: Send a business summary lookup to get the list of businesses at this address
     let mut summary_lookup = EnrichmentLookup::<BusinessSummaryResponse> {
         smarty_key,
         ..Default::default()
@@ -30,34 +30,43 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     client.send(&mut summary_lookup).await?;
 
-    if summary_lookup.results.is_empty() || summary_lookup.results[0].businesses.is_empty() {
-        println!("No businesses found for this SmartyKey");
+    let summary = match summary_lookup.results.first() {
+        Some(summary) => summary,
+        None => {
+            println!("No response returned for SmartyKey {}", smarty_key);
+            return Ok(());
+        }
+    };
+
+    if summary.businesses.is_empty() {
+        println!("SmartyKey {} has no business tenants", smarty_key);
         return Ok(());
     }
 
     println!("Summary results for SmartyKey: {}", smarty_key);
-    for biz in &summary_lookup.results[0].businesses {
+    for biz in &summary.businesses {
         println!("  - {} (ID: {})", biz.company_name, biz.business_id);
     }
 
-    // Step 2: Use the first business ID to get detailed information
-    let business_id = &summary_lookup.results[0].businesses[0].business_id;
+    let first = &summary.businesses[0];
     println!(
         "\nFetching details for business: {} (ID: {})",
-        summary_lookup.results[0].businesses[0].company_name, business_id
+        first.company_name, first.business_id
     );
 
     let mut detail_lookup = BusinessDetailLookup {
-        business_id: business_id.clone(),
+        business_id: first.business_id.clone(),
         ..Default::default()
     };
 
     client.send_business_detail(&mut detail_lookup).await?;
 
-    println!("\nDetail results:");
-    for (i, response) in detail_lookup.results.iter().enumerate() {
-        let json_response = serde_json::to_string_pretty(response)?;
-        println!("#{}: {}", i, json_response);
+    match &detail_lookup.result {
+        Some(response) => {
+            let json_response = serde_json::to_string_pretty(response)?;
+            println!("\nDetail results:\n{}", json_response);
+        }
+        None => println!("\nNo detail result returned"),
     }
 
     println!("OK");

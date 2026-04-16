@@ -55,13 +55,25 @@ impl<R: EnrichmentResponse> EnrichmentLookup<R> {
     }
 }
 
+/// Lookup for the `/lookup/business/{business_id}` endpoint.
+///
+/// `business_id` is obtained from a prior
+/// [`BusinessSummaryResponse`][crate::us_enrichment_api::business::BusinessSummaryResponse]
+/// and is percent-encoded into the URL path.
+///
+/// `include`/`exclude` are comma-separated attribute names that narrow the
+/// response body; see the Smarty Enrichment API docs for valid values.
+///
+/// `etag` is sent as `If-None-Match` on subsequent calls. On HTTP 304 the
+/// server returns no body, `result` is left untouched, and `etag` is
+/// refreshed from the response.
 #[derive(Clone, Default)]
 pub struct BusinessDetailLookup {
     pub business_id: String,
     pub include: String,
     pub exclude: String,
     pub etag: String,
-    pub results: Vec<BusinessDetailResponse>,
+    pub result: Option<BusinessDetailResponse>,
 }
 
 impl BusinessDetailLookup {
