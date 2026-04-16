@@ -33,7 +33,10 @@ async fn single_lookup_default_enhanced() {
     client.send(&mut batch).await.unwrap();
 
     let results = &batch.records()[0].results;
-    assert!(!results.is_empty(), "Expected results for default enhanced lookup");
+    assert!(
+        !results.is_empty(),
+        "Expected results for default enhanced lookup"
+    );
 }
 
 #[tokio::test]
@@ -79,7 +82,10 @@ async fn batch_default_enhanced() {
     client.send(&mut batch).await.unwrap();
 
     for (i, record) in batch.records().iter().enumerate() {
-        assert!(!record.results.is_empty(), "Expected results for batch record {i}");
+        assert!(
+            !record.results.is_empty(),
+            "Expected results for batch record {i}"
+        );
     }
 }
 
@@ -108,7 +114,10 @@ async fn batch_strict() {
     client.send(&mut batch).await.unwrap();
 
     for (i, record) in batch.records().iter().enumerate() {
-        assert!(!record.results.is_empty(), "Expected results for strict batch record {i}");
+        assert!(
+            !record.results.is_empty(),
+            "Expected results for strict batch record {i}"
+        );
     }
 }
 
@@ -136,6 +145,9 @@ async fn batch_mixed_strategies() {
     client.send(&mut batch).await.unwrap();
 
     for (i, record) in batch.records().iter().enumerate() {
-        assert!(!record.results.is_empty(), "Expected results for mixed batch record {i}");
+        assert!(
+            !record.results.is_empty(),
+            "Expected results for mixed batch record {i}"
+        );
     }
 }

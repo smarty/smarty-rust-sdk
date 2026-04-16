@@ -106,6 +106,14 @@ impl OptionsBuilder {
         self
     }
 
+    /// Sets the base url from a string. Panics if the string is not a valid URL —
+    /// this is called at client-construction time with a static configuration value,
+    /// so a bad URL is a programmer error, not a runtime condition.
+    pub fn with_base_url(self, url: &str) -> Self {
+        let parsed = Url::parse(url).expect("with_base_url: invalid URL");
+        self.with_url(parsed)
+    }
+
     /// Adds a custom proxy for the request to point to.
     pub fn with_proxy(mut self, proxy: Proxy) -> Self {
         self.proxy = Some(proxy);
@@ -143,31 +151,6 @@ impl OptionsBuilder {
     /// with_iana_time_zone turns on the IANA timezone feature for the request.
     pub fn with_iana_time_zone(self) -> Self {
         self.with_custom_comma_separated_query("features", "iana-timezone")
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::OptionsBuilder;
-
-    #[test]
-    fn with_iana_time_zone_sets_feature() {
-        let options = OptionsBuilder::new(None).with_iana_time_zone().build();
-        let queries = options.custom_queries.unwrap();
-        assert_eq!(queries.get("features").unwrap(), "iana-timezone");
-    }
-
-    #[test]
-    fn with_iana_time_zone_appends_to_component_analysis() {
-        let options = OptionsBuilder::new(None)
-            .with_component_analysis()
-            .with_iana_time_zone()
-            .build();
-        let queries = options.custom_queries.unwrap();
-        assert_eq!(
-            queries.get("features").unwrap(),
-            "component-analysis,iana-timezone"
-        );
     }
 }
 
@@ -217,5 +200,30 @@ impl Clone for Options {
             url: self.url.clone(),
             proxy: self.proxy.clone(),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::OptionsBuilder;
+
+    #[test]
+    fn with_iana_time_zone_sets_feature() {
+        let options = OptionsBuilder::new(None).with_iana_time_zone().build();
+        let queries = options.custom_queries.unwrap();
+        assert_eq!(queries.get("features").unwrap(), "iana-timezone");
+    }
+
+    #[test]
+    fn with_iana_time_zone_appends_to_component_analysis() {
+        let options = OptionsBuilder::new(None)
+            .with_component_analysis()
+            .with_iana_time_zone()
+            .build();
+        let queries = options.custom_queries.unwrap();
+        assert_eq!(
+            queries.get("features").unwrap(),
+            "component-analysis,iana-timezone"
+        );
     }
 }

@@ -39,7 +39,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Here is an example of how to access component analysis
     for record in batch.records() {
         if !record.results.is_empty() {
-            println!("Component Analysis Results:\n {}",serde_json::to_string_pretty(&record.results[0].analysis.components)?);
+            println!(
+                "Component Analysis Results:\n {}",
+                serde_json::to_string_pretty(&record.results[0].analysis.components)?
+            );
         }
     }
 

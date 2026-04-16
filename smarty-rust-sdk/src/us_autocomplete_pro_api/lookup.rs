@@ -46,7 +46,7 @@ impl Default for Lookup {
 impl Lookup {
     pub(crate) fn into_param_array(self) -> Vec<(String, String)> {
         let geolocation_self = self.clone();
-        vec![
+        [
             has_param("search".to_string(), self.search),
             has_param("source".to_string(), self.source),
             has_param("max_results".to_string(), self.max_results),

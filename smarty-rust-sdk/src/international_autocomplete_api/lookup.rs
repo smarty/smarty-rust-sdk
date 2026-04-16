@@ -35,13 +35,20 @@ impl Default for Lookup {
 
 impl Lookup {
     pub(crate) fn into_param_array(self) -> Vec<(String, String)> {
-        vec![
+        [
             has_param("country".to_string(), self.country),
             has_param("search".to_string(), self.search),
             has_param("address_id".to_string(), self.address_id),
             has_param("max_results".to_string(), self.max_results.to_string()),
-            has_param("max_group_results".to_string(), self.max_group_results.to_string()),
-            if self.geolocation { Some(("geolocation".to_string(), "on".to_string())) } else { None },
+            has_param(
+                "max_group_results".to_string(),
+                self.max_group_results.to_string(),
+            ),
+            if self.geolocation {
+                Some(("geolocation".to_string(), "on".to_string()))
+            } else {
+                None
+            },
             has_param(
                 "include_only_locality".to_string(),
                 self.include_only_locality,

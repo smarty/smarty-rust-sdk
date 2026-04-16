@@ -32,16 +32,36 @@ impl Serialize for Lookup {
     {
         let mut map = serializer.serialize_map(None)?;
 
-        if !self.street.is_empty() { map.serialize_entry("street", &self.street)?; }
-        if !self.street2.is_empty() { map.serialize_entry("street2", &self.street2)?; }
-        if !self.secondary.is_empty() { map.serialize_entry("secondary", &self.secondary)?; }
-        if !self.city.is_empty() { map.serialize_entry("city", &self.city)?; }
-        if !self.state.is_empty() { map.serialize_entry("state", &self.state)?; }
-        if !self.zipcode.is_empty() { map.serialize_entry("zipcode", &self.zipcode)?; }
-        if !self.last_line.is_empty() { map.serialize_entry("lastline", &self.last_line)?; }
-        if !self.addressee.is_empty() { map.serialize_entry("addressee", &self.addressee)?; }
-        if !self.urbanization.is_empty() { map.serialize_entry("urbanization", &self.urbanization)?; }
-        if !self.input_id.is_empty() { map.serialize_entry("input_id", &self.input_id)?; }
+        if !self.street.is_empty() {
+            map.serialize_entry("street", &self.street)?;
+        }
+        if !self.street2.is_empty() {
+            map.serialize_entry("street2", &self.street2)?;
+        }
+        if !self.secondary.is_empty() {
+            map.serialize_entry("secondary", &self.secondary)?;
+        }
+        if !self.city.is_empty() {
+            map.serialize_entry("city", &self.city)?;
+        }
+        if !self.state.is_empty() {
+            map.serialize_entry("state", &self.state)?;
+        }
+        if !self.zipcode.is_empty() {
+            map.serialize_entry("zipcode", &self.zipcode)?;
+        }
+        if !self.last_line.is_empty() {
+            map.serialize_entry("lastline", &self.last_line)?;
+        }
+        if !self.addressee.is_empty() {
+            map.serialize_entry("addressee", &self.addressee)?;
+        }
+        if !self.urbanization.is_empty() {
+            map.serialize_entry("urbanization", &self.urbanization)?;
+        }
+        if !self.input_id.is_empty() {
+            map.serialize_entry("input_id", &self.input_id)?;
+        }
 
         let candidates = self.effective_candidates();
         if candidates > 0 {
@@ -62,7 +82,6 @@ impl Serialize for Lookup {
         map.end()
     }
 }
-
 
 impl Lookup {
     fn effective_candidates(&self) -> i64 {

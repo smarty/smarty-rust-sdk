@@ -7,9 +7,9 @@ use smarty_rust_sdk::us_enrichment_api::principal::*;
 
 use smarty_rust_sdk::us_enrichment_api::lookup::EnrichmentLookup;
 use smarty_rust_sdk::us_enrichment_api::response::EnrichmentResponse;
+use smarty_rust_sdk::us_enrichment_api::risk::RiskResponse;
 use smarty_rust_sdk::us_enrichment_api::secondary::SecondaryCountResponse;
 use smarty_rust_sdk::us_enrichment_api::secondary::SecondaryResponse;
-use smarty_rust_sdk::us_enrichment_api::risk::RiskResponse;
 
 use std::error::Error;
 

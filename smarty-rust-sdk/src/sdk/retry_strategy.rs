@@ -116,29 +116,27 @@ fn retry_success(res: &Response) -> RetryResult {
         | StatusCode::BAD_GATEWAY
         | StatusCode::SERVICE_UNAVAILABLE
         | StatusCode::GATEWAY_TIMEOUT => RetryResult::Transient,
-        StatusCode::TOO_MANY_REQUESTS => {
-            match res.headers().get(RETRY_AFTER) {
-                Some(time) => {
-                    if let Ok(time) = time.to_str() {
-                        if let Ok(time) = time.parse::<u64>() {
-                            RetryResult::RateLimit(Duration::from_secs(time))
-                        } else {
-                            warn!(
+        StatusCode::TOO_MANY_REQUESTS => match res.headers().get(RETRY_AFTER) {
+            Some(time) => {
+                if let Ok(time) = time.to_str() {
+                    if let Ok(time) = time.parse::<u64>() {
+                        RetryResult::RateLimit(Duration::from_secs(time))
+                    } else {
+                        warn!(
                                 "Server Returned Too Many Requests Status Code, but the RETRY_AFTER header was unable to be parsed"
                             );
-                            RetryResult::Transient
-                        }
-                    } else {
-                        warn!("Server Returned Too Many Requests Status Code, but the RETRY_AFTER header was unable to be turned into a valid utf-8 string");
                         RetryResult::Transient
                     }
-                }
-                _ => {
-                    warn!("Server Returned Too Many Requests Status Code, but the RETRY_AFTER header was non-existent");
+                } else {
+                    warn!("Server Returned Too Many Requests Status Code, but the RETRY_AFTER header was unable to be turned into a valid utf-8 string");
                     RetryResult::Transient
                 }
             }
-        }
+            _ => {
+                warn!("Server Returned Too Many Requests Status Code, but the RETRY_AFTER header was non-existent");
+                RetryResult::Transient
+            }
+        },
         _ => {
             // Fatal
             RetryResult::Fatal
