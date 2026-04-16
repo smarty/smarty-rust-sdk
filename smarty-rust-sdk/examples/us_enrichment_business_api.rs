@@ -20,7 +20,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let client = USEnrichmentClient::new(options)?;
 
-    // Demo SmartyKey — substitute your own in production code.
     let smarty_key = 1962995076;
 
     let mut summary_lookup = EnrichmentLookup::<BusinessSummaryResponse> {

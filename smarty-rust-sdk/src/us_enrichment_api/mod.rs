@@ -372,9 +372,8 @@ mod tests {
 
     #[test]
     fn extract_etag_returns_empty_on_non_utf8_bytes() {
-        // Bytes 0xFF / 0xFE are valid in a HeaderValue (any byte >= 0x80 is
-        // legal) but HeaderValue::to_str rejects non-UTF-8. The prior code
-        // used .expect() here and would panic; extract_etag must not.
+        // Bytes >= 0x80 are legal in a HeaderValue but HeaderValue::to_str
+        // rejects non-UTF-8, so extract_etag must tolerate that case.
         let bad = HeaderValue::from_bytes(&[0xff, 0xfe, 0xfd]).unwrap();
         let mut headers = HeaderMap::new();
         headers.insert("ETag", bad);

@@ -2,6 +2,17 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Completion Steps
+
+After any refactoring or code addition, run these as a final step and fix anything they report:
+
+```bash
+cargo clippy --all-targets -- -D warnings
+cargo fmt
+```
+
+Do not treat a change as finished until clippy is clean and `cargo fmt` has been applied.
+
 ## Allowed
 
 - Edit(*)
@@ -20,9 +31,10 @@ make clippy                 # Run linter
 make clean                  # Clean build artifacts
 
 # Run individual examples (requires SMARTY_AUTH_ID and SMARTY_AUTH_TOKEN env vars)
-make us_street_api
+make us_street_api          # also runs us_street_component_analysis + us_street_iana_timezone
 make us_enrichment_api
 make us_enrichment_address_search_api
+make us_enrichment_business_api
 make us_zipcode_api
 make us_extract_api
 make us_autocomplete_pro_api
@@ -32,9 +44,12 @@ make international_autocomplete_api
 make international_postal_code_api
 make logger
 make examples               # Run all examples
+make integration            # Run ignored integration tests (cargo test --test us_street_integration -- --ignored)
 ```
 
 Run a single test: `cargo test <test_name>`
+
+The `us_street_multithread` example has no make target — invoke it directly with `cargo run --example us_street_multithread` if needed.
 
 ## Architecture
 
@@ -72,8 +87,10 @@ pub struct USStreetAddressClient;
 
 Three `custom_send` clients implement their own `send()`:
 - **USExtractClient**: POST with `text/plain` body instead of JSON
-- **USEnrichmentClient**: Dynamic URL path (`/lookup/{key}/{type}`) and ETag header handling
+- **USEnrichmentClient**: Generic `send<L: EnrichmentRequest>(&self, lookup: &mut L)`. The `EnrichmentRequest` trait (in `us_enrichment_api/request.rs`) lets each lookup own its URL shape, validation, query params, ETag state, and result-apply logic. The client handles `If-None-Match` / 304 Not Modified; on 304 prior results are left untouched and only the ETag refreshes
 - **InternationalAutocompleteClient**: Optional address_id path suffix appended to URL
+
+Enrichment lookup types (`geo`, `secondary`, `principal`, `risk`, `business`, plus the search variant) each implement `EnrichmentRequest` — add new enrichment endpoints by implementing the trait, not by extending the client.
 
 ### Core SDK Components (in `sdk/`)
 

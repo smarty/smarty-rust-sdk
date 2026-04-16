@@ -43,9 +43,8 @@ fn business_detail_body(business_id: &str) -> serde_json::Value {
 async fn send_uses_if_none_match_header_not_etag_request_header() {
     let server = MockServer::start().await;
 
-    // Only matches when If-None-Match: prev-tag is present. If the SDK mistakenly
-    // sends the header as "ETag" (the pre-hardening bug), wiremock returns the
-    // default 404 and the send fails.
+    // The `if-none-match` matcher is what enforces the header name: any other
+    // name (e.g. "ETag") falls through to wiremock's default 404 and send fails.
     Mock::given(method("GET"))
         .and(path("/lookup/100/property/principal"))
         .and(header("if-none-match", "prev-tag"))
@@ -62,8 +61,8 @@ async fn send_uses_if_none_match_header_not_etag_request_header() {
 
     client.send(&mut lookup).await.expect("send should succeed");
 
-    // Also verify the request did NOT carry a literal "ETag" header, which
-    // was the shape of the bug before hardening.
+    // The mock matcher proves If-None-Match was sent but does not rule out a
+    // duplicate literal "ETag" header alongside it; this closes that gap.
     let received = server.received_requests().await.expect("recording on");
     let req = received.first().expect("one request");
     assert!(

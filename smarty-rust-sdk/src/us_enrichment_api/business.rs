@@ -2,8 +2,6 @@ use serde::{Deserialize, Serialize};
 
 use super::response::EnrichmentResponse;
 
-/// Response from `/lookup/{smarty_key}/business` listing the businesses
-/// located at the given SmartyKey.
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(default)]
 pub struct BusinessSummaryResponse {
@@ -25,9 +23,6 @@ pub struct BusinessSummaryEntry {
     pub business_id: String,
 }
 
-/// Response from `/lookup/business/{business_id}` with full attributes for
-/// a single business. Obtain `business_id` values from
-/// [`BusinessSummaryResponse::businesses`].
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(default)]
 pub struct BusinessDetailResponse {

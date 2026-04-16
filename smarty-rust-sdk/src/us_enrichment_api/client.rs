@@ -18,9 +18,6 @@ use smarty_rust_proc_macro::smarty_api;
 )]
 pub struct USEnrichmentClient;
 
-/// Result of a single enrichment HTTP call.
-/// `not_modified` is true when the server returned 304 Not Modified; in that
-/// case `results` is empty and the caller should leave prior results untouched.
 pub(crate) struct EnrichmentTransport<R> {
     pub(crate) results: Vec<R>,
     pub(crate) etag: String,
@@ -28,13 +25,6 @@ pub(crate) struct EnrichmentTransport<R> {
 }
 
 impl USEnrichmentClient {
-    /// Sends any enrichment lookup that implements
-    /// [`EnrichmentRequest`].
-    ///
-    /// If the lookup's `etag` is non-empty, it is sent as `If-None-Match`. On
-    /// HTTP 304 Not Modified, the lookup's results are left untouched and the
-    /// etag is refreshed from the response. On 2xx the results are replaced
-    /// via [`EnrichmentRequest::apply_results`].
     pub async fn send<L: EnrichmentRequest>(&self, lookup: &mut L) -> Result<(), SmartyError> {
         lookup.validate()?;
 
@@ -88,10 +78,6 @@ impl USEnrichmentClient {
     }
 }
 
-// Returns an empty string if the ETag header is missing or contains bytes
-// that aren't valid UTF-8 (to_str rejects those). The old code used
-// `.expect("ETag should always be a string")` and could panic on a malformed
-// response.
 pub(crate) fn extract_etag(headers: &HeaderMap) -> String {
     headers
         .get("ETag")
