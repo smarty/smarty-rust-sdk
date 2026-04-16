@@ -154,31 +154,6 @@ impl OptionsBuilder {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::OptionsBuilder;
-
-    #[test]
-    fn with_iana_time_zone_sets_feature() {
-        let options = OptionsBuilder::new(None).with_iana_time_zone().build();
-        let queries = options.custom_queries.unwrap();
-        assert_eq!(queries.get("features").unwrap(), "iana-timezone");
-    }
-
-    #[test]
-    fn with_iana_time_zone_appends_to_component_analysis() {
-        let options = OptionsBuilder::new(None)
-            .with_component_analysis()
-            .with_iana_time_zone()
-            .build();
-        let queries = options.custom_queries.unwrap();
-        assert_eq!(
-            queries.get("features").unwrap(),
-            "component-analysis,iana-timezone"
-        );
-    }
-}
-
 /// Options that can be passed into a new client
 /// `num_retries`: the number of retries that the client with run before giving up.
 /// `logging_enabled`: whether we should send logging data
@@ -225,5 +200,30 @@ impl Clone for Options {
             url: self.url.clone(),
             proxy: self.proxy.clone(),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::OptionsBuilder;
+
+    #[test]
+    fn with_iana_time_zone_sets_feature() {
+        let options = OptionsBuilder::new(None).with_iana_time_zone().build();
+        let queries = options.custom_queries.unwrap();
+        assert_eq!(queries.get("features").unwrap(), "iana-timezone");
+    }
+
+    #[test]
+    fn with_iana_time_zone_appends_to_component_analysis() {
+        let options = OptionsBuilder::new(None)
+            .with_component_analysis()
+            .with_iana_time_zone()
+            .build();
+        let queries = options.custom_queries.unwrap();
+        assert_eq!(
+            queries.get("features").unwrap(),
+            "component-analysis,iana-timezone"
+        );
     }
 }
