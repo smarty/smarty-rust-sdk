@@ -106,6 +106,14 @@ impl OptionsBuilder {
         self
     }
 
+    /// Sets the base url from a string. Panics if the string is not a valid URL —
+    /// this is called at client-construction time with a static configuration value,
+    /// so a bad URL is a programmer error, not a runtime condition.
+    pub fn with_base_url(self, url: &str) -> Self {
+        let parsed = Url::parse(url).expect("with_base_url: invalid URL");
+        self.with_url(parsed)
+    }
+
     /// Adds a custom proxy for the request to point to.
     pub fn with_proxy(mut self, proxy: Proxy) -> Self {
         self.proxy = Some(proxy);

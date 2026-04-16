@@ -1,5 +1,6 @@
 pub mod client;
 pub mod lookup;
+pub mod request;
 
 pub mod response;
 
@@ -14,9 +15,11 @@ mod tests {
     use crate::sdk::error::SmartyError;
     use crate::sdk::options::OptionsBuilder;
     use crate::us_enrichment_api::business::{BusinessDetailResponse, BusinessSummaryResponse};
-    use crate::us_enrichment_api::client::{build_business_detail_url, USEnrichmentClient};
+    use crate::us_enrichment_api::client::{extract_etag, USEnrichmentClient};
     use crate::us_enrichment_api::lookup::{BusinessDetailLookup, EnrichmentLookup};
     use crate::us_enrichment_api::principal::PrincipalResponse;
+    use crate::us_enrichment_api::request::EnrichmentRequest;
+    use reqwest::header::{HeaderMap, HeaderValue};
 
     #[test]
     fn client_test() {
@@ -44,7 +47,7 @@ mod tests {
             ("exclude".to_string(), "assessed_improvement_value".to_string()),
         ];
 
-        assert_eq!(lookup.into_param_array(), expected_params);
+        assert_eq!(lookup.params(), expected_params);
     }
 
     #[test]
@@ -56,7 +59,7 @@ mod tests {
 
         let expected_params: Vec<(String, String)> = vec![];
 
-        assert_eq!(lookup.into_param_array(), expected_params);
+        assert_eq!(lookup.params(), expected_params);
     }
 
     #[test]
@@ -78,7 +81,7 @@ mod tests {
             ("zipcode".to_string(), "85001".to_string()),
         ];
 
-        assert_eq!(lookup.into_param_array(), expected_params);
+        assert_eq!(lookup.params(), expected_params);
     }
 
     #[test]
@@ -94,7 +97,7 @@ mod tests {
             ("freeform".to_string(), "123 Main St, Phoenix, AZ 85001".to_string()),
         ];
 
-        assert_eq!(lookup.into_param_array(), expected_params);
+        assert_eq!(lookup.params(), expected_params);
     }
 
     #[test]
@@ -189,7 +192,7 @@ mod tests {
             ("exclude".to_string(), "latitude".to_string()),
         ];
 
-        assert_eq!(lookup.into_param_array(), expected_params);
+        assert_eq!(lookup.params(), expected_params);
     }
 
     #[test]
@@ -206,7 +209,7 @@ mod tests {
             ("freeform".to_string(), "123 Main St, Denver CO".to_string()),
         ];
 
-        assert_eq!(lookup.into_param_array(), expected_params);
+        assert_eq!(lookup.params(), expected_params);
     }
 
     #[test]
@@ -286,18 +289,26 @@ mod tests {
     }
 
     #[test]
-    fn build_business_detail_url_encodes_reserved_chars() {
+    fn business_detail_build_url_encodes_reserved_chars() {
         let base = "https://us-enrichment.api.smarty.com/".parse().unwrap();
 
-        let url = build_business_detail_url(&base, "a/b?c#d").unwrap();
+        let lookup = BusinessDetailLookup {
+            business_id: "a/b?c#d".to_string(),
+            ..Default::default()
+        };
+        let url = lookup.build_url(&base).unwrap();
         assert_eq!(
             url.as_str(),
             "https://us-enrichment.api.smarty.com/lookup/business/a%2Fb%3Fc%23d"
         );
 
-        let plain = build_business_detail_url(&base, "GEYTCMZSGU2TCMBZHE3DIOI").unwrap();
+        let plain = BusinessDetailLookup {
+            business_id: "GEYTCMZSGU2TCMBZHE3DIOI".to_string(),
+            ..Default::default()
+        };
+        let plain_url = plain.build_url(&base).unwrap();
         assert_eq!(
-            plain.as_str(),
+            plain_url.as_str(),
             "https://us-enrichment.api.smarty.com/lookup/business/GEYTCMZSGU2TCMBZHE3DIOI"
         );
     }
@@ -308,7 +319,7 @@ mod tests {
         let client = USEnrichmentClient::new(options).unwrap();
 
         let mut lookup = BusinessDetailLookup::default();
-        let err = client.send_business_detail(&mut lookup).await.unwrap_err();
+        let err = client.send(&mut lookup).await.unwrap_err();
         assert!(matches!(err, SmartyError::ValidationError(_)));
     }
 
@@ -321,7 +332,65 @@ mod tests {
             business_id: "   ".to_string(),
             ..Default::default()
         };
-        let err = client.send_business_detail(&mut lookup).await.unwrap_err();
+        let err = client.send(&mut lookup).await.unwrap_err();
         assert!(matches!(err, SmartyError::ValidationError(_)));
+    }
+
+    #[test]
+    fn business_detail_apply_results_rejects_multiple() {
+        let mut lookup = BusinessDetailLookup {
+            business_id: "ABC".to_string(),
+            ..Default::default()
+        };
+
+        let too_many = vec![
+            BusinessDetailResponse::default(),
+            BusinessDetailResponse::default(),
+        ];
+        let err = lookup.apply_results(too_many).unwrap_err();
+        assert!(matches!(err, SmartyError::ValidationError(_)));
+        assert!(lookup.result.is_none());
+    }
+
+    #[test]
+    fn extract_etag_handles_missing_header() {
+        let headers = HeaderMap::new();
+        assert_eq!(extract_etag(&headers), "");
+    }
+
+    #[test]
+    fn extract_etag_returns_ascii_value() {
+        let mut headers = HeaderMap::new();
+        headers.insert("ETag", HeaderValue::from_static("\"abc-123\""));
+        assert_eq!(extract_etag(&headers), "\"abc-123\"");
+    }
+
+    #[test]
+    fn extract_etag_returns_empty_on_non_utf8_bytes() {
+        // Bytes 0xFF / 0xFE are valid in a HeaderValue (any byte >= 0x80 is
+        // legal) but HeaderValue::to_str rejects non-UTF-8. The prior code
+        // used .expect() here and would panic; extract_etag must not.
+        let bad = HeaderValue::from_bytes(&[0xff, 0xfe, 0xfd]).unwrap();
+        let mut headers = HeaderMap::new();
+        headers.insert("ETag", bad);
+        assert_eq!(extract_etag(&headers), "");
+    }
+
+    #[test]
+    fn business_detail_apply_results_accepts_empty_and_single() {
+        let mut lookup = BusinessDetailLookup {
+            business_id: "ABC".to_string(),
+            ..Default::default()
+        };
+
+        lookup.apply_results(vec![]).unwrap();
+        assert!(lookup.result.is_none());
+
+        let one = BusinessDetailResponse {
+            business_id: "ABC".to_string(),
+            ..Default::default()
+        };
+        lookup.apply_results(vec![one]).unwrap();
+        assert_eq!(lookup.result.as_ref().unwrap().business_id, "ABC");
     }
 }

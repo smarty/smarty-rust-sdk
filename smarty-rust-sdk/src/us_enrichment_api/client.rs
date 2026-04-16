@@ -1,15 +1,12 @@
-use std::borrow::Cow;
-
 use crate::sdk::client::Client;
 use crate::sdk::error::SmartyError;
 use crate::sdk::options::Options;
 use crate::sdk::{parse_response_json, send_request_full};
-use crate::us_enrichment_api::lookup::{BusinessDetailLookup, EnrichmentLookup};
+use crate::us_enrichment_api::request::EnrichmentRequest;
+use reqwest::header::HeaderMap;
 use reqwest::{Method, StatusCode, Url};
 use serde::de::DeserializeOwned;
 use smarty_rust_proc_macro::smarty_api;
-
-use super::response::EnrichmentResponse;
 
 #[smarty_api(
     api_path = "lookup",
@@ -31,76 +28,27 @@ pub(crate) struct EnrichmentTransport<R> {
 }
 
 impl USEnrichmentClient {
-    /// Sends an enrichment lookup for standard endpoints that use
-    /// `/lookup/{smarty_key}/{type}` or `/lookup/search/{type}`.
+    /// Sends any enrichment lookup that implements
+    /// [`EnrichmentRequest`].
     ///
-    /// If `lookup.etag` is set, it is sent as `If-None-Match`. On HTTP 304
-    /// Not Modified, `lookup.results` is left untouched and `lookup.etag` is
-    /// refreshed from the response.
-    pub async fn send<R: EnrichmentResponse>(
+    /// If the lookup's `etag` is non-empty, it is sent as `If-None-Match`. On
+    /// HTTP 304 Not Modified, the lookup's results are left untouched and the
+    /// etag is refreshed from the response. On 2xx the results are replaced
+    /// via [`EnrichmentRequest::apply_results`].
+    pub async fn send<L: EnrichmentRequest>(
         &self,
-        lookup: &mut EnrichmentLookup<R>,
+        lookup: &mut L,
     ) -> Result<(), SmartyError> {
-        if lookup.is_address_search() && !lookup.has_address_fields() {
-            return Err(SmartyError::ValidationError(
-                "address search requires at least one address field (street, city, state, zipcode, or freeform)".to_string()
-            ));
-        }
+        lookup.validate()?;
 
-        let key_or_search: Cow<str> = if lookup.is_address_search() {
-            "search".into()
-        } else {
-            lookup.smarty_key.to_string().into()
-        };
-
-        let url = self
-            .client
-            .url
-            .join(&format!("/lookup/{}/{}", key_or_search, R::lookup_type()))?;
-
-        let params = lookup.clone().into_param_array();
+        let url = lookup.build_url(&self.client.url)?;
         let transport = self
-            .send_enrichment_request::<R>(url, &lookup.etag, params)
+            .send_enrichment_request::<L::Response>(url, lookup.etag(), lookup.params())
             .await?;
 
-        lookup.etag = transport.etag;
+        lookup.set_etag(transport.etag);
         if !transport.not_modified {
-            lookup.set_results(transport.results);
-        }
-
-        Ok(())
-    }
-
-    /// Sends a business detail lookup using `/lookup/business/{business_id}`.
-    ///
-    /// `business_id` must be non-empty (and not just whitespace) and is
-    /// percent-encoded as a single path segment. If `lookup.etag` is set, it
-    /// is sent as `If-None-Match`. On HTTP 304 Not Modified, `lookup.result`
-    /// is left untouched and `lookup.etag` is refreshed from the response.
-    pub async fn send_business_detail(
-        &self,
-        lookup: &mut BusinessDetailLookup,
-    ) -> Result<(), SmartyError> {
-        if lookup.business_id.trim().is_empty() {
-            return Err(SmartyError::ValidationError(
-                "business detail lookup requires a non-empty business_id".to_string(),
-            ));
-        }
-
-        let url = build_business_detail_url(&self.client.url, &lookup.business_id)?;
-
-        let params = lookup.clone().into_param_array();
-        let transport = self
-            .send_enrichment_request::<super::business::BusinessDetailResponse>(
-                url,
-                &lookup.etag,
-                params,
-            )
-            .await?;
-
-        lookup.etag = transport.etag;
-        if !transport.not_modified {
-            lookup.result = transport.results.into_iter().next();
+            lookup.apply_results(transport.results)?;
         }
 
         Ok(())
@@ -123,12 +71,7 @@ impl USEnrichmentClient {
 
         let response = send_request_full(req).await?;
 
-        let etag = response
-            .headers()
-            .get("ETag")
-            .and_then(|x| x.to_str().ok())
-            .unwrap_or_default()
-            .to_string();
+        let etag = extract_etag(response.headers());
 
         if response.status() == StatusCode::NOT_MODIFIED {
             return Ok(EnrichmentTransport {
@@ -148,17 +91,14 @@ impl USEnrichmentClient {
     }
 }
 
-/// Builds `{base}/lookup/business/{business_id}` with `business_id`
-/// percent-encoded as a single path segment so slashes and other URL-reserved
-/// characters cannot change routing.
-pub(crate) fn build_business_detail_url(
-    base: &Url,
-    business_id: &str,
-) -> Result<Url, SmartyError> {
-    let mut url = base.join("/lookup/business")?;
-    url.path_segments_mut()
-        .map_err(|_| SmartyError::ValidationError("invalid base URL".to_string()))?
-        .pop_if_empty()
-        .push(business_id);
-    Ok(url)
+// Returns an empty string if the ETag header is missing or contains bytes
+// that aren't valid UTF-8 (to_str rejects those). The old code used
+// `.expect("ETag should always be a string")` and could panic on a malformed
+// response.
+pub(crate) fn extract_etag(headers: &HeaderMap) -> String {
+    headers
+        .get("ETag")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or_default()
+        .to_string()
 }

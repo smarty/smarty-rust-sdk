@@ -59,7 +59,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         ..Default::default()
     };
 
-    client.send_business_detail(&mut detail_lookup).await?;
+    client.send(&mut detail_lookup).await?;
 
     match &detail_lookup.result {
         Some(response) => {

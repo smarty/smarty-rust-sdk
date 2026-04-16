@@ -28,6 +28,7 @@ thiserror = "1.0.58"
 
 [dev-dependencies]
 futures = "0.3.28"
+wiremock = "0.5"
 
 [lib]
 name = "smarty_rust_sdk"
