@@ -7,8 +7,8 @@ pub mod response;
 pub mod business;
 pub mod geo;
 pub mod principal;
-pub mod secondary;
 pub mod risk;
+pub mod secondary;
 
 #[cfg(test)]
 mod tests {
@@ -43,8 +43,14 @@ mod tests {
         };
 
         let expected_params = vec![
-            ("include".to_string(), "group_structural,group_other".to_string()),
-            ("exclude".to_string(), "assessed_improvement_value".to_string()),
+            (
+                "include".to_string(),
+                "group_structural,group_other".to_string(),
+            ),
+            (
+                "exclude".to_string(),
+                "assessed_improvement_value".to_string(),
+            ),
         ];
 
         assert_eq!(lookup.params(), expected_params);
@@ -93,9 +99,10 @@ mod tests {
 
         assert!(lookup.is_address_search());
 
-        let expected_params = vec![
-            ("freeform".to_string(), "123 Main St, Phoenix, AZ 85001".to_string()),
-        ];
+        let expected_params = vec![(
+            "freeform".to_string(),
+            "123 Main St, Phoenix, AZ 85001".to_string(),
+        )];
 
         assert_eq!(lookup.params(), expected_params);
     }
@@ -205,9 +212,7 @@ mod tests {
         assert!(lookup.is_address_search());
         assert!(lookup.has_address_fields());
 
-        let expected_params = vec![
-            ("freeform".to_string(), "123 Main St, Denver CO".to_string()),
-        ];
+        let expected_params = vec![("freeform".to_string(), "123 Main St, Denver CO".to_string())];
 
         assert_eq!(lookup.params(), expected_params);
     }

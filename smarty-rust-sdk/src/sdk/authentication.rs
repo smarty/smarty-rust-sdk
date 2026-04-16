@@ -134,7 +134,8 @@ mod tests {
 
     #[test]
     fn test_new_basic_auth_credential_with_special_characters() {
-        let cred = BasicAuthCredential::new("test@id#123".to_string(), "token!@#$%^&*()".to_string());
+        let cred =
+            BasicAuthCredential::new("test@id#123".to_string(), "token!@#$%^&*()".to_string());
 
         assert_eq!(cred.auth_id, "test@id#123");
         assert_eq!(cred.auth_token, "token!@#$%^&*()");
@@ -143,7 +144,10 @@ mod tests {
     #[test]
     fn test_new_basic_auth_credential_with_password_containing_colon() {
         // Note: Per RFC 2617, userid must NOT contain colons, but password can
-        let cred = BasicAuthCredential::new("validUserID".to_string(), "password:with:colons".to_string());
+        let cred = BasicAuthCredential::new(
+            "validUserID".to_string(),
+            "password:with:colons".to_string(),
+        );
 
         assert_eq!(cred.auth_id, "validUserID");
         assert_eq!(cred.auth_token, "password:with:colons");
@@ -217,6 +221,9 @@ mod tests {
         let authenticated_req = cloned_box.authenticate(req);
         let built = authenticated_req.build().unwrap();
 
-        assert!(built.headers().get(reqwest::header::AUTHORIZATION).is_some());
+        assert!(built
+            .headers()
+            .get(reqwest::header::AUTHORIZATION)
+            .is_some());
     }
 }

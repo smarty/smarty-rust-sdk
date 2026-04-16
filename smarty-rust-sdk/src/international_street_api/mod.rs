@@ -2,40 +2,53 @@ pub mod candidate;
 pub mod client;
 pub mod lookup;
 
-
 #[cfg(test)]
 mod tests {
-    use serde_json::from_str;
-    use crate::international_street_api::client::{InternationalStreetClient, ensure_enough_info};
+    use crate::international_street_api::candidate::*;
+    use crate::international_street_api::client::{ensure_enough_info, InternationalStreetClient};
     use crate::international_street_api::lookup::Lookup;
     use crate::sdk::error::SmartyError;
     use crate::sdk::options::OptionsBuilder;
-    use crate::international_street_api::candidate::*;
-
+    use serde_json::from_str;
 
     #[test]
     fn empty_lookup_missing_country() {
         let lookup = Lookup::default();
         let err = ensure_enough_info(&lookup).unwrap_err();
-        assert!(matches!(err, SmartyError::ValidationError(ref msg) if msg == "country field is required"));
+        assert!(
+            matches!(err, SmartyError::ValidationError(ref msg) if msg == "country field is required")
+        );
     }
 
     #[test]
     fn lookup_has_country_missing_freeform_and_address1() {
-        let lookup = Lookup { country: "CA".to_string(), ..Default::default() };
+        let lookup = Lookup {
+            country: "CA".to_string(),
+            ..Default::default()
+        };
         let err = ensure_enough_info(&lookup).unwrap_err();
-        assert!(matches!(err, SmartyError::ValidationError(ref msg) if msg == "either freeform or address1 is required"));
+        assert!(
+            matches!(err, SmartyError::ValidationError(ref msg) if msg == "either freeform or address1 is required")
+        );
     }
 
     #[test]
     fn lookup_valid_with_freeform() {
-        let lookup = Lookup { country: "CA".to_string(), freeform: "123 Main St".to_string(), ..Default::default() };
+        let lookup = Lookup {
+            country: "CA".to_string(),
+            freeform: "123 Main St".to_string(),
+            ..Default::default()
+        };
         assert!(ensure_enough_info(&lookup).is_ok());
     }
 
     #[test]
     fn lookup_valid_with_address1() {
-        let lookup = Lookup { country: "CA".to_string(), address1: "123 Main St".to_string(), ..Default::default() };
+        let lookup = Lookup {
+            country: "CA".to_string(),
+            address1: "123 Main St".to_string(),
+            ..Default::default()
+        };
         assert!(ensure_enough_info(&lookup).is_ok());
     }
 
@@ -82,7 +95,7 @@ mod tests {
     }
 
     #[test]
-    fn candidate_test(){
+    fn candidate_test() {
         let response_payload = r#"[{
             "input_id": "12345678",
             "organization": "1",
@@ -147,8 +160,9 @@ mod tests {
                 }
             }
         }]"#;
-    
-        let candidates: Vec<Candidate> = from_str(response_payload).expect("Failed to deserialize JSON");
+
+        let candidates: Vec<Candidate> =
+            from_str(response_payload).expect("Failed to deserialize JSON");
         let candidate = &candidates[0];
 
         assert_eq!(candidate.input_id, "12345678");
@@ -191,10 +205,19 @@ mod tests {
         assert_eq!(candidate.components.thoroughfare_trailing_type, "33");
         assert_eq!(candidate.components.thoroughfare_type, "34");
         assert_eq!(candidate.components.dependent_thoroughfare, "35");
-        assert_eq!(candidate.components.dependent_thoroughfare_predirection, "36");
-        assert_eq!(candidate.components.dependent_thoroughfare_postdirection, "37");
+        assert_eq!(
+            candidate.components.dependent_thoroughfare_predirection,
+            "36"
+        );
+        assert_eq!(
+            candidate.components.dependent_thoroughfare_postdirection,
+            "37"
+        );
         assert_eq!(candidate.components.dependent_thoroughfare_name, "38");
-        assert_eq!(candidate.components.dependent_thoroughfare_trailing_type, "39");
+        assert_eq!(
+            candidate.components.dependent_thoroughfare_trailing_type,
+            "39"
+        );
         assert_eq!(candidate.components.dependent_thoroughfare_type, "40");
         assert_eq!(candidate.components.building, "41");
         assert_eq!(candidate.components.building_leading_type, "42");
@@ -211,7 +234,10 @@ mod tests {
         assert_eq!(candidate.components.post_box_number, "51");
         assert_eq!(candidate.metadata.latitude, 52.0);
         assert_eq!(candidate.metadata.longitude, 53.0);
-        assert_eq!(candidate.metadata.geocode_classification, "multiple-point-average");
+        assert_eq!(
+            candidate.metadata.geocode_classification,
+            "multiple-point-average"
+        );
         assert_eq!(candidate.metadata.geocode_precision, "54");
         assert_eq!(candidate.metadata.max_geocode_precision, "55");
         assert_eq!(candidate.metadata.address_format, "56");
@@ -231,53 +257,210 @@ mod tests {
         assert_eq!(candidate.analysis.changes.root_level.address10, "70");
         assert_eq!(candidate.analysis.changes.root_level.address11, "71");
         assert_eq!(candidate.analysis.changes.root_level.address12, "72");
-        assert_eq!(candidate.analysis.changes.components.super_administrative_area, "73");
-        assert_eq!(candidate.analysis.changes.components.administrative_area, "74");
-        assert_eq!(candidate.analysis.changes.components.administrative_area_short, "74.1");
-        assert_eq!(candidate.analysis.changes.components.administrative_area_long, "74.2");
-        assert_eq!(candidate.analysis.changes.components.sub_administrative_area, "75");
+        assert_eq!(
+            candidate
+                .analysis
+                .changes
+                .components
+                .super_administrative_area,
+            "73"
+        );
+        assert_eq!(
+            candidate.analysis.changes.components.administrative_area,
+            "74"
+        );
+        assert_eq!(
+            candidate
+                .analysis
+                .changes
+                .components
+                .administrative_area_short,
+            "74.1"
+        );
+        assert_eq!(
+            candidate
+                .analysis
+                .changes
+                .components
+                .administrative_area_long,
+            "74.2"
+        );
+        assert_eq!(
+            candidate
+                .analysis
+                .changes
+                .components
+                .sub_administrative_area,
+            "75"
+        );
         assert_eq!(candidate.analysis.changes.components.building, "76");
-        assert_eq!(candidate.analysis.changes.components.dependent_locality, "77");
-        assert_eq!(candidate.analysis.changes.components.dependent_locality_name, "78");
-        assert_eq!(candidate.analysis.changes.components.double_dependent_locality, "79");
+        assert_eq!(
+            candidate.analysis.changes.components.dependent_locality,
+            "77"
+        );
+        assert_eq!(
+            candidate
+                .analysis
+                .changes
+                .components
+                .dependent_locality_name,
+            "78"
+        );
+        assert_eq!(
+            candidate
+                .analysis
+                .changes
+                .components
+                .double_dependent_locality,
+            "79"
+        );
         assert_eq!(candidate.analysis.changes.components.country_iso_3, "80");
         assert_eq!(candidate.analysis.changes.components.locality, "81");
         assert_eq!(candidate.analysis.changes.components.postal_code, "82");
-        assert_eq!(candidate.analysis.changes.components.postal_code_short, "83");
-        assert_eq!(candidate.analysis.changes.components.postal_code_extra, "84");
+        assert_eq!(
+            candidate.analysis.changes.components.postal_code_short,
+            "83"
+        );
+        assert_eq!(
+            candidate.analysis.changes.components.postal_code_extra,
+            "84"
+        );
         assert_eq!(candidate.analysis.changes.components.premise, "85");
         assert_eq!(candidate.analysis.changes.components.premise_extra, "86");
         assert_eq!(candidate.analysis.changes.components.premise_number, "87");
         assert_eq!(candidate.analysis.changes.components.premise_type, "88");
-        assert_eq!(candidate.analysis.changes.components.premise_prefix_number, "89");
+        assert_eq!(
+            candidate.analysis.changes.components.premise_prefix_number,
+            "89"
+        );
         assert_eq!(candidate.analysis.changes.components.thoroughfare, "90");
-        assert_eq!(candidate.analysis.changes.components.thoroughfare_predirection, "91");
-        assert_eq!(candidate.analysis.changes.components.thoroughfare_postdirection, "92");
-        assert_eq!(candidate.analysis.changes.components.thoroughfare_name, "93");
-        assert_eq!(candidate.analysis.changes.components.thoroughfare_trailing_type, "94");
-        assert_eq!(candidate.analysis.changes.components.thoroughfare_type, "95");
-        assert_eq!(candidate.analysis.changes.components.dependent_thoroughfare, "96");
-        assert_eq!(candidate.analysis.changes.components.dependent_thoroughfare_predirection, "97");
-        assert_eq!(candidate.analysis.changes.components.dependent_thoroughfare_postdirection, "98");
-        assert_eq!(candidate.analysis.changes.components.dependent_thoroughfare_name, "99");
-        assert_eq!(candidate.analysis.changes.components.dependent_thoroughfare_trailing_type, "100");
-        assert_eq!(candidate.analysis.changes.components.dependent_thoroughfare_type, "101");
-        assert_eq!(candidate.analysis.changes.components.building_leading_type, "102");
+        assert_eq!(
+            candidate
+                .analysis
+                .changes
+                .components
+                .thoroughfare_predirection,
+            "91"
+        );
+        assert_eq!(
+            candidate
+                .analysis
+                .changes
+                .components
+                .thoroughfare_postdirection,
+            "92"
+        );
+        assert_eq!(
+            candidate.analysis.changes.components.thoroughfare_name,
+            "93"
+        );
+        assert_eq!(
+            candidate
+                .analysis
+                .changes
+                .components
+                .thoroughfare_trailing_type,
+            "94"
+        );
+        assert_eq!(
+            candidate.analysis.changes.components.thoroughfare_type,
+            "95"
+        );
+        assert_eq!(
+            candidate.analysis.changes.components.dependent_thoroughfare,
+            "96"
+        );
+        assert_eq!(
+            candidate
+                .analysis
+                .changes
+                .components
+                .dependent_thoroughfare_predirection,
+            "97"
+        );
+        assert_eq!(
+            candidate
+                .analysis
+                .changes
+                .components
+                .dependent_thoroughfare_postdirection,
+            "98"
+        );
+        assert_eq!(
+            candidate
+                .analysis
+                .changes
+                .components
+                .dependent_thoroughfare_name,
+            "99"
+        );
+        assert_eq!(
+            candidate
+                .analysis
+                .changes
+                .components
+                .dependent_thoroughfare_trailing_type,
+            "100"
+        );
+        assert_eq!(
+            candidate
+                .analysis
+                .changes
+                .components
+                .dependent_thoroughfare_type,
+            "101"
+        );
+        assert_eq!(
+            candidate.analysis.changes.components.building_leading_type,
+            "102"
+        );
         assert_eq!(candidate.analysis.changes.components.building_name, "103");
-        assert_eq!(candidate.analysis.changes.components.building_trailing_type, "104");
-        assert_eq!(candidate.analysis.changes.components.sub_building_type, "105");
-        assert_eq!(candidate.analysis.changes.components.sub_building_number, "106");
-        assert_eq!(candidate.analysis.changes.components.sub_building_name, "107");
+        assert_eq!(
+            candidate.analysis.changes.components.building_trailing_type,
+            "104"
+        );
+        assert_eq!(
+            candidate.analysis.changes.components.sub_building_type,
+            "105"
+        );
+        assert_eq!(
+            candidate.analysis.changes.components.sub_building_number,
+            "106"
+        );
+        assert_eq!(
+            candidate.analysis.changes.components.sub_building_name,
+            "107"
+        );
         assert_eq!(candidate.analysis.changes.components.sub_building, "108");
         assert_eq!(candidate.analysis.changes.components.level_type, "108.1");
         assert_eq!(candidate.analysis.changes.components.level_number, "108.2");
         assert_eq!(candidate.analysis.changes.components.post_box, "109");
         assert_eq!(candidate.analysis.changes.components.post_box_type, "110");
         assert_eq!(candidate.analysis.changes.components.post_box_number, "111");
-        assert_eq!(candidate.analysis.changes.components.additional_content, "112");
-        assert_eq!(candidate.analysis.changes.components.delivery_installation, "113");
-        assert_eq!(candidate.analysis.changes.components.delivery_installation_type, "114");
-        assert_eq!(candidate.analysis.changes.components.delivery_installation_qualifier_name, "115");
+        assert_eq!(
+            candidate.analysis.changes.components.additional_content,
+            "112"
+        );
+        assert_eq!(
+            candidate.analysis.changes.components.delivery_installation,
+            "113"
+        );
+        assert_eq!(
+            candidate
+                .analysis
+                .changes
+                .components
+                .delivery_installation_type,
+            "114"
+        );
+        assert_eq!(
+            candidate
+                .analysis
+                .changes
+                .components
+                .delivery_installation_qualifier_name,
+            "115"
+        );
         assert_eq!(candidate.analysis.changes.components.route, "116");
         assert_eq!(candidate.analysis.changes.components.route_number, "117");
         assert_eq!(candidate.analysis.changes.components.route_type, "118");

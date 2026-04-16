@@ -35,10 +35,7 @@ impl USEnrichmentClient {
     /// HTTP 304 Not Modified, the lookup's results are left untouched and the
     /// etag is refreshed from the response. On 2xx the results are replaced
     /// via [`EnrichmentRequest::apply_results`].
-    pub async fn send<L: EnrichmentRequest>(
-        &self,
-        lookup: &mut L,
-    ) -> Result<(), SmartyError> {
+    pub async fn send<L: EnrichmentRequest>(&self, lookup: &mut L) -> Result<(), SmartyError> {
         lookup.validate()?;
 
         let url = lookup.build_url(&self.client.url)?;

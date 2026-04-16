@@ -7,10 +7,10 @@ pub mod candidate;
 mod tests {
     use crate::sdk::batch::Batch;
     use crate::sdk::options::OptionsBuilder;
+    use crate::us_street_api::candidate::Candidate;
     use crate::us_street_api::client::USStreetAddressClient;
     use crate::us_street_api::lookup::{Lookup, MatchStrategy};
     use serde_json::json;
-    use crate::us_street_api::candidate::Candidate;
 
     #[test]
     fn client_test() {
@@ -419,5 +419,4 @@ mod tests {
         assert_eq!(json["match"], "strict");
         assert!(json.get("candidates").is_none());
     }
-
 }

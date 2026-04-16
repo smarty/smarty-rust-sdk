@@ -130,17 +130,14 @@ mod tests {
         assert_eq!(client.url.to_string(), "https://www.smarty.com/docs");
     }
 
-    fn build_request_headers(
-        options: OptionsBuilder,
-    ) -> reqwest::header::HeaderMap {
+    fn build_request_headers(options: OptionsBuilder) -> reqwest::header::HeaderMap {
         let client = Client::new(
             "https://www.smarty.com".parse().unwrap(),
             options.build(),
             "test",
         )
         .unwrap();
-        let reqwest_client =
-            reqwest_middleware::ClientBuilder::new(reqwest::Client::new()).build();
+        let reqwest_client = reqwest_middleware::ClientBuilder::new(reqwest::Client::new()).build();
         let builder = reqwest_client.get("https://www.smarty.com/test");
         let built = client.build_request(builder).build().unwrap();
         built.headers().clone()
@@ -156,18 +153,12 @@ mod tests {
 
     #[test]
     fn appended_user_agent_header() {
-        let options = OptionsBuilder::new(None).with_appended_header(
-            USER_AGENT.as_str(),
-            "my-app/1.0",
-            " ",
-        );
+        let options =
+            OptionsBuilder::new(None).with_appended_header(USER_AGENT.as_str(), "my-app/1.0", " ");
         let headers = build_request_headers(options);
         let ua = headers.get(USER_AGENT).unwrap().to_str().unwrap();
 
-        assert_eq!(
-            ua,
-            format!("smarty (sdk:rust@{}) my-app/1.0", VERSION)
-        );
+        assert_eq!(ua, format!("smarty (sdk:rust@{}) my-app/1.0", VERSION));
     }
 
     #[test]
@@ -219,10 +210,7 @@ mod tests {
         let headers = build_request_headers(options);
 
         let ua = headers.get(USER_AGENT).unwrap().to_str().unwrap();
-        assert_eq!(
-            ua,
-            format!("smarty (sdk:rust@{}) my-app/1.0", VERSION)
-        );
+        assert_eq!(ua, format!("smarty (sdk:rust@{}) my-app/1.0", VERSION));
 
         let regular = headers.get("x-regular").unwrap().to_str().unwrap();
         assert_eq!(regular, "regular-val");

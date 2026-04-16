@@ -35,7 +35,7 @@ impl Default for Lookup {
 
 impl Lookup {
     pub(crate) fn into_param_array(self) -> Vec<(String, String)> {
-        vec![
+        [
             has_param("html".to_string(), self.html.to_string()),
             has_param("aggressive".to_string(), self.aggressive),
             has_param(
