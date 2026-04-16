@@ -13,9 +13,8 @@ pub mod risk;
 mod tests {
     use crate::us_enrichment_api::business::{BusinessSummaryResponse, BusinessDetailResponse};
     use crate::us_enrichment_api::client::USEnrichmentClient;
-    use crate::us_enrichment_api::lookup::EnrichmentLookup;
+    use crate::us_enrichment_api::lookup::{BusinessDetailLookup, EnrichmentLookup};
     use crate::us_enrichment_api::principal::PrincipalResponse;
-    use crate::us_enrichment_api::response::{EndpointPathKind, EnrichmentResponse};
     use crate::sdk::options::OptionsBuilder;
 
     #[test]
@@ -167,35 +166,9 @@ mod tests {
     }
 
     #[test]
-    fn business_summary_path_kind_is_standard() {
-        assert_eq!(BusinessSummaryResponse::path_kind(), EndpointPathKind::Standard);
-    }
-
-    #[test]
-    fn business_detail_path_kind_is_business_id() {
-        assert_eq!(BusinessDetailResponse::path_kind(), EndpointPathKind::BusinessId);
-    }
-
-    #[test]
-    fn principal_path_kind_is_standard() {
-        assert_eq!(PrincipalResponse::path_kind(), EndpointPathKind::Standard);
-    }
-
-    #[test]
     fn business_summary_lookup_by_smarty_key() {
         let lookup: EnrichmentLookup<BusinessSummaryResponse> = EnrichmentLookup {
             smarty_key: 1962995076,
-            ..Default::default()
-        };
-
-        assert!(!lookup.is_address_search());
-        assert!(lookup.business_id.is_empty());
-    }
-
-    #[test]
-    fn business_id_with_no_smarty_key_is_not_address_search() {
-        let lookup: EnrichmentLookup<BusinessSummaryResponse> = EnrichmentLookup {
-            business_id: "GEYTCMZSGU2TCMBZHE3DIOI".to_string(),
             ..Default::default()
         };
 
@@ -204,12 +177,38 @@ mod tests {
 
     #[test]
     fn business_detail_lookup() {
-        let lookup: EnrichmentLookup<BusinessDetailResponse> = EnrichmentLookup {
+        let lookup = BusinessDetailLookup {
             business_id: "GEYTCMZSGU2TCMBZHE3DIOI".to_string(),
             ..Default::default()
         };
 
         assert!(!lookup.business_id.is_empty());
+    }
+
+    #[test]
+    fn business_detail_lookup_default() {
+        let lookup = BusinessDetailLookup::default();
+
+        assert!(lookup.business_id.is_empty());
+        assert!(lookup.etag.is_empty());
+        assert!(lookup.results.is_empty());
+    }
+
+    #[test]
+    fn business_detail_lookup_params() {
+        let lookup = BusinessDetailLookup {
+            business_id: "ABC123".to_string(),
+            include: "company_name,city_name".to_string(),
+            exclude: "latitude".to_string(),
+            ..Default::default()
+        };
+
+        let expected_params = vec![
+            ("include".to_string(), "company_name,city_name".to_string()),
+            ("exclude".to_string(), "latitude".to_string()),
+        ];
+
+        assert_eq!(lookup.into_param_array(), expected_params);
     }
 
     #[test]

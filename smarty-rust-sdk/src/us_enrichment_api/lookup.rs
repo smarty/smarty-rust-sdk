@@ -1,10 +1,10 @@
 use crate::sdk::has_param;
+use crate::us_enrichment_api::business::BusinessDetailResponse;
 use crate::us_enrichment_api::response::EnrichmentResponse;
 
 #[derive(Clone, Default)]
 pub struct EnrichmentLookup<R: EnrichmentResponse> {
     pub smarty_key: u32,
-    pub business_id: String,
     pub include: String,
     pub exclude: String,
     pub etag: String,
@@ -42,7 +42,7 @@ impl<R: EnrichmentResponse> EnrichmentLookup<R> {
 
     /// Returns true if this is an address search lookup (no smarty_key provided)
     pub fn is_address_search(&self) -> bool {
-        self.smarty_key == 0 && self.business_id.is_empty()
+        self.smarty_key == 0
     }
 
     /// Returns true if any address fields are populated
@@ -52,5 +52,26 @@ impl<R: EnrichmentResponse> EnrichmentLookup<R> {
             || !self.state.is_empty()
             || !self.zipcode.is_empty()
             || !self.freeform.is_empty()
+    }
+}
+
+#[derive(Clone, Default)]
+pub struct BusinessDetailLookup {
+    pub business_id: String,
+    pub include: String,
+    pub exclude: String,
+    pub etag: String,
+    pub results: Vec<BusinessDetailResponse>,
+}
+
+impl BusinessDetailLookup {
+    pub(crate) fn into_param_array(self) -> Vec<(String, String)> {
+        [
+            has_param("include".to_string(), self.include),
+            has_param("exclude".to_string(), self.exclude),
+        ]
+        .into_iter()
+        .flatten()
+        .collect()
     }
 }

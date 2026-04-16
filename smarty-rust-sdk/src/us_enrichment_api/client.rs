@@ -4,11 +4,11 @@ use crate::sdk::client::Client;
 use crate::sdk::error::SmartyError;
 use crate::sdk::options::Options;
 use crate::sdk::{parse_response_json, send_request_full};
-use crate::us_enrichment_api::lookup::EnrichmentLookup;
+use crate::us_enrichment_api::lookup::{BusinessDetailLookup, EnrichmentLookup};
 use reqwest::Method;
 use smarty_rust_proc_macro::smarty_api;
 
-use super::response::{EndpointPathKind, EnrichmentResponse};
+use super::response::EnrichmentResponse;
 
 #[smarty_api(
     api_path = "lookup",
@@ -21,46 +21,27 @@ use super::response::{EndpointPathKind, EnrichmentResponse};
 pub struct USEnrichmentClient;
 
 impl USEnrichmentClient {
-    /// Uses the lookup and the client in
-    /// order to build a request and send the message
-    /// to the server.
+    /// Sends an enrichment lookup for standard endpoints that use
+    /// `/lookup/{smarty_key}/{type}` or `/lookup/search/{type}`.
     pub async fn send<R: EnrichmentResponse>(
         &self,
         lookup: &mut EnrichmentLookup<R>,
     ) -> Result<(), SmartyError> {
+        if lookup.is_address_search() && !lookup.has_address_fields() {
+            return Err(SmartyError::ValidationError(
+                "address search requires at least one address field (street, city, state, zipcode, or freeform)".to_string()
+            ));
+        }
+
         let mut url = self.client.url.clone();
 
-        url = match R::path_kind() {
-            EndpointPathKind::BusinessId => {
-                if lookup.business_id.is_empty() {
-                    return Err(SmartyError::ValidationError(
-                        "business detail lookup requires a business_id".to_string(),
-                    ));
-                }
-                url.join(&format!(
-                    "/lookup/{}/{}",
-                    R::lookup_type(),
-                    lookup.business_id
-                ))?
-            }
-            EndpointPathKind::Standard => {
-                if lookup.is_address_search() && !lookup.has_address_fields() {
-                    return Err(SmartyError::ValidationError(
-                        "address search requires at least one address field (street, city, state, zipcode, or freeform)".to_string()
-                    ));
-                }
-                let key_or_search: Cow<str> = if lookup.is_address_search() {
-                    "search".into()
-                } else {
-                    lookup.smarty_key.to_string().into()
-                };
-                url.join(&format!(
-                    "/lookup/{}/{}",
-                    key_or_search,
-                    R::lookup_type()
-                ))?
-            }
+        let key_or_search: Cow<str> = if lookup.is_address_search() {
+            "search".into()
+        } else {
+            lookup.smarty_key.to_string().into()
         };
+
+        url = url.join(&format!("/lookup/{}/{}", key_or_search, R::lookup_type()))?;
 
         let mut req = self.client.reqwest_client.request(Method::GET, url);
 
@@ -83,6 +64,47 @@ impl USEnrichmentClient {
         let candidates = parse_response_json(response).await?;
 
         lookup.set_results(candidates);
+
+        Ok(())
+    }
+
+    /// Sends a business detail lookup using `/lookup/business/{business_id}`.
+    pub async fn send_business_detail(
+        &self,
+        lookup: &mut BusinessDetailLookup,
+    ) -> Result<(), SmartyError> {
+        if lookup.business_id.is_empty() {
+            return Err(SmartyError::ValidationError(
+                "business detail lookup requires a business_id".to_string(),
+            ));
+        }
+
+        let url = self
+            .client
+            .url
+            .join(&format!("/lookup/business/{}", lookup.business_id))?;
+
+        let mut req = self.client.reqwest_client.request(Method::GET, url);
+
+        if !lookup.etag.is_empty() {
+            req = req.header("ETag", &lookup.etag);
+        }
+
+        req = self.client.build_request(req);
+        req = req.query(&lookup.clone().into_param_array());
+
+        let response = send_request_full(req).await?;
+
+        let etag = response
+            .headers()
+            .get("ETag")
+            .map(|x| x.to_str().expect("ETag should always be a string"))
+            .unwrap_or_default();
+        lookup.etag = etag.to_string();
+
+        let candidates = parse_response_json(response).await?;
+
+        lookup.results = candidates;
 
         Ok(())
     }

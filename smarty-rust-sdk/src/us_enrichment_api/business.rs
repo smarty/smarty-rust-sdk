@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use super::response::{EndpointPathKind, EnrichmentResponse};
+use super::response::EnrichmentResponse;
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(default)]
@@ -35,10 +35,6 @@ pub struct BusinessDetailResponse {
 impl EnrichmentResponse for BusinessDetailResponse {
     fn lookup_type() -> &'static str {
         "business"
-    }
-
-    fn path_kind() -> EndpointPathKind {
-        EndpointPathKind::BusinessId
     }
 }
 

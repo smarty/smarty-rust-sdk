@@ -1,9 +1,9 @@
 use smarty_rust_sdk::sdk::authentication::BasicAuthCredential;
 use smarty_rust_sdk::sdk::options::OptionsBuilder;
 
-use smarty_rust_sdk::us_enrichment_api::business::{BusinessDetailResponse, BusinessSummaryResponse};
+use smarty_rust_sdk::us_enrichment_api::business::BusinessSummaryResponse;
 use smarty_rust_sdk::us_enrichment_api::client::USEnrichmentClient;
-use smarty_rust_sdk::us_enrichment_api::lookup::EnrichmentLookup;
+use smarty_rust_sdk::us_enrichment_api::lookup::{BusinessDetailLookup, EnrichmentLookup};
 
 use std::error::Error;
 
@@ -47,12 +47,12 @@ async fn main() -> Result<(), Box<dyn Error>> {
         summary_lookup.results[0].businesses[0].company_name, business_id
     );
 
-    let mut detail_lookup = EnrichmentLookup::<BusinessDetailResponse> {
+    let mut detail_lookup = BusinessDetailLookup {
         business_id: business_id.clone(),
         ..Default::default()
     };
 
-    client.send(&mut detail_lookup).await?;
+    client.send_business_detail(&mut detail_lookup).await?;
 
     println!("\nDetail results:");
     for (i, response) in detail_lookup.results.iter().enumerate() {
