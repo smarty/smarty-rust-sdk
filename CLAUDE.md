@@ -51,6 +51,12 @@ Run a single test: `cargo test <test_name>`
 
 The `us_street_multithread` example has no make target — invoke it directly with `cargo run --example us_street_multithread` if needed.
 
+### Tests
+
+- Unit tests live inline (`#[cfg(test)]`) in each module's `mod.rs`.
+- `tests/us_enrichment_http.rs` — wiremock-driven HTTP tests for the enrichment client (`If-None-Match`, 304, ETag round-trips, contract violations). No credentials; runs as part of default `cargo test`.
+- `tests/us_street_integration.rs` — live-API integration tests, gated by `#[ignore]`. Run via `make integration`; requires `SMARTY_AUTH_ID` / `SMARTY_AUTH_TOKEN`.
+
 ## Architecture
 
 This is the official Smarty Rust SDK for address verification APIs. It uses a workspace with two crates:
