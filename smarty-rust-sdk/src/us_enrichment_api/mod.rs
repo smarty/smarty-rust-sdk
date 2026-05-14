@@ -7,7 +7,6 @@ pub mod response;
 pub mod business;
 pub mod geo;
 pub mod principal;
-pub mod risk;
 pub mod secondary;
 
 #[cfg(test)]

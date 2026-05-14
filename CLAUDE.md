@@ -96,7 +96,7 @@ Three `custom_send` clients implement their own `send()`:
 - **USEnrichmentClient**: Generic `send<L: EnrichmentRequest>(&self, lookup: &mut L)`. The `EnrichmentRequest` trait (in `us_enrichment_api/request.rs`) lets each lookup own its URL shape, validation, query params, ETag state, and result-apply logic. The client handles `If-None-Match` / 304 Not Modified; on 304 prior results are left untouched and only the ETag refreshes
 - **InternationalAutocompleteClient**: Optional address_id path suffix appended to URL
 
-Enrichment lookup types (`geo`, `secondary`, `principal`, `risk`, `business`, plus the search variant) each implement `EnrichmentRequest` — add new enrichment endpoints by implementing the trait, not by extending the client.
+Enrichment lookup types (`geo`, `secondary`, `principal`, `business`, plus the search variant) each implement `EnrichmentRequest` — add new enrichment endpoints by implementing the trait, not by extending the client.
 
 ### Core SDK Components (in `sdk/`)
 
