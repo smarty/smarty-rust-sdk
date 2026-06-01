@@ -35,8 +35,8 @@ async fn out_of_range_latitude_surfaces_http_error_with_code_and_body() {
 
     let client = client_for(&server);
     let mut lookup = Lookup {
-        latitude: 99937.42251134855708,
-        longitude: -122.08412869140541,
+        latitude: 99_937.422_511_348_56,
+        longitude: -122.084_128_691_405_41,
         ..Default::default()
     };
 
@@ -46,9 +46,17 @@ async fn out_of_range_latitude_surfaces_http_error_with_code_and_body() {
         .expect_err("422 should be an error");
 
     match err {
-        SmartyError::HttpError { code, detail } => {
+        SmartyError::HttpError {
+            code,
+            message,
+            body: raw_body,
+        } => {
             assert_eq!(code.as_u16(), 422);
-            assert_eq!(detail, body, "response body should be preserved verbatim");
+            assert_eq!(raw_body, body, "response body should be preserved verbatim");
+            assert_eq!(
+                message, "latitude is out of range",
+                "message should be parsed from errors[].message"
+            );
         }
         other => panic!("expected HttpError, got {other:?}"),
     }
@@ -71,8 +79,8 @@ async fn http_error_display_includes_status_and_detail() {
 
     let client = client_for(&server);
     let mut lookup = Lookup {
-        latitude: 99937.42251134855708,
-        longitude: -122.08412869140541,
+        latitude: 99_937.422_511_348_56,
+        longitude: -122.084_128_691_405_41,
         ..Default::default()
     };
 
