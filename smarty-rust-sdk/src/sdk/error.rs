@@ -10,8 +10,7 @@ pub enum SmartyError {
     Middleware(#[from] anyhow::Error),
     #[error("failed to parse url")]
     Parse(#[from] url::ParseError),
-    #[error("http error")]
+    #[error("http error {code}: {detail}")]
     HttpError { code: StatusCode, detail: String },
     #[error("validation error: {0}")]
     ValidationError(String),
-}
