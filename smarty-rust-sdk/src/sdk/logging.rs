@@ -1,6 +1,6 @@
+use hyper::http::Extensions;
 use reqwest::{Request, Response};
 use reqwest_middleware::{Middleware, Next};
-use task_local_extensions::Extensions;
 
 pub struct LoggingMiddleware;
 

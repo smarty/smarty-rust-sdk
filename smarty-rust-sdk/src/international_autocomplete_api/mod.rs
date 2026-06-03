@@ -87,6 +87,6 @@ mod tests {
 
         assert_eq!(lookup.max_results, 5);
         assert_eq!(lookup.max_group_results, 100);
-        assert_eq!(lookup.geolocation, false);
+        assert!(!lookup.geolocation);
     }
 }

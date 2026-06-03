@@ -37,7 +37,7 @@ impl Middleware for SmartyRetryMiddleware {
     async fn handle(
         &self,
         req: Request,
-        extensions: &mut task_local_extensions::Extensions,
+        extensions: &mut hyper::http::Extensions,
         next: reqwest_middleware::Next<'_>,
     ) -> reqwest_middleware::Result<Response> {
         self.handle_retry(req, extensions, next).await
@@ -48,7 +48,7 @@ impl SmartyRetryMiddleware {
     async fn handle_retry<'a>(
         &'a self,
         req: Request,
-        extensions: &'a mut task_local_extensions::Extensions,
+        extensions: &'a mut hyper::http::Extensions,
         next: reqwest_middleware::Next<'a>,
     ) -> reqwest_middleware::Result<Response> {
         let mut cur_retries = 0;
