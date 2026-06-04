@@ -36,7 +36,7 @@ impl OptionsBuilder {
     pub fn new(authentication: Option<Box<dyn Authenticate>>) -> Self {
         Self {
             license: "".to_string(),
-            num_retries: 10,
+            num_retries: 5,
             logging_enabled: false,
             headers: vec![],
             append_headers: HashMap::new(),
@@ -206,6 +206,12 @@ impl Clone for Options {
 #[cfg(test)]
 mod tests {
     use super::OptionsBuilder;
+
+    #[test]
+    fn default_retry_count_is_5() {
+        let options = OptionsBuilder::new(None).build();
+        assert_eq!(options.num_retries, 5);
+    }
 
     #[test]
     fn with_iana_time_zone_sets_feature() {

@@ -5,6 +5,7 @@ use log::warn;
 use reqwest::{Request, Response, StatusCode};
 use reqwest_middleware::{Error, Middleware};
 
+const DEFAULT_SLEEP_SECS: u64 = 10;
 const MAX_RETRY_DURATION: u64 = 10;
 
 enum RetryResult {
@@ -23,12 +24,6 @@ impl SmartyRetryMiddleware {
         Self {
             retry_count: max_retries,
         }
-    }
-}
-
-impl Default for SmartyRetryMiddleware {
-    fn default() -> Self {
-        Self::new(10)
     }
 }
 
@@ -74,7 +69,6 @@ impl SmartyRetryMiddleware {
             break match retry {
                 RetryResult::Transient => {
                     cur_retries += 1;
-
                     warn!(
                         "Retry Attempt #{}, Sleeping {} seconds before the next attempt",
                         cur_retries,
@@ -82,19 +76,16 @@ impl SmartyRetryMiddleware {
                     );
                     tokio::time::sleep(Duration::from_secs(cur_retries.min(MAX_RETRY_DURATION)))
                         .await;
-
                     continue;
                 }
-                RetryResult::RateLimit(time) => {
+                RetryResult::RateLimit(sleep_duration) => {
                     cur_retries += 1;
                     warn!(
-                        "Retry Attempt #{} resulted in rate limit. Waiting for {}",
+                        "Retry Attempt #{} resulted in rate limit. Sleeping {} seconds before the next attempt",
                         cur_retries,
-                        time.as_secs()
+                        sleep_duration.as_secs()
                     );
-
-                    tokio::time::sleep(time).await;
-
+                    tokio::time::sleep(sleep_duration).await;
                     continue;
                 }
                 _ => res,
@@ -104,8 +95,10 @@ impl SmartyRetryMiddleware {
 }
 
 fn retry_success(res: &Response) -> RetryResult {
-    let status = res.status();
+    classify_response(res.status(), res.headers().get(RETRY_AFTER))
+}
 
+fn classify_response(status: StatusCode, retry_after: Option<&reqwest::header::HeaderValue>) -> RetryResult {
     if status.is_success() {
         return RetryResult::Success;
     }
@@ -116,31 +109,29 @@ fn retry_success(res: &Response) -> RetryResult {
         | StatusCode::BAD_GATEWAY
         | StatusCode::SERVICE_UNAVAILABLE
         | StatusCode::GATEWAY_TIMEOUT => RetryResult::Transient,
-        StatusCode::TOO_MANY_REQUESTS => match res.headers().get(RETRY_AFTER) {
-            Some(time) => {
-                if let Ok(time) = time.to_str() {
-                    if let Ok(time) = time.parse::<u64>() {
-                        RetryResult::RateLimit(Duration::from_secs(time))
+        StatusCode::TOO_MANY_REQUESTS => {
+            let sleep_duration = match retry_after {
+                Some(value) => {
+                    if let Ok(s) = value.to_str() {
+                        if let Ok(secs) = s.parse::<u64>() {
+                            Duration::from_secs(secs)
+                        } else {
+                            warn!("Server Returned Too Many Requests Status Code, but the RETRY_AFTER header was unable to be parsed. Using default of {} seconds.", DEFAULT_SLEEP_SECS);
+                            Duration::from_secs(DEFAULT_SLEEP_SECS)
+                        }
                     } else {
-                        warn!(
-                                "Server Returned Too Many Requests Status Code, but the RETRY_AFTER header was unable to be parsed"
-                            );
-                        RetryResult::Transient
+                        warn!("Server Returned Too Many Requests Status Code, but the RETRY_AFTER header was unable to be turned into a valid utf-8 string. Using default of {} seconds.", DEFAULT_SLEEP_SECS);
+                        Duration::from_secs(DEFAULT_SLEEP_SECS)
                     }
-                } else {
-                    warn!("Server Returned Too Many Requests Status Code, but the RETRY_AFTER header was unable to be turned into a valid utf-8 string");
-                    RetryResult::Transient
                 }
-            }
-            _ => {
-                warn!("Server Returned Too Many Requests Status Code, but the RETRY_AFTER header was non-existent");
-                RetryResult::Transient
-            }
-        },
-        _ => {
-            // Fatal
-            RetryResult::Fatal
+                None => {
+                    warn!("Server Returned Too Many Requests Status Code, but the RETRY_AFTER header was non-existent. Using default of {} seconds.", DEFAULT_SLEEP_SECS);
+                    Duration::from_secs(DEFAULT_SLEEP_SECS)
+                }
+            };
+            RetryResult::RateLimit(sleep_duration)
         }
+        _ => RetryResult::Fatal,
     }
 }
 
@@ -223,4 +214,83 @@ fn get_source_error_type<T: std::error::Error + 'static>(
         source = err.source();
     }
     None
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use reqwest::header::HeaderValue;
+
+    #[test]
+    fn custom_retry_count() {
+        let middleware = SmartyRetryMiddleware::new(3);
+        assert_eq!(middleware.retry_count, 3);
+    }
+
+    #[test]
+    fn retry_after_header_parsed_correctly() {
+        let header = HeaderValue::from_static("30");
+        let result = classify_response(StatusCode::TOO_MANY_REQUESTS, Some(&header));
+        match result {
+            RetryResult::RateLimit(d) => assert_eq!(d, Duration::from_secs(30)),
+            _ => panic!("Expected RateLimit with Retry-After duration"),
+        }
+    }
+
+    #[test]
+    fn retry_after_missing_uses_default_sleep() {
+        let result = classify_response(StatusCode::TOO_MANY_REQUESTS, None);
+        match result {
+            RetryResult::RateLimit(d) => assert_eq!(d, Duration::from_secs(DEFAULT_SLEEP_SECS)),
+            _ => panic!("Expected RateLimit with default sleep duration"),
+        }
+    }
+
+    #[test]
+    fn retry_after_unparseable_uses_default_sleep() {
+        let header = HeaderValue::from_static("not-a-number");
+        let result = classify_response(StatusCode::TOO_MANY_REQUESTS, Some(&header));
+        match result {
+            RetryResult::RateLimit(d) => assert_eq!(d, Duration::from_secs(DEFAULT_SLEEP_SECS)),
+            _ => panic!("Expected RateLimit with default sleep duration"),
+        }
+    }
+
+    #[test]
+    fn transient_errors_are_retried() {
+        for status in [
+            StatusCode::REQUEST_TIMEOUT,
+            StatusCode::INTERNAL_SERVER_ERROR,
+            StatusCode::BAD_GATEWAY,
+            StatusCode::SERVICE_UNAVAILABLE,
+            StatusCode::GATEWAY_TIMEOUT,
+        ] {
+            assert!(
+                matches!(classify_response(status, None), RetryResult::Transient),
+                "status {status} should be Transient"
+            );
+        }
+    }
+
+    #[test]
+    fn success_response_is_not_retried() {
+        let result = classify_response(StatusCode::OK, None);
+        assert!(matches!(result, RetryResult::Success));
+    }
+
+    #[test]
+    fn fatal_status_codes_are_not_retried() {
+        for status in [
+            StatusCode::BAD_REQUEST,
+            StatusCode::UNAUTHORIZED,
+            StatusCode::FORBIDDEN,
+            StatusCode::NOT_FOUND,
+            StatusCode::UNPROCESSABLE_ENTITY,
+        ] {
+            assert!(
+                matches!(classify_response(status, None), RetryResult::Fatal),
+                "status {status} should be Fatal"
+            );
+        }
+    }
 }
