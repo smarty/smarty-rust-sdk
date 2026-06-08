@@ -147,6 +147,12 @@ mod tests {
             ..Default::default()
         };
         assert!(lookup_freeform.has_address_fields());
+
+        let lookup_business_name: EnrichmentLookup<PrincipalResponse> = EnrichmentLookup {
+            business_name: "Style Studio".to_string(),
+            ..Default::default()
+        };
+        assert!(lookup_business_name.has_address_fields());
     }
 
     #[test]
@@ -219,18 +225,15 @@ mod tests {
     #[test]
     fn business_summary_business_name_search() {
         let lookup: EnrichmentLookup<BusinessSummaryResponse> = EnrichmentLookup {
-            freeform: "123 Main St, Denver CO".to_string(),
-            business_name: "Acme Corp".to_string(),
+            business_name: "Style Studio".to_string(),
             ..Default::default()
         };
 
         assert!(lookup.is_address_search());
         assert!(lookup.has_address_fields());
+        assert!(lookup.validate().is_ok());
 
-        let expected_params = vec![
-            ("freeform".to_string(), "123 Main St, Denver CO".to_string()),
-            ("business_name".to_string(), "Acme Corp".to_string()),
-        ];
+        let expected_params = vec![("business_name".to_string(), "Style Studio".to_string())];
 
         assert_eq!(lookup.params(), expected_params);
     }

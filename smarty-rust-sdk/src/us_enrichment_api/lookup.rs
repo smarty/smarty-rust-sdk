@@ -39,6 +39,7 @@ impl<R: EnrichmentResponse> EnrichmentLookup<R> {
             || !self.state.is_empty()
             || !self.zipcode.is_empty()
             || !self.freeform.is_empty()
+            || !self.business_name.is_empty()
     }
 }
 
@@ -48,7 +49,7 @@ impl<R: EnrichmentResponse> EnrichmentRequest for EnrichmentLookup<R> {
     fn validate(&self) -> Result<(), SmartyError> {
         if self.is_address_search() && !self.has_address_fields() {
             return Err(SmartyError::ValidationError(
-                "address search requires at least one address field (street, city, state, zipcode, or freeform)".to_string()
+                "address search requires at least one address field (street, city, state, zipcode, freeform, or business_name)".to_string()
             ));
         }
         Ok(())

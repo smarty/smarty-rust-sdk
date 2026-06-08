@@ -20,11 +20,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let client = USEnrichmentClient::new(options)?;
 
-    // Business-name search: an address search (freeform satisfies validation)
-    // narrowed to businesses whose name matches `business_name`.
     let mut summary_lookup = EnrichmentLookup::<BusinessSummaryResponse> {
-        freeform: "1600 Pennsylvania Ave, Washington DC".to_string(),
-        business_name: "Coffee".to_string(),
+        business_name: "delta air".to_string(),
+        city: "atlanta".to_string(),
         ..Default::default()
     };
 
@@ -39,11 +37,14 @@ async fn main() -> Result<(), Box<dyn Error>> {
     };
 
     if summary.businesses.is_empty() {
-        println!("No businesses matched the business-name search");
+        println!("No businesses found for this business-name search");
         return Ok(());
     }
 
-    println!("Matching businesses:");
+    println!(
+        "Summary results for BusinessName: {}, City: {}",
+        summary_lookup.business_name, summary_lookup.city
+    );
     for biz in &summary.businesses {
         println!("  - {} (ID: {})", biz.company_name, biz.business_id);
     }
