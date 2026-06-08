@@ -50,14 +50,48 @@ pub(crate) async fn parse_response_json<C: DeserializeOwned>(
     if !response.status().is_success() {
         let status_code = response.status();
         let body = response.text().await?;
+        let message = extract_error_message(&body).unwrap_or_else(|| body.clone());
 
         return Err(SmartyError::HttpError {
             code: status_code,
-            detail: body,
+            message,
+            body,
         });
     }
 
     Ok(response.json::<C>().await?)
+}
+
+/// Pulls a human-readable message out of a Smarty API error body, which has the
+/// shape `{"errors":[{"message":"..."}]}`. The `message` values are joined with
+/// a space. Returns `None` if the body is empty, unparseable, or carries no
+/// non-empty messages, leaving the caller to fall back to the raw body.
+fn extract_error_message(body: &str) -> Option<String> {
+    #[derive(serde::Deserialize)]
+    struct ErrorBody {
+        errors: Vec<ApiError>,
+    }
+    #[derive(serde::Deserialize)]
+    struct ApiError {
+        #[serde(default)]
+        message: String,
+    }
+
+    let parsed: ErrorBody = serde_json::from_str(body).ok()?;
+    let message = parsed
+        .errors
+        .into_iter()
+        .map(|e| e.message)
+        .filter(|m| !m.trim().is_empty())
+        .collect::<Vec<_>>()
+        .join(" ");
+    let message = message.trim().to_string();
+
+    if message.is_empty() {
+        None
+    } else {
+        Some(message)
+    }
 }
 
 pub(crate) async fn send_request<C: DeserializeOwned>(
@@ -96,9 +130,37 @@ mod tests {
     use crate::sdk::authentication::SecretKeyCredential;
     use crate::sdk::batch::Batch;
     use crate::sdk::client::Client;
+    use crate::sdk::extract_error_message;
     use crate::sdk::options::OptionsBuilder;
     use crate::sdk::VERSION;
     use reqwest::header::USER_AGENT;
+
+    #[test]
+    fn extract_error_message_pulls_api_messages() {
+        let body = r#"{"errors":[{"message":"latitude is out of range"}]}"#;
+        assert_eq!(
+            extract_error_message(body).as_deref(),
+            Some("latitude is out of range")
+        );
+    }
+
+    #[test]
+    fn extract_error_message_joins_multiple_messages() {
+        let body = r#"{"errors":[{"message":"first"},{"message":"second"}]}"#;
+        assert_eq!(extract_error_message(body).as_deref(), Some("first second"));
+    }
+
+    #[test]
+    fn extract_error_message_falls_back_when_unusable() {
+        // empty body, malformed json, and a body missing the field all yield None
+        assert_eq!(extract_error_message(""), None);
+        assert_eq!(extract_error_message("not json"), None);
+        assert_eq!(extract_error_message(r#"{"errors":[]}"#), None);
+        assert_eq!(
+            extract_error_message(r#"{"errors":[{"message":"  "}]}"#),
+            None
+        );
+    }
 
     #[test]
     fn batch_test() {
