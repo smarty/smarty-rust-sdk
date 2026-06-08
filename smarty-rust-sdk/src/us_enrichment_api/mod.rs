@@ -217,6 +217,38 @@ mod tests {
     }
 
     #[test]
+    fn business_summary_business_name_search() {
+        let lookup: EnrichmentLookup<BusinessSummaryResponse> = EnrichmentLookup {
+            freeform: "123 Main St, Denver CO".to_string(),
+            business_name: "Acme Corp".to_string(),
+            ..Default::default()
+        };
+
+        assert!(lookup.is_address_search());
+        assert!(lookup.has_address_fields());
+
+        let expected_params = vec![
+            ("freeform".to_string(), "123 Main St, Denver CO".to_string()),
+            ("business_name".to_string(), "Acme Corp".to_string()),
+        ];
+
+        assert_eq!(lookup.params(), expected_params);
+    }
+
+    #[test]
+    fn business_summary_without_business_name_omits_param() {
+        let lookup: EnrichmentLookup<BusinessSummaryResponse> = EnrichmentLookup {
+            freeform: "123 Main St, Denver CO".to_string(),
+            ..Default::default()
+        };
+
+        assert!(!lookup
+            .params()
+            .iter()
+            .any(|(key, _)| key == "business_name"));
+    }
+
+    #[test]
     fn business_summary_response_deserialize() {
         let json = r#"[{
             "smarty_key": "123",

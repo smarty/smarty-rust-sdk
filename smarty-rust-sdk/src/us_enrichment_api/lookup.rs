@@ -23,6 +23,7 @@ pub struct EnrichmentLookup<R: EnrichmentResponse> {
     pub state: String,
     pub zipcode: String,
     pub freeform: String,
+    pub business_name: String,
 }
 
 impl<R: EnrichmentResponse> EnrichmentLookup<R> {
@@ -80,6 +81,7 @@ impl<R: EnrichmentResponse> EnrichmentRequest for EnrichmentLookup<R> {
             has_param("state".to_string(), self.state.clone()),
             has_param("zipcode".to_string(), self.zipcode.clone()),
             has_param("freeform".to_string(), self.freeform.clone()),
+            has_param("business_name".to_string(), self.business_name.clone()),
         ]
         .into_iter()
         .flatten()
