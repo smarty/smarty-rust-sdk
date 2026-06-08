@@ -101,16 +101,16 @@ mod tests {
             "organization": "1",
             "address1": "2", "address2": "3", "address3": "4", "address4": "5",
             "address5": "6", "address6": "7", "address7": "8", "address8": "9",
-            "address9": "10", "address10": "11", "address11": "12", "address12": "13",
             "components": {
-                "country_iso_3": "14", "super_administrative_area": "15",
+                "attention": "119", "country_iso_3": "14", "super_administrative_area": "15",
                 "administrative_area": "16", "administrative_area_iso2": "16.1",
-                "administrative_area_short": "16.2", "administrative_area_long": "16.3",
                 "sub_administrative_area": "17", "dependent_locality": "18",
                 "dependent_locality_name": "19", "double_dependent_locality": "20",
                 "locality": "21", "postal_code": "22", "postal_code_short": "23",
                 "postal_code_extra": "24", "premise": "25", "premise_extra": "26",
                 "premise_number": "27", "premise_prefix_number": "27.5", "premise_type": "28",
+                "short_address_code": "120", "sub_building_leading_type": "121",
+                "sub_building_block": "122", "sub_building_door": "123", "sub_building_staircase": "124",
                 "thoroughfare": "29", "thoroughfare_predirection": "30", "thoroughfare_postdirection": "31",
                 "thoroughfare_name": "32", "thoroughfare_trailing_type": "33", "thoroughfare_type": "34",
                 "dependent_thoroughfare": "35", "dependent_thoroughfare_predirection": "36",
@@ -133,17 +133,18 @@ mod tests {
                 "changes": {
                     "organization": "60", "address1": "61", "address2": "62", "address3": "63",
                     "address4": "64", "address5": "65", "address6": "66", "address7": "67",
-                    "address8": "68", "address9": "69", "address10": "70", "address11": "71",
-                    "address12": "72",
+                    "address8": "68", "country": "125",
                     "components": {
-                        "super_administrative_area": "73", "administrative_area": "74",
-                        "administrative_area_short": "74.1", "administrative_area_long": "74.2",
+                        "attention": "126", "super_administrative_area": "73", "administrative_area": "74",
                         "sub_administrative_area": "75", "building": "76",
                         "dependent_locality": "77", "dependent_locality_name": "78",
                         "double_dependent_locality": "79", "country_iso_3": "80", "locality": "81",
                         "postal_code": "82", "postal_code_short": "83", "postal_code_extra": "84",
                         "premise": "85", "premise_extra": "86", "premise_number": "87",
-                        "premise_type": "88", "premise_prefix_number": "89", "thoroughfare": "90",
+                        "premise_type": "88", "premise_prefix_number": "89",
+                        "short_address_code": "127", "sub_building_leading_type": "128",
+                        "sub_building_block": "129", "sub_building_door": "130", "sub_building_staircase": "131",
+                        "thoroughfare": "90",
                         "thoroughfare_predirection": "91", "thoroughfare_postdirection": "92",
                         "thoroughfare_name": "93", "thoroughfare_trailing_type": "94", "thoroughfare_type": "95",
                         "dependent_thoroughfare": "96", "dependent_thoroughfare_predirection": "97",
@@ -175,16 +176,11 @@ mod tests {
         assert_eq!(candidate.root_level.address6, "7");
         assert_eq!(candidate.root_level.address7, "8");
         assert_eq!(candidate.root_level.address8, "9");
-        assert_eq!(candidate.root_level.address9, "10");
-        assert_eq!(candidate.root_level.address10, "11");
-        assert_eq!(candidate.root_level.address11, "12");
-        assert_eq!(candidate.root_level.address12, "13");
         assert_eq!(candidate.components.country_iso_3, "14");
         assert_eq!(candidate.components.super_administrative_area, "15");
         assert_eq!(candidate.components.administrative_area, "16");
+        assert_eq!(candidate.components.attention, "119");
         assert_eq!(candidate.components.administrative_area_iso2, "16.1");
-        assert_eq!(candidate.components.administrative_area_short, "16.2");
-        assert_eq!(candidate.components.administrative_area_long, "16.3");
         assert_eq!(candidate.components.sub_administrative_area, "17");
         assert_eq!(candidate.components.dependent_locality, "18");
         assert_eq!(candidate.components.dependent_locality_name, "19");
@@ -197,6 +193,11 @@ mod tests {
         assert_eq!(candidate.components.premise_extra, "26");
         assert_eq!(candidate.components.premise_number, "27");
         assert_eq!(candidate.components.premise_prefix_number, "27.5");
+        assert_eq!(candidate.components.short_address_code, "120");
+        assert_eq!(candidate.components.sub_building_leading_type, "121");
+        assert_eq!(candidate.components.sub_building_block, "122");
+        assert_eq!(candidate.components.sub_building_door, "123");
+        assert_eq!(candidate.components.sub_building_staircase, "124");
         assert_eq!(candidate.components.premise_type, "28");
         assert_eq!(candidate.components.thoroughfare, "29");
         assert_eq!(candidate.components.thoroughfare_predirection, "30");
@@ -253,10 +254,8 @@ mod tests {
         assert_eq!(candidate.analysis.changes.root_level.address6, "66");
         assert_eq!(candidate.analysis.changes.root_level.address7, "67");
         assert_eq!(candidate.analysis.changes.root_level.address8, "68");
-        assert_eq!(candidate.analysis.changes.root_level.address9, "69");
-        assert_eq!(candidate.analysis.changes.root_level.address10, "70");
-        assert_eq!(candidate.analysis.changes.root_level.address11, "71");
-        assert_eq!(candidate.analysis.changes.root_level.address12, "72");
+        assert_eq!(candidate.analysis.changes.country, "125");
+        assert_eq!(candidate.analysis.changes.components.attention, "126");
         assert_eq!(
             candidate
                 .analysis
@@ -268,22 +267,6 @@ mod tests {
         assert_eq!(
             candidate.analysis.changes.components.administrative_area,
             "74"
-        );
-        assert_eq!(
-            candidate
-                .analysis
-                .changes
-                .components
-                .administrative_area_short,
-            "74.1"
-        );
-        assert_eq!(
-            candidate
-                .analysis
-                .changes
-                .components
-                .administrative_area_long,
-            "74.2"
         );
         assert_eq!(
             candidate
@@ -332,6 +315,30 @@ mod tests {
         assert_eq!(
             candidate.analysis.changes.components.premise_prefix_number,
             "89"
+        );
+        assert_eq!(
+            candidate.analysis.changes.components.short_address_code,
+            "127"
+        );
+        assert_eq!(
+            candidate
+                .analysis
+                .changes
+                .components
+                .sub_building_leading_type,
+            "128"
+        );
+        assert_eq!(
+            candidate.analysis.changes.components.sub_building_block,
+            "129"
+        );
+        assert_eq!(
+            candidate.analysis.changes.components.sub_building_door,
+            "130"
+        );
+        assert_eq!(
+            candidate.analysis.changes.components.sub_building_staircase,
+            "131"
         );
         assert_eq!(candidate.analysis.changes.components.thoroughfare, "90");
         assert_eq!(

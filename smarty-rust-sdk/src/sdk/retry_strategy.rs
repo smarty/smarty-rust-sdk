@@ -98,7 +98,10 @@ fn retry_success(res: &Response) -> RetryResult {
     classify_response(res.status(), res.headers().get(RETRY_AFTER))
 }
 
-fn classify_response(status: StatusCode, retry_after: Option<&reqwest::header::HeaderValue>) -> RetryResult {
+fn classify_response(
+    status: StatusCode,
+    retry_after: Option<&reqwest::header::HeaderValue>,
+) -> RetryResult {
     if status.is_success() {
         return RetryResult::Success;
     }
