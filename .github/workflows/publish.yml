@@ -6,15 +6,23 @@ on:
       - '*'
 
 jobs:
-  publish:
+  test:
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        rust: ["stable", "1.88.0"]
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-      - run : |
-          VERSION="${GITHUB_REF#refs/*/}" make publish
+      - uses: actions/checkout@v4
+      - run: rustup update ${{ matrix.rust }} && rustup default ${{ matrix.rust }}
+      - run: cargo build
+      - run: cargo test
+
+  publish:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup update stable && rustup default stable
+      - run: VERSION="${GITHUB_REF#refs/tags/}" make publish
         env:
-            CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
