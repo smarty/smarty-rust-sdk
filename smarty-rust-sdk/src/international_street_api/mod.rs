@@ -133,7 +133,7 @@ mod tests {
                 "changes": {
                     "organization": "60", "address1": "61", "address2": "62", "address3": "63",
                     "address4": "64", "address5": "65", "address6": "66", "address7": "67",
-                    "address8": "68", "country": "125",
+                    "address8": "68",
                     "components": {
                         "attention": "126", "super_administrative_area": "73", "administrative_area": "74",
                         "sub_administrative_area": "75", "building": "76",
@@ -254,7 +254,6 @@ mod tests {
         assert_eq!(candidate.analysis.changes.root_level.address6, "66");
         assert_eq!(candidate.analysis.changes.root_level.address7, "67");
         assert_eq!(candidate.analysis.changes.root_level.address8, "68");
-        assert_eq!(candidate.analysis.changes.country, "125");
         assert_eq!(candidate.analysis.changes.components.attention, "126");
         assert_eq!(
             candidate

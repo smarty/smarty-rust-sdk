@@ -113,6 +113,5 @@ pub struct Changes {
     #[serde(flatten)]
     pub root_level: RootLevel,
 
-    pub country: String,
     pub components: Components,
 }
