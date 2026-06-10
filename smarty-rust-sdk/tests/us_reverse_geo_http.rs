@@ -69,7 +69,7 @@ async fn out_of_range_latitude_surfaces_http_error_with_code_and_body() {
 async fn http_error_display_includes_status_and_detail() {
     let server = MockServer::start().await;
 
-    let body = "latitude is out of range";
+    let body = "{\"errors\":[{\"message\":\"latitude is out of range\"}]}";
 
     Mock::given(method("GET"))
         .and(path("/lookup"))
@@ -92,7 +92,48 @@ async fn http_error_display_includes_status_and_detail() {
     // Display must carry the actionable info, not the old bare "http error".
     let rendered = err.to_string();
     assert!(
-        rendered.contains("422") && rendered.contains(body),
+        rendered.contains("422") && rendered.contains("latitude is out of range"),
         "Display dropped status/detail: {rendered:?}"
     );
+}
+
+#[tokio::test]
+async fn unusable_error_body_falls_back_to_standard_message() {
+    let server = MockServer::start().await;
+
+    let body = "latitude is out of range";
+
+    Mock::given(method("GET"))
+        .and(path("/lookup"))
+        .respond_with(ResponseTemplate::new(422).set_body_string(body))
+        .mount(&server)
+        .await;
+
+    let client = client_for(&server);
+    let mut lookup = Lookup {
+        latitude: 99_937.422_511_348_56,
+        longitude: -122.084_128_691_405_41,
+        ..Default::default()
+    };
+
+    let err = client
+        .send(&mut lookup)
+        .await
+        .expect_err("422 should be an error");
+
+    match err {
+        SmartyError::HttpError {
+            code,
+            message,
+            body: raw_body,
+        } => {
+            assert_eq!(code.as_u16(), 422);
+            assert_eq!(raw_body, body, "response body should be preserved verbatim");
+            assert_eq!(
+                message, "GET request lacked required fields.",
+                "non-JSON body should fall back to the standard message"
+            );
+        }
+        other => panic!("expected HttpError, got {other:?}"),
+    }
 }
