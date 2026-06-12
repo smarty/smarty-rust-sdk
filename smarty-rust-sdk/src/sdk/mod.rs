@@ -50,7 +50,11 @@ pub(crate) async fn parse_response_json<C: DeserializeOwned>(
     if !response.status().is_success() {
         let status_code = response.status();
         let body = response.text().await?;
-        let message = extract_error_message(&body).unwrap_or_else(|| fallback_message(status_code));
+        let message = extract_error_message(&body).unwrap_or_else(|| {
+            format!("{} Body: {}", fallback_message(status_code), body.trim())
+                .trim_end()
+                .to_string()
+        });
 
         return Err(SmartyError::HttpError {
             code: status_code,

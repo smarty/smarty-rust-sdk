@@ -130,8 +130,8 @@ async fn unusable_error_body_falls_back_to_standard_message() {
             assert_eq!(code.as_u16(), 422);
             assert_eq!(raw_body, body, "response body should be preserved verbatim");
             assert_eq!(
-                message, "GET request lacked required fields.",
-                "non-JSON body should fall back to the standard message"
+                message, "GET request lacked required fields. Body: latitude is out of range",
+                "non-JSON body should fall back to the standard message with the body appended"
             );
         }
         other => panic!("expected HttpError, got {other:?}"),
