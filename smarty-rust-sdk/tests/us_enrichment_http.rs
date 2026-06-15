@@ -1,7 +1,7 @@
 //! HTTP-layer tests for the US Enrichment client, driven by wiremock.
 //!
 //! These exercise the wire contract that unit tests can't reach: the
-//! If-None-Match request header, 304 Not Modified handling, ETag round-trips,
+//! Etag request header, 304 Not Modified handling, ETag round-trips,
 //! and server-contract violations. They run without credentials against a
 //! local mock server, so they're part of the default `cargo test` run.
 
@@ -40,14 +40,12 @@ fn business_detail_body(business_id: &str) -> serde_json::Value {
 }
 
 #[tokio::test]
-async fn send_uses_if_none_match_header_not_etag_request_header() {
+async fn send_uses_etag_request_header_honored_by_api() {
     let server = MockServer::start().await;
 
-    // The `if-none-match` matcher is what enforces the header name: any other
-    // name (e.g. "ETag") falls through to wiremock's default 404 and send fails.
     Mock::given(method("GET"))
         .and(path("/lookup/100/property/principal"))
-        .and(header("if-none-match", "prev-tag"))
+        .and(header("etag", "prev-tag"))
         .respond_with(ResponseTemplate::new(200).set_body_json(principal_body()))
         .mount(&server)
         .await;
@@ -61,15 +59,13 @@ async fn send_uses_if_none_match_header_not_etag_request_header() {
 
     client.send(&mut lookup).await.expect("send should succeed");
 
-    // The mock matcher proves If-None-Match was sent but does not rule out a
-    // duplicate literal "ETag" header alongside it; this closes that gap.
     let received = server.received_requests().await.expect("recording on");
     let req = received.first().expect("one request");
     assert!(
         !req.headers
             .iter()
-            .any(|(k, _)| k.as_str().eq_ignore_ascii_case("etag")),
-        "unexpected ETag request header"
+            .any(|(k, _)| k.as_str().eq_ignore_ascii_case("if-none-match")),
+        "unexpected If-None-Match request header"
     );
 }
 

@@ -50,7 +50,7 @@ impl USEnrichmentClient {
         let mut req = self.client.reqwest_client.request(Method::GET, url);
 
         if !etag_in.is_empty() {
-            req = req.header("If-None-Match", etag_in);
+            req = req.header("Etag", etag_in);
         }
 
         req = self.client.build_request(req);
