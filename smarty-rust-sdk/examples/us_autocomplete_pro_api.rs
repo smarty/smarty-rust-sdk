@@ -5,7 +5,7 @@ extern crate tokio;
 use smarty_rust_sdk::sdk::authentication::BasicAuthCredential;
 use smarty_rust_sdk::sdk::options::OptionsBuilder;
 use smarty_rust_sdk::us_autocomplete_pro_api::client::USAutocompleteProClient;
-use smarty_rust_sdk::us_autocomplete_pro_api::lookup::{Geolocation, Lookup};
+use smarty_rust_sdk::us_autocomplete_pro_api::lookup::{Geolocation, Lookup, Source};
 use std::error::Error;
 
 #[tokio::main]
@@ -18,7 +18,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         prefer_state: vec!["KY".to_string()],
         prefer_ratio: 3,
         geolocation: Geolocation::GeolocateCity,
-        source: "all".to_string(),
+        source: Source::All,
         ..Default::default()
     };
 

@@ -6,7 +6,7 @@ pub mod suggestion;
 mod tests {
     use crate::sdk::options::OptionsBuilder;
     use crate::us_autocomplete_pro_api::client::USAutocompleteProClient;
-    use crate::us_autocomplete_pro_api::lookup::{Geolocation, Lookup};
+    use crate::us_autocomplete_pro_api::lookup::{Geolocation, Lookup, Source};
 
     #[test]
     fn client_test() {
@@ -28,7 +28,7 @@ mod tests {
             prefer_state: vec!["CO".to_string()],
             prefer_ratio: 3,
             geolocation: Geolocation::GeolocateCity,
-            source: "all".to_string(),
+            source: Source::All,
             ..Default::default()
         };
 
@@ -47,5 +47,28 @@ mod tests {
         ];
 
         assert_eq!(lookup.into_param_array(), expected_results)
+    }
+
+    #[test]
+    fn lookup_excludes_source_when_not_specified() {
+        let lookup = Lookup {
+            search: "1042 W Center".to_string(),
+            ..Default::default()
+        };
+
+        let params = lookup.into_param_array();
+        assert!(!params.iter().any(|(k, _)| k == "source"));
+    }
+
+    #[test]
+    fn lookup_includes_source_postal() {
+        let lookup = Lookup {
+            search: "1042 W Center".to_string(),
+            source: Source::Postal,
+            ..Default::default()
+        };
+
+        let params = lookup.into_param_array();
+        assert!(params.iter().any(|(k, v)| k == "source" && v == "postal"));
     }
 }

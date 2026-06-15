@@ -1,11 +1,12 @@
 use crate::sdk::{has_param, has_vec_param};
 use crate::us_autocomplete_pro_api::suggestion::SuggestionListing;
 use serde::Serialize;
+use std::fmt::{Display, Formatter};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Lookup {
     pub search: String,
-    pub source: String,
+    pub source: Source,
     pub max_results: i32,
     pub city_filter: Vec<String>,
     pub state_filter: Vec<String>,
@@ -24,7 +25,7 @@ impl Default for Lookup {
     fn default() -> Self {
         Lookup {
             search: String::default(),
-            source: String::default(),
+            source: Source::default(),
             max_results: 0,
             city_filter: vec![],
             state_filter: vec![],
@@ -87,4 +88,22 @@ pub enum Geolocation {
     GeolocateNone,
     #[serde(rename = "city")]
     GeolocateCity,
+}
+
+#[derive(Default, Debug, Clone, PartialEq)]
+pub enum Source {
+    #[default]
+    NotSpecified,
+    All,
+    Postal,
+}
+
+impl Display for Source {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Source::NotSpecified => write!(f, ""),
+            Source::All => write!(f, "all"),
+            Source::Postal => write!(f, "postal"),
+        }
+    }
 }

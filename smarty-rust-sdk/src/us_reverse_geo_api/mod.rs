@@ -6,7 +6,7 @@ pub mod lookup;
 mod tests {
     use crate::sdk::options::OptionsBuilder;
     use crate::us_reverse_geo_api::client::USReverseGeoClient;
-    use crate::us_reverse_geo_api::lookup::Lookup;
+    use crate::us_reverse_geo_api::lookup::{Lookup, Source};
 
     #[test]
     fn client_test() {
@@ -23,14 +23,41 @@ mod tests {
         let lookup = Lookup {
             latitude: 37.42251134855708,
             longitude: -122.08412869140541,
+            source: Source::All,
             ..Default::default()
         };
 
         let expected_result = vec![
             ("latitude".to_string(), "37.42251134855708".to_string()),
             ("longitude".to_string(), "-122.08412869140541".to_string()),
+            ("source".to_string(), "all".to_string()),
         ];
 
         assert_eq!(lookup.into_param_array(), expected_result)
+    }
+
+    #[test]
+    fn lookup_excludes_source_when_not_specified() {
+        let lookup = Lookup {
+            latitude: 37.42251134855708,
+            longitude: -122.08412869140541,
+            ..Default::default()
+        };
+
+        let params = lookup.into_param_array();
+        assert!(!params.iter().any(|(k, _)| k == "source"));
+    }
+
+    #[test]
+    fn lookup_includes_source_postal() {
+        let lookup = Lookup {
+            latitude: 37.42251134855708,
+            longitude: -122.08412869140541,
+            source: Source::Postal,
+            ..Default::default()
+        };
+
+        let params = lookup.into_param_array();
+        assert!(params.iter().any(|(k, v)| k == "source" && v == "postal"));
     }
 }
