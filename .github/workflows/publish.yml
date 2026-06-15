@@ -3,7 +3,7 @@ name: Publish To Crates.io
 on:
   push:
     tags:
-      - '*'
+      - '**'
 
 jobs:
   test:
