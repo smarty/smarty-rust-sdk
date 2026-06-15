@@ -54,6 +54,7 @@ impl Lookup {
             has_vec_param("include_only_states".to_string(), ";", self.state_filter),
             has_vec_param("include_only_zip_codes".to_string(), ";", self.zip_filter),
             has_vec_param("exclude_states".to_string(), ";", self.exclude_states),
+            has_vec_param("prefer_cities".to_string(), ";", self.prefer_city),
             has_vec_param("prefer_states".to_string(), ";", self.prefer_state),
             has_vec_param("prefer_zip_codes".to_string(), ";", self.prefer_zip),
             has_param("prefer_ratio".to_string(), self.prefer_ratio),
