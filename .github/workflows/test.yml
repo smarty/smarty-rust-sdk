@@ -10,7 +10,7 @@ jobs:
       matrix:
         rust: ["stable", "1.88.0"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - run: rustup update ${{ matrix.rust }} && rustup default ${{ matrix.rust }} && rustup component add clippy rustfmt
       - run: cargo test
       - run: cargo clippy --all-targets
