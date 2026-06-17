@@ -18,9 +18,27 @@ async fn main() -> Result<(), Box<dyn Error>> {
     //   - invalid:  most permissive; always returns at least one candidate (a best-guess standardization).
     // Documentation for input fields: https://smartystreets.com/docs/us-street-api#input-fields
     let addresses = [
-        ("valid (real, deliverable)", "1600 Amphitheatre Pkwy", "Mountain View", "CA", "94043"),
-        ("invalid (no such address)", "9999 W 1150 S", "Provo", "UT", "84601"),
-        ("ambiguous (missing ZIP/unit)", "1 Rosedale St", "Baltimore", "MD", ""),
+        (
+            "valid (real, deliverable)",
+            "1600 Amphitheatre Pkwy",
+            "Mountain View",
+            "CA",
+            "94043",
+        ),
+        (
+            "invalid (no such address)",
+            "9999 W 1150 S",
+            "Provo",
+            "UT",
+            "84601",
+        ),
+        (
+            "ambiguous (missing ZIP/unit)",
+            "1 Rosedale St",
+            "Baltimore",
+            "MD",
+            "",
+        ),
     ];
     let strategies = [
         MatchStrategy::Strict,
@@ -43,7 +61,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 ..Default::default()
             };
             batch.push(lookup)?;
-            cases.push((label, format!("{street}, {city}, {state}"), strategy.clone()));
+            cases.push((
+                label,
+                format!("{street}, {city}, {state}"),
+                strategy.clone(),
+            ));
         }
     }
 
