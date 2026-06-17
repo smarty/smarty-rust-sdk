@@ -1,0 +1,17 @@
+name: Tests
+
+on:
+  workflow_call:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rust: ["stable", "1.88.0"]
+    steps:
+      - uses: actions/checkout@v6
+      - run: rustup update ${{ matrix.rust }} && rustup default ${{ matrix.rust }} && rustup component add clippy rustfmt
+      - run: cargo test
+      - run: cargo clippy --all-targets
+      - run: cargo fmt --check

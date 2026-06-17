@@ -14,7 +14,7 @@ test:
 build:
 	cargo build
 
-publish: test
+publish:
 	sed -i -r "s/version=\"0\.0\.0\"/version=\"${VERSION}\"/g" "$(SDK_VERSION_FILE)" \
 	  && sed -i -r "s/0\.0\.0/${VERSION}/g" "$(VERSION_FILE)" \
 	  && cargo publish --package smarty-rust-proc-macro --allow-dirty \
