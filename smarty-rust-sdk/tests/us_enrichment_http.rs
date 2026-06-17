@@ -95,7 +95,8 @@ async fn not_modified_preserves_prior_results_and_refreshes_etag() {
 
     client.send(&mut lookup).await.expect("304 is not an error");
 
-    assert_eq!(lookup.etag, "refreshed-tag");
+    assert_eq!(lookup.response_etag, "refreshed-tag");
+    assert_eq!(lookup.etag, "old-tag");
     assert_eq!(lookup.results.len(), 1);
     assert_eq!(lookup.results[0].smarty_key, "prior");
 }
@@ -126,7 +127,8 @@ async fn not_modified_preserves_prior_business_detail_result() {
 
     client.send(&mut lookup).await.expect("304 is not an error");
 
-    assert_eq!(lookup.etag, "refreshed-tag");
+    assert_eq!(lookup.response_etag, "refreshed-tag");
+    assert_eq!(lookup.etag, "old-tag");
     assert_eq!(lookup.result.as_ref().unwrap().business_id, "ABC123");
 }
 
@@ -152,7 +154,8 @@ async fn ok_response_refreshes_etag_and_replaces_results() {
 
     client.send(&mut lookup).await.expect("send should succeed");
 
-    assert_eq!(lookup.etag, "server-tag");
+    assert_eq!(lookup.response_etag, "server-tag");
+    assert!(lookup.etag.is_empty());
     assert_eq!(lookup.results.len(), 1);
     assert_eq!(lookup.results[0].smarty_key, "100");
 }
@@ -221,7 +224,8 @@ async fn business_detail_happy_path_populates_result() {
 
     client.send(&mut lookup).await.expect("send should succeed");
 
-    assert_eq!(lookup.etag, "b-tag");
+    assert_eq!(lookup.response_etag, "b-tag");
+    assert!(lookup.etag.is_empty());
     let result = lookup.result.expect("result should be populated");
     assert_eq!(result.business_id, "ABC123");
     assert_eq!(result.attributes.company_name, "Acme");

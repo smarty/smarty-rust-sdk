@@ -14,6 +14,8 @@ pub trait EnrichmentRequest {
 
     fn set_etag(&mut self, etag: String);
 
+    fn set_response_etag(&mut self, etag: String);
+
     fn params(&self) -> Vec<(String, String)>;
 
     fn apply_results(&mut self, results: Vec<Self::Response>) -> Result<(), SmartyError>;

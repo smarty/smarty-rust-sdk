@@ -33,7 +33,7 @@ impl USEnrichmentClient {
             .send_enrichment_request::<L::Response>(url, lookup.etag(), lookup.params())
             .await?;
 
-        lookup.set_etag(transport.etag);
+        lookup.set_response_etag(transport.etag);
         if !transport.not_modified {
             lookup.apply_results(transport.results)?;
         }
