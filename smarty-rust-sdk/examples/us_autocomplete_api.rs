@@ -14,6 +14,10 @@ use std::error::Error;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
+
+    // Documentation for input fields can be found at:
+    // https://www.smarty.com/docs/apis/us-autocomplete-v2/reference#http-request-input-fields
+
     let lookup = &mut Lookup {
         search: "1042 W Center".to_string(),
         max_results: 5,
