@@ -31,7 +31,7 @@ make clippy                 # Run linter
 make clean                  # Clean build artifacts
 
 # Run individual examples (requires SMARTY_AUTH_ID and SMARTY_AUTH_TOKEN env vars)
-make us_street_api          # also runs us_street_component_analysis + us_street_iana_timezone
+make us_street_api          # also runs us_street_component_analysis + us_street_iana_timezone + us_street_match_strategy
 make us_enrichment_api
 make us_enrichment_address_search_api
 make us_enrichment_business_api
@@ -61,7 +61,7 @@ The `us_street_multithread` example has no make target — invoke it directly wi
 
 This is the official Smarty Rust SDK for address verification APIs. It uses a workspace with two crates:
 
-- **smarty-rust-sdk**: Main SDK library with API clients (edition 2021, rust-version 1.63.0)
+- **smarty-rust-sdk**: Main SDK library with API clients (edition 2021, rust-version 1.88.0)
 - **smarty-rust-proc-macro**: Procedural macro that generates API client boilerplate
 
 ### API Client Pattern

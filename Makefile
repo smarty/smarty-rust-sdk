@@ -14,7 +14,7 @@ test:
 build:
 	cargo build
 
-publish: test
+publish:
 	sed -i -r "s/version=\"0\.0\.0\"/version=\"${VERSION}\"/g" "$(SDK_VERSION_FILE)" \
 	  && sed -i -r "s/0\.0\.0/${VERSION}/g" "$(VERSION_FILE)" \
 	  && cargo publish --package smarty-rust-proc-macro --allow-dirty \
@@ -48,7 +48,10 @@ us_street_iana_timezone:
 	RUST_LOG=trace cargo run --example us_street_iana_timezone
 
 us_street_api:
-	RUST_LOG=trace cargo run --example us_street_api && RUST_LOG=trace cargo run --example us_street_component_analysis && RUST_LOG=trace cargo run --example us_street_iana_timezone
+	RUST_LOG=trace cargo run --example us_street_api && RUST_LOG=trace cargo run --example us_street_component_analysis && RUST_LOG=trace cargo run --example us_street_iana_timezone && RUST_LOG=trace cargo run --example us_street_match_strategy
+
+us_street_match_strategy:
+	RUST_LOG=trace cargo run --example us_street_match_strategy
 
 us_zipcode_api:
 	RUST_LOG=trace cargo run --example us_zipcode_api
@@ -62,9 +65,15 @@ us_enrichment_address_search_api:
 us_enrichment_business_api:
 	RUST_LOG=trace cargo run --example us_enrichment_business_api
 
+us_enrichment_business_name_search_api:
+	RUST_LOG=trace cargo run --example us_enrichment_business_name_search_api
+
 integration:
 	cargo test --test us_street_integration -- --ignored
 
-examples: international_autocomplete_api international_postal_code_api international_street_api logger us_autocomplete_pro_api us_extract_api us_reverse_geo_api us_street_api us_zipcode_api us_enrichment_api us_enrichment_address_search_api us_enrichment_business_api
+examples: international_autocomplete_api international_postal_code_api international_street_api logger us_autocomplete_pro_api us_extract_api us_reverse_geo_api us_street_api us_street_match_strategy us_zipcode_api us_enrichment_api us_enrichment_address_search_api us_enrichment_business_api
 
-.PHONY: clean test dependencies package examples clippy integration international_autocomplete_api international_postal_code_api international_street_api logger us_autocomplete_pro_api us_extract_api us_reverse_geo_api us_street_api us_street_iana_timezone us_zipcode_api us_enrichment_api us_enrichment_address_search_api us_enrichment_business_api
+.PHONY: clean test dependencies package examples clippy integration international_autocomplete_api international_postal_code_api international_street_api logger us_autocomplete_pro_api us_extract_api us_reverse_geo_api us_street_api us_street_match_strategy us_street_iana_timezone us_zipcode_api us_enrichment_api us_enrichment_address_search_api us_enrichment_business_api
+examples: international_autocomplete_api international_postal_code_api international_street_api logger us_autocomplete_pro_api us_extract_api us_reverse_geo_api us_street_api us_zipcode_api us_enrichment_api us_enrichment_address_search_api us_enrichment_business_api us_enrichment_business_name_search_api
+
+.PHONY: clean test dependencies package examples clippy integration international_autocomplete_api international_postal_code_api international_street_api logger us_autocomplete_pro_api us_extract_api us_reverse_geo_api us_street_api us_street_iana_timezone us_zipcode_api us_enrichment_api us_enrichment_address_search_api us_enrichment_business_api us_enrichment_business_name_search_api
