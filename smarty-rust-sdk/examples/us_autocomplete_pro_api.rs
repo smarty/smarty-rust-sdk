@@ -18,7 +18,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         prefer_state: vec!["KY".to_string()],
         prefer_ratio: 3,
         geolocation: Geolocation::GeolocateCity,
-        source: Source::All,
+        source: Some(Source::All),
         ..Default::default()
     };
 

@@ -13,7 +13,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let lookup = &mut Lookup {
         latitude: 43.674389,
         longitude: -116.686195,
-        source: Source::All,
+        source: Some(Source::All),
         ..Default::default()
     };
 

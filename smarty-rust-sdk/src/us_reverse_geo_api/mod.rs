@@ -23,7 +23,7 @@ mod tests {
         let lookup = Lookup {
             latitude: 37.42251134855708,
             longitude: -122.08412869140541,
-            source: Source::All,
+            source: Some(Source::All),
             ..Default::default()
         };
 
@@ -53,7 +53,7 @@ mod tests {
         let lookup = Lookup {
             latitude: 37.42251134855708,
             longitude: -122.08412869140541,
-            source: Source::Postal,
+            source: Some(Source::Postal),
             ..Default::default()
         };
 
