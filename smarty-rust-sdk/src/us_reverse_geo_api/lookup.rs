@@ -1,11 +1,11 @@
-use crate::sdk::has_param;
 use crate::us_reverse_geo_api::address::Results;
+use std::fmt::{Display, Formatter};
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Lookup {
     pub latitude: f64,
     pub longitude: f64,
-    pub source: String,
+    pub source: Option<Source>,
     pub results: Results,
 }
 
@@ -14,7 +14,7 @@ impl Default for Lookup {
         Lookup {
             latitude: 0.0,
             longitude: 0.0,
-            source: String::default(),
+            source: None,
             results: Results { results: vec![] },
         }
     }
@@ -27,10 +27,25 @@ impl Lookup {
             ("longitude".to_string(), self.longitude.to_string()),
         ];
 
-        if let Some(source_string) = has_param("source".to_string(), self.source) {
-            result.push(source_string)
+        if let Some(source) = self.source {
+            result.push(("source".to_string(), source.to_string()));
         }
 
         result
+    }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum Source {
+    All,
+    Postal,
+}
+
+impl Display for Source {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Source::All => write!(f, "all"),
+            Source::Postal => write!(f, "postal"),
+        }
     }
 }

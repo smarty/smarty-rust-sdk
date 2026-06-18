@@ -1,11 +1,12 @@
 use crate::sdk::{has_param, has_vec_param};
 use crate::us_autocomplete_pro_api::suggestion::SuggestionListing;
 use serde::Serialize;
+use std::fmt::{Display, Formatter};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Lookup {
     pub search: String,
-    pub source: String,
+    pub source: Option<Source>,
     pub max_results: i32,
     pub city_filter: Vec<String>,
     pub state_filter: Vec<String>,
@@ -24,7 +25,7 @@ impl Default for Lookup {
     fn default() -> Self {
         Lookup {
             search: String::default(),
-            source: String::default(),
+            source: None,
             max_results: 0,
             city_filter: vec![],
             state_filter: vec![],
@@ -46,9 +47,8 @@ impl Default for Lookup {
 impl Lookup {
     pub(crate) fn into_param_array(self) -> Vec<(String, String)> {
         let geolocation_self = self.clone();
-        [
+        let mut result: Vec<(String, String)> = [
             has_param("search".to_string(), self.search),
-            has_param("source".to_string(), self.source),
             has_param("max_results".to_string(), self.max_results),
             has_vec_param("include_only_cities".to_string(), ";", self.city_filter),
             has_vec_param("include_only_states".to_string(), ";", self.state_filter),
@@ -61,7 +61,13 @@ impl Lookup {
         ]
         .iter()
         .filter_map(Option::clone)
-        .collect::<Vec<_>>()
+        .collect::<Vec<_>>();
+
+        if let Some(source) = self.source {
+            result.push(("source".to_string(), source.to_string()));
+        }
+
+        result
     }
 
     fn geolocation_param(self) -> Option<(String, String)> {
@@ -87,4 +93,19 @@ pub enum Geolocation {
     GeolocateNone,
     #[serde(rename = "city")]
     GeolocateCity,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum Source {
+    All,
+    Postal,
+}
+
+impl Display for Source {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Source::All => write!(f, "all"),
+            Source::Postal => write!(f, "postal"),
+        }
+    }
 }
