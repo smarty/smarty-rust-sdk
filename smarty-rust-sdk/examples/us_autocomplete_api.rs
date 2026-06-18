@@ -9,12 +9,11 @@ extern crate tokio;
 use smarty_rust_sdk::sdk::authentication::BasicAuthCredential;
 use smarty_rust_sdk::sdk::options::OptionsBuilder;
 use smarty_rust_sdk::us_autocomplete_api::client::USAutocompleteClient;
-use smarty_rust_sdk::us_autocomplete_api::lookup::{Geolocation, Lookup};
+use smarty_rust_sdk::us_autocomplete_api::lookup::{Geolocation, Lookup, Source};
 use std::error::Error;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-
     // Documentation for input fields can be found at:
     // https://www.smarty.com/docs/apis/us-autocomplete-v2/reference#http-request-input-fields
 
@@ -26,7 +25,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         prefer_state: vec!["KY".to_string()],
         prefer_ratio: 3,
         geolocation: Geolocation::GeolocateCity,
-        source: "all".to_string(),
+        source: Some(Source::All),
         ..Default::default()
     };
 
