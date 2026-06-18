@@ -50,7 +50,11 @@ pub(crate) async fn parse_response_json<C: DeserializeOwned>(
     if !response.status().is_success() {
         let status_code = response.status();
         let body = response.text().await?;
-        let message = extract_error_message(&body).unwrap_or_else(|| body.clone());
+        let message = extract_error_message(&body).unwrap_or_else(|| {
+            format!("{} Body: {}", fallback_message(status_code), body.trim())
+                .trim_end()
+                .to_string()
+        });
 
         return Err(SmartyError::HttpError {
             code: status_code,
@@ -94,6 +98,27 @@ fn extract_error_message(body: &str) -> Option<String> {
     }
 }
 
+/// Standard fallback message for an HTTP status code, used when the API error
+/// body carries no message of its own.
+fn fallback_message(code: reqwest::StatusCode) -> String {
+    match code.as_u16() {
+        304 => "Not Modified: The requested record has not been modified since the previous request with the Etag value.".to_string(),
+        400 => "Bad Request (Malformed Payload): A GET request lacked a required field or the request body of a POST request contained malformed JSON.".to_string(),
+        401 => "Unauthorized: The credentials were provided incorrectly or did not match any existing, active credentials.".to_string(),
+        402 => "Payment Required: There is no active subscription for the account associated with the credentials submitted with the request.".to_string(),
+        403 => "Forbidden: The request contained valid data and was understood by the server, but the server is refusing action.".to_string(),
+        408 => "Request timeout error.".to_string(),
+        413 => "Request Entity Too Large: The request body has exceeded the maximum size.".to_string(),
+        422 => "GET request lacked required fields.".to_string(),
+        429 => "Too Many Requests: The rate limit for your account has been exceeded.".to_string(),
+        500 => "Internal Server Error.".to_string(),
+        502 => "Bad Gateway error.".to_string(),
+        503 => "Service Unavailable. Try again later.".to_string(),
+        504 => "The upstream data provider did not respond in a timely fashion and the request failed. A serious, yet rare occurrence indeed.".to_string(),
+        other => format!("The server returned an unexpected HTTP status code: {other}"),
+    }
+}
+
 pub(crate) async fn send_request<C: DeserializeOwned>(
     request: RequestBuilder,
 ) -> Result<C, SmartyError> {
@@ -130,10 +155,11 @@ mod tests {
     use crate::sdk::authentication::SecretKeyCredential;
     use crate::sdk::batch::Batch;
     use crate::sdk::client::Client;
-    use crate::sdk::extract_error_message;
     use crate::sdk::options::OptionsBuilder;
     use crate::sdk::VERSION;
+    use crate::sdk::{extract_error_message, fallback_message};
     use reqwest::header::USER_AGENT;
+    use reqwest::StatusCode;
 
     #[test]
     fn extract_error_message_pulls_api_messages() {
@@ -159,6 +185,38 @@ mod tests {
         assert_eq!(
             extract_error_message(r#"{"errors":[{"message":"  "}]}"#),
             None
+        );
+    }
+
+    #[test]
+    fn fallback_message_uses_standard_list() {
+        let cases = [
+            (304, "Not Modified: The requested record has not been modified since the previous request with the Etag value."),
+            (400, "Bad Request (Malformed Payload): A GET request lacked a required field or the request body of a POST request contained malformed JSON."),
+            (401, "Unauthorized: The credentials were provided incorrectly or did not match any existing, active credentials."),
+            (402, "Payment Required: There is no active subscription for the account associated with the credentials submitted with the request."),
+            (403, "Forbidden: The request contained valid data and was understood by the server, but the server is refusing action."),
+            (408, "Request timeout error."),
+            (413, "Request Entity Too Large: The request body has exceeded the maximum size."),
+            (422, "GET request lacked required fields."),
+            (429, "Too Many Requests: The rate limit for your account has been exceeded."),
+            (500, "Internal Server Error."),
+            (502, "Bad Gateway error."),
+            (503, "Service Unavailable. Try again later."),
+            (504, "The upstream data provider did not respond in a timely fashion and the request failed. A serious, yet rare occurrence indeed."),
+        ];
+        for (code, expected) in cases {
+            let status = StatusCode::from_u16(code).unwrap();
+            assert_eq!(fallback_message(status), expected, "status {code}");
+        }
+    }
+
+    #[test]
+    fn fallback_message_reports_unexpected_codes() {
+        let status = StatusCode::from_u16(418).unwrap();
+        assert_eq!(
+            fallback_message(status),
+            "The server returned an unexpected HTTP status code: 418"
         );
     }
 
