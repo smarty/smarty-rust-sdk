@@ -1,7 +1,7 @@
 //! HTTP-layer tests for the US Enrichment client, driven by wiremock.
 //!
 //! These exercise the wire contract that unit tests can't reach: the
-//! If-None-Match request header, 304 Not Modified handling, ETag round-trips,
+//! Etag request header, 304 Not Modified handling, ETag round-trips,
 //! and server-contract violations. They run without credentials against a
 //! local mock server, so they're part of the default `cargo test` run.
 
@@ -40,14 +40,12 @@ fn business_detail_body(business_id: &str) -> serde_json::Value {
 }
 
 #[tokio::test]
-async fn send_uses_if_none_match_header_not_etag_request_header() {
+async fn send_uses_etag_request_header_honored_by_api() {
     let server = MockServer::start().await;
 
-    // The `if-none-match` matcher is what enforces the header name: any other
-    // name (e.g. "ETag") falls through to wiremock's default 404 and send fails.
     Mock::given(method("GET"))
         .and(path("/lookup/100/property/principal"))
-        .and(header("if-none-match", "prev-tag"))
+        .and(header("etag", "prev-tag"))
         .respond_with(ResponseTemplate::new(200).set_body_json(principal_body()))
         .mount(&server)
         .await;
@@ -61,15 +59,13 @@ async fn send_uses_if_none_match_header_not_etag_request_header() {
 
     client.send(&mut lookup).await.expect("send should succeed");
 
-    // The mock matcher proves If-None-Match was sent but does not rule out a
-    // duplicate literal "ETag" header alongside it; this closes that gap.
     let received = server.received_requests().await.expect("recording on");
     let req = received.first().expect("one request");
     assert!(
         !req.headers
             .iter()
-            .any(|(k, _)| k.as_str().eq_ignore_ascii_case("etag")),
-        "unexpected ETag request header"
+            .any(|(k, _)| k.as_str().eq_ignore_ascii_case("if-none-match")),
+        "unexpected If-None-Match request header"
     );
 }
 
@@ -99,7 +95,8 @@ async fn not_modified_preserves_prior_results_and_refreshes_etag() {
 
     client.send(&mut lookup).await.expect("304 is not an error");
 
-    assert_eq!(lookup.etag, "refreshed-tag");
+    assert_eq!(lookup.response_etag, "refreshed-tag");
+    assert_eq!(lookup.etag, "old-tag");
     assert_eq!(lookup.results.len(), 1);
     assert_eq!(lookup.results[0].smarty_key, "prior");
 }
@@ -130,7 +127,8 @@ async fn not_modified_preserves_prior_business_detail_result() {
 
     client.send(&mut lookup).await.expect("304 is not an error");
 
-    assert_eq!(lookup.etag, "refreshed-tag");
+    assert_eq!(lookup.response_etag, "refreshed-tag");
+    assert_eq!(lookup.etag, "old-tag");
     assert_eq!(lookup.result.as_ref().unwrap().business_id, "ABC123");
 }
 
@@ -156,7 +154,8 @@ async fn ok_response_refreshes_etag_and_replaces_results() {
 
     client.send(&mut lookup).await.expect("send should succeed");
 
-    assert_eq!(lookup.etag, "server-tag");
+    assert_eq!(lookup.response_etag, "server-tag");
+    assert!(lookup.etag.is_empty());
     assert_eq!(lookup.results.len(), 1);
     assert_eq!(lookup.results[0].smarty_key, "100");
 }
@@ -225,7 +224,8 @@ async fn business_detail_happy_path_populates_result() {
 
     client.send(&mut lookup).await.expect("send should succeed");
 
-    assert_eq!(lookup.etag, "b-tag");
+    assert_eq!(lookup.response_etag, "b-tag");
+    assert!(lookup.etag.is_empty());
     let result = lookup.result.expect("result should be populated");
     assert_eq!(result.business_id, "ABC123");
     assert_eq!(result.attributes.company_name, "Acme");

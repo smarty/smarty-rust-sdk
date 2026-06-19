@@ -33,7 +33,7 @@ impl USEnrichmentClient {
             .send_enrichment_request::<L::Response>(url, lookup.etag(), lookup.params())
             .await?;
 
-        lookup.set_etag(transport.etag);
+        lookup.set_response_etag(transport.etag);
         if !transport.not_modified {
             lookup.apply_results(transport.results)?;
         }
@@ -50,7 +50,7 @@ impl USEnrichmentClient {
         let mut req = self.client.reqwest_client.request(Method::GET, url);
 
         if !etag_in.is_empty() {
-            req = req.header("If-None-Match", etag_in);
+            req = req.header("Etag", etag_in);
         }
 
         req = self.client.build_request(req);

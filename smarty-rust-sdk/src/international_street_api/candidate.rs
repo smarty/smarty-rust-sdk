@@ -23,20 +23,15 @@ pub struct RootLevel {
     pub address6: String,
     pub address7: String,
     pub address8: String,
-    pub address9: String,
-    pub address10: String,
-    pub address11: String,
-    pub address12: String,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(default)]
 pub struct Components {
+    pub attention: String,
     pub super_administrative_area: String,
     pub administrative_area: String,
     pub administrative_area_iso2: String,
-    pub administrative_area_short: String,
-    pub administrative_area_long: String,
     pub sub_administrative_area: String,
     pub building: String,
     pub dependent_locality: String,
@@ -52,6 +47,11 @@ pub struct Components {
     pub premise_number: String,
     pub premise_type: String,
     pub premise_prefix_number: String,
+    pub short_address_code: String,
+    pub sub_building_leading_type: String,
+    pub sub_building_block: String,
+    pub sub_building_door: String,
+    pub sub_building_staircase: String,
     pub thoroughfare: String,
     pub thoroughfare_predirection: String,
     pub thoroughfare_postdirection: String,

@@ -14,6 +14,7 @@ pub struct EnrichmentLookup<R: EnrichmentResponse> {
     pub include: String,
     pub exclude: String,
     pub etag: String,
+    pub response_etag: String,
     pub features: String,
     pub results: Vec<R>,
 
@@ -72,6 +73,10 @@ impl<R: EnrichmentResponse> EnrichmentRequest for EnrichmentLookup<R> {
         self.etag = etag;
     }
 
+    fn set_response_etag(&mut self, etag: String) {
+        self.response_etag = etag;
+    }
+
     fn params(&self) -> Vec<(String, String)> {
         [
             has_param("include".to_string(), self.include.clone()),
@@ -101,6 +106,7 @@ pub struct BusinessDetailLookup {
     pub include: String,
     pub exclude: String,
     pub etag: String,
+    pub response_etag: String,
     pub result: Option<BusinessDetailResponse>,
 }
 
@@ -131,6 +137,10 @@ impl EnrichmentRequest for BusinessDetailLookup {
 
     fn set_etag(&mut self, etag: String) {
         self.etag = etag;
+    }
+
+    fn set_response_etag(&mut self, etag: String) {
+        self.response_etag = etag;
     }
 
     fn params(&self) -> Vec<(String, String)> {
