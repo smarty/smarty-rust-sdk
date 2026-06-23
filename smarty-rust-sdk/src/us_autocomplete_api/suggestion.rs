@@ -17,4 +17,5 @@ pub struct Suggestion {
     pub state: String,
     pub zipcode: String,
     pub entries: i32,
+    pub source: String,
 }
