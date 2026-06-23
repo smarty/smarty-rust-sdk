@@ -16,9 +16,9 @@ pub struct Lookup {
     pub prefer_state: Vec<String>,
     pub prefer_zip: Vec<String>,
     pub prefer_ratio: i32,
-    pub geolocation: Geolocation,
+    pub prefer_geolocation: PreferGeolocation,
     pub selected: String,
-    pub exclude: String,
+    pub exclude: Vec<String>,
 
     pub results: SuggestionListing,
 }
@@ -37,9 +37,9 @@ impl Default for Lookup {
             prefer_state: vec![],
             prefer_zip: vec![],
             prefer_ratio: 0,
-            geolocation: Geolocation::default(),
+            prefer_geolocation: PreferGeolocation::default(),
             selected: String::default(),
-            exclude: String::default(),
+            exclude: vec![],
 
             results: SuggestionListing {
                 suggestions: vec![],
@@ -64,7 +64,7 @@ impl Lookup {
             has_param("prefer_ratio".to_string(), self.prefer_ratio),
             geolocation,
             has_param("selected".to_string(), self.selected),
-            has_param("exclude".to_string(), self.exclude),
+            has_vec_param("exclude".to_string(), ",", self.exclude),
         ]
         .iter()
         .filter_map(Option::clone)
@@ -82,11 +82,11 @@ impl Lookup {
             return Some(("prefer_geolocation".to_string(), "none".to_string()));
         }
 
-        match self.geolocation {
-            Geolocation::GeolocateCity => {
+        match self.prefer_geolocation {
+            PreferGeolocation::GeolocateCity => {
                 Some(("prefer_geolocation".to_string(), "city".to_string()))
             }
-            Geolocation::GeolocateNone => {
+            PreferGeolocation::GeolocateNone => {
                 Some(("prefer_geolocation".to_string(), "none".to_string()))
             }
         }
@@ -94,7 +94,7 @@ impl Lookup {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize)]
-pub enum Geolocation {
+pub enum PreferGeolocation {
     #[default]
     #[serde(rename = "none")]
     GeolocateNone,
