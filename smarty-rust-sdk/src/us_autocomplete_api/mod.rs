@@ -31,7 +31,10 @@ mod tests {
             prefer_geolocation: PreferGeolocation::GeolocateCity,
             source: Some(Source::All),
             selected: "selectedAddress".to_string(),
-            exclude: vec!["excludedAddress".to_string(), "excludedAddress2".to_string()],
+            exclude: vec![
+                "excludedAddress".to_string(),
+                "excludedAddress2".to_string(),
+            ],
             ..Default::default()
         };
 
@@ -48,7 +51,10 @@ mod tests {
             ("prefer_ratio".to_string(), "3".to_string()),
             ("prefer_geolocation".to_string(), "city".to_string()),
             ("selected".to_string(), "selectedAddress".to_string()),
-            ("exclude".to_string(), "excludedAddress,excludedAddress2".to_string()),
+            (
+                "exclude".to_string(),
+                "excludedAddress,excludedAddress2".to_string(),
+            ),
             ("source".to_string(), "all".to_string()),
         ];
 
