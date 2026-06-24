@@ -1,5 +1,5 @@
 use crate::sdk::{has_param, has_vec_param};
-use crate::us_autocomplete_pro_api::suggestion::SuggestionListing;
+use crate::us_autocomplete_api::suggestion::SuggestionListing;
 use serde::Serialize;
 use std::fmt::{Display, Formatter};
 
@@ -16,7 +16,9 @@ pub struct Lookup {
     pub prefer_state: Vec<String>,
     pub prefer_zip: Vec<String>,
     pub prefer_ratio: i32,
-    pub geolocation: Geolocation,
+    pub prefer_geolocation: PreferGeolocation,
+    pub selected: String,
+    pub exclude: Vec<String>,
 
     pub results: SuggestionListing,
 }
@@ -35,7 +37,9 @@ impl Default for Lookup {
             prefer_state: vec![],
             prefer_zip: vec![],
             prefer_ratio: 0,
-            geolocation: Geolocation::default(),
+            prefer_geolocation: PreferGeolocation::default(),
+            selected: String::default(),
+            exclude: vec![],
 
             results: SuggestionListing {
                 suggestions: vec![],
@@ -46,7 +50,7 @@ impl Default for Lookup {
 
 impl Lookup {
     pub(crate) fn into_param_array(self) -> Vec<(String, String)> {
-        let geolocation_self = self.clone();
+        let geolocation = self.geolocation_param();
         let mut result: Vec<(String, String)> = [
             has_param("search".to_string(), self.search),
             has_param("max_results".to_string(), self.max_results),
@@ -58,7 +62,9 @@ impl Lookup {
             has_vec_param("prefer_states".to_string(), ";", self.prefer_state),
             has_vec_param("prefer_zip_codes".to_string(), ";", self.prefer_zip),
             has_param("prefer_ratio".to_string(), self.prefer_ratio),
-            geolocation_self.geolocation_param(),
+            geolocation,
+            has_param("selected".to_string(), self.selected),
+            has_vec_param("exclude".to_string(), ",", self.exclude),
         ]
         .iter()
         .filter_map(Option::clone)
@@ -71,16 +77,16 @@ impl Lookup {
         result
     }
 
-    fn geolocation_param(self) -> Option<(String, String)> {
+    fn geolocation_param(&self) -> Option<(String, String)> {
         if !self.zip_filter.is_empty() || !self.prefer_zip.is_empty() {
             return Some(("prefer_geolocation".to_string(), "none".to_string()));
         }
 
-        match self.geolocation {
-            Geolocation::GeolocateCity => {
+        match self.prefer_geolocation {
+            PreferGeolocation::GeolocateCity => {
                 Some(("prefer_geolocation".to_string(), "city".to_string()))
             }
-            Geolocation::GeolocateNone => {
+            PreferGeolocation::GeolocateNone => {
                 Some(("prefer_geolocation".to_string(), "none".to_string()))
             }
         }
@@ -88,7 +94,7 @@ impl Lookup {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize)]
-pub enum Geolocation {
+pub enum PreferGeolocation {
     #[default]
     #[serde(rename = "none")]
     GeolocateNone,

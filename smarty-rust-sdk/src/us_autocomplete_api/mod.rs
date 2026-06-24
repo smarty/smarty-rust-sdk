@@ -5,16 +5,16 @@ pub mod suggestion;
 #[cfg(test)]
 mod tests {
     use crate::sdk::options::OptionsBuilder;
-    use crate::us_autocomplete_pro_api::client::USAutocompleteProClient;
-    use crate::us_autocomplete_pro_api::lookup::{Geolocation, Lookup, Source};
+    use crate::us_autocomplete_api::client::USAutocompleteClient;
+    use crate::us_autocomplete_api::lookup::{Lookup, PreferGeolocation, Source};
 
     #[test]
     fn client_test() {
-        let client = USAutocompleteProClient::new(OptionsBuilder::new(None).build()).unwrap();
+        let client = USAutocompleteClient::new(OptionsBuilder::new(None).build()).unwrap();
 
         assert_eq!(
             client.client.url.to_string(),
-            "https://us-autocomplete-pro.api.smarty.com/lookup".to_string()
+            "https://us-autocomplete.api.smarty.com/v2/lookup".to_string()
         )
     }
 
@@ -28,8 +28,13 @@ mod tests {
             prefer_city: vec!["Denver".to_string()],
             prefer_state: vec!["CO".to_string()],
             prefer_ratio: 3,
-            geolocation: Geolocation::GeolocateCity,
+            prefer_geolocation: PreferGeolocation::GeolocateCity,
             source: Some(Source::All),
+            selected: "selectedAddress".to_string(),
+            exclude: vec![
+                "excludedAddress".to_string(),
+                "excludedAddress2".to_string(),
+            ],
             ..Default::default()
         };
 
@@ -45,6 +50,11 @@ mod tests {
             ("prefer_states".to_string(), "CO".to_string()),
             ("prefer_ratio".to_string(), "3".to_string()),
             ("prefer_geolocation".to_string(), "city".to_string()),
+            ("selected".to_string(), "selectedAddress".to_string()),
+            (
+                "exclude".to_string(),
+                "excludedAddress,excludedAddress2".to_string(),
+            ),
             ("source".to_string(), "all".to_string()),
         ];
 
