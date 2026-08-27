@@ -102,6 +102,7 @@ Enrichment lookup types (`geo`, `secondary`, `principal`, `business`, plus the s
 
 - **client.rs**: Base `Client` struct wrapping `reqwest_middleware::ClientWithMiddleware`. Constructs the middleware chain: retry middleware (always) → logging middleware (if enabled). `build_request` handles auth, license params, custom headers, and User-Agent (`"smarty (sdk:rust@{VERSION})"`)
 - **authentication.rs**: Three credential types implementing `Authenticate` trait: `SecretKeyCredential` (query params), `WebsiteKeyCredential` (query param + Referer header), `BasicAuthCredential` (HTTP Authorization header)
+- Embedded/website keys are GET-only — not valid for batch (POST) requests or the US Extract API (POST-only): https://www.smarty.com/docs/cloud/authentication
 - **batch.rs**: `Batch<T>` — generic Vec wrapper capped at `MAX_BATCH_SIZE` (100)
 - **options.rs**: `OptionsBuilder` for client configuration (retries, logging, proxy, custom headers, API feature flags like `iana-timezone`)
 - **retry_strategy.rs**: `SmartyRetryMiddleware` — exponential backoff (max 10s), retries on 408/429/5xx and transient connection errors, fatal on all others. Default max 10 retries
