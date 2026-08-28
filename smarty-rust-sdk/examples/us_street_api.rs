@@ -31,6 +31,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
     batch.push(lookup)?;
     batch.push(lookup2)?;
 
+    // Batch requests are sent via HTTP POST. Embedded keys are restricted to GET, so
+    // batches require secret keys: https://www.smarty.com/docs/cloud/authentication
     let authentication = BasicAuthCredential::new(
         std::env::var("SMARTY_AUTH_ID").expect("Missing SMARTY_AUTH_ID env variable"),
         std::env::var("SMARTY_AUTH_TOKEN").expect("Missing SMARTY_AUTH_TOKEN env variable"),

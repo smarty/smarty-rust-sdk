@@ -22,6 +22,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
         ..Default::default()
     };
 
+    // The US Extract API is POST-only and embedded keys are restricted to GET, so this
+    // API requires secret keys: https://www.smarty.com/docs/cloud/authentication
     let authentication = BasicAuthCredential::new(
         std::env::var("SMARTY_AUTH_ID").expect("Missing SMARTY_AUTH_ID env variable"),
         std::env::var("SMARTY_AUTH_TOKEN").expect("Missing SMARTY_AUTH_TOKEN env variable"),
