@@ -1,5 +1,6 @@
 use crate::international_autocomplete_api::suggestion::SuggestionListing;
 use crate::sdk::has_param;
+use std::fmt::{Display, Formatter};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Lookup {
@@ -11,6 +12,7 @@ pub struct Lookup {
     pub geolocation: bool,
     pub include_only_locality: String,
     pub include_only_postal_code: String,
+    pub language: Option<Language>,
     pub results: SuggestionListing,
 }
 
@@ -25,6 +27,7 @@ impl Default for Lookup {
             geolocation: false,
             include_only_locality: "".to_string(),
             include_only_postal_code: "".to_string(),
+            language: None,
 
             results: SuggestionListing {
                 suggestions: vec![],
@@ -57,9 +60,34 @@ impl Lookup {
                 "include_only_postal_code".to_string(),
                 self.include_only_postal_code,
             ),
+            self.language
+                .map(|language| ("language".to_string(), language.to_string())),
         ]
         .iter()
         .filter_map(Option::clone)
         .collect::<Vec<_>>()
+    }
+}
+
+/// The language of the returned suggestions, sent as the `language` query parameter.
+///
+/// A [`Lookup`] whose `language` is `None` omits the parameter entirely, and the output
+/// language matches the default for the country.
+#[derive(Clone, Debug, PartialEq)]
+pub enum Language {
+    /// Results are in the language of the output country whenever possible.
+    ///
+    /// Required to get French diacritics in Canada.
+    Native,
+    /// Results use the Latin character set, with accents and other diacritics removed.
+    Latin,
+}
+
+impl Display for Language {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Language::Native => write!(f, "native"),
+            Language::Latin => write!(f, "latin"),
+        }
     }
 }
