@@ -3,7 +3,7 @@ extern crate smarty_rust_sdk;
 extern crate tokio;
 
 use smarty_rust_sdk::international_autocomplete_api::client::InternationalAutocompleteClient;
-use smarty_rust_sdk::international_autocomplete_api::lookup::Lookup;
+use smarty_rust_sdk::international_autocomplete_api::lookup::{Language, Lookup};
 use smarty_rust_sdk::sdk::authentication::BasicAuthCredential;
 use smarty_rust_sdk::sdk::options::OptionsBuilder;
 use std::error::Error;
@@ -16,6 +16,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         max_group_results: 10,
         geolocation: true,
         include_only_locality: "Paris".to_string(),
+        language: Some(Language::Native),
         ..Default::default()
     };
 
@@ -42,6 +43,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             country: "FRA".to_string(),
             address_id: result.address_id.clone(),
             max_results: result.entries,
+            language: Some(Language::Native),
             ..Default::default()
         };
 
