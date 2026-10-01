@@ -35,17 +35,14 @@ impl InternationalAutocompleteClient {
         Ok(())
     }
 
-    /// Builds the request url, appending the address id (if any) as a
-    /// path segment: `/v2/lookup` or `/v2/lookup/{address_id}`.
-    pub(crate) fn build_url(&self, lookup: &Lookup) -> Result<Url, SmartyError> {
+    /// Builds the request url, it should have path segments by now
+    pub(crate) fn build_url(&self, lookup: &Lookup) -> Url {
         let mut url = self.client.url.clone();
         if lookup.address_id != String::default() {
             url.path_segments_mut()
-                .map_err(|_| {
-                    SmartyError::ValidationError("base url cannot have path segments".to_string())
-                })?
+                .expect("client url should accept path segments")
                 .push(&lookup.address_id);
         }
-        Ok(url)
+        url
     }
 }
