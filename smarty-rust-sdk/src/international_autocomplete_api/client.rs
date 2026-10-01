@@ -23,7 +23,7 @@ impl InternationalAutocompleteClient {
     /// order to build a request and send the message
     /// to the server.
     pub async fn send(&self, lookup: &mut Lookup) -> Result<(), SmartyError> {
-        let url = self.build_url(lookup)?;
+        let url = self.build_url(lookup);
         let mut req = self.client.reqwest_client.request(Method::GET, url);
         req = self.client.build_request(req);
         req = req.query(&lookup.clone().into_param_array());
@@ -35,7 +35,7 @@ impl InternationalAutocompleteClient {
         Ok(())
     }
 
-    /// Builds the request url, it should have path segments by now
+    /// Builds the request url, it should have path segments already
     pub(crate) fn build_url(&self, lookup: &Lookup) -> Url {
         let mut url = self.client.url.clone();
         if lookup.address_id != String::default() {

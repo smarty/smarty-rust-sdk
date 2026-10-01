@@ -30,7 +30,7 @@ mod tests {
         };
 
         assert_eq!(
-            client.build_url(&lookup).unwrap().to_string(),
+            client.build_url(&lookup).to_string(),
             "https://international-autocomplete.api.smarty.com/v2/lookup"
         )
     }
@@ -46,7 +46,7 @@ mod tests {
         };
 
         assert_eq!(
-            client.build_url(&lookup).unwrap().to_string(),
+            client.build_url(&lookup).to_string(),
             "https://international-autocomplete.api.smarty.com/v2/lookup/thisisid"
         )
     }
@@ -65,7 +65,7 @@ mod tests {
         };
 
         assert_eq!(
-            client.build_url(&lookup).unwrap().to_string(),
+            client.build_url(&lookup).to_string(),
             "https://example.com/v2/lookup/thisisid"
         )
     }
