@@ -15,7 +15,58 @@ mod tests {
 
         assert_eq!(
             client.client.url.to_string(),
-            "https://international-autocomplete.api.smarty.com/v2/lookup/".to_string()
+            "https://international-autocomplete.api.smarty.com/v2/lookup".to_string()
+        )
+    }
+
+    #[test]
+    fn build_url_without_address_id() {
+        let client =
+            InternationalAutocompleteClient::new(OptionsBuilder::new(None).build()).unwrap();
+        let lookup = Lookup {
+            country: "FRA".to_string(),
+            search: "Louis".to_string(),
+            ..Default::default()
+        };
+
+        assert_eq!(
+            client.build_url(&lookup).to_string(),
+            "https://international-autocomplete.api.smarty.com/v2/lookup"
+        )
+    }
+
+    #[test]
+    fn build_url_with_address_id() {
+        let client =
+            InternationalAutocompleteClient::new(OptionsBuilder::new(None).build()).unwrap();
+        let lookup = Lookup {
+            country: "FRA".to_string(),
+            address_id: "thisisid".to_string(),
+            ..Default::default()
+        };
+
+        assert_eq!(
+            client.build_url(&lookup).to_string(),
+            "https://international-autocomplete.api.smarty.com/v2/lookup/thisisid"
+        )
+    }
+
+    #[test]
+    fn build_url_with_custom_base_url() {
+        let client = InternationalAutocompleteClient::new(
+            OptionsBuilder::new(None)
+                .with_base_url("https://example.com/")
+                .build(),
+        )
+        .unwrap();
+        let lookup = Lookup {
+            address_id: "thisisid".to_string(),
+            ..Default::default()
+        };
+
+        assert_eq!(
+            client.build_url(&lookup).to_string(),
+            "https://example.com/v2/lookup/thisisid"
         )
     }
 

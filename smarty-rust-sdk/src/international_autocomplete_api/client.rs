@@ -6,9 +6,10 @@ use crate::sdk::options::Options;
 use crate::sdk::send_request;
 use reqwest::Method;
 use smarty_rust_proc_macro::smarty_api;
+use url::Url;
 
 #[smarty_api(
-    api_path = "v2/lookup/",
+    api_path = "v2/lookup",
     default_url = "https://international-autocomplete.api.smarty.com/",
     lookup_style(lookup),
     lookup_type = "Lookup",
@@ -22,10 +23,7 @@ impl InternationalAutocompleteClient {
     /// order to build a request and send the message
     /// to the server.
     pub async fn send(&self, lookup: &mut Lookup) -> Result<(), SmartyError> {
-        let mut url = self.client.url.clone();
-        if lookup.address_id != String::default() {
-            url = url.join(&lookup.address_id)?;
-        }
+        let url = self.build_url(lookup);
         let mut req = self.client.reqwest_client.request(Method::GET, url);
         req = self.client.build_request(req);
         req = req.query(&lookup.clone().into_param_array());
@@ -35,5 +33,16 @@ impl InternationalAutocompleteClient {
         lookup.results = candidates;
 
         Ok(())
+    }
+
+    /// Builds the request url, it should have path segments already
+    pub(crate) fn build_url(&self, lookup: &Lookup) -> Url {
+        let mut url = self.client.url.clone();
+        if lookup.address_id != String::default() {
+            url.path_segments_mut()
+                .expect("client url should accept path segments")
+                .push(&lookup.address_id);
+        }
+        url
     }
 }
