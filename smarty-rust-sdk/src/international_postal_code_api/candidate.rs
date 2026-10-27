@@ -12,6 +12,7 @@ pub struct Candidate {
     pub dependent_locality: String,
     pub dependent_locality_name: String,
     pub double_dependent_locality: String,
+    pub thoroughfare: String,
     #[serde(rename = "postal_code")]
     pub postal_code: String,
     pub postal_code_extra: String,

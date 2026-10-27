@@ -95,6 +95,54 @@ mod tests {
     }
 
     #[test]
+    fn lookup_with_freeform() {
+        let lookup = Lookup {
+            country: "Brazil".to_string(),
+            freeform: "Rua Padre Antonio D'Angelo 121 Casa Verde, Sao Paulo".to_string(),
+            ..Default::default()
+        };
+
+        let expected_results = vec![
+            ("country".to_string(), "Brazil".to_string()),
+            ("geocode".to_string(), "true".to_string()),
+            ("language".to_string(), "native".to_string()),
+            (
+                "freeform".to_string(),
+                "Rua Padre Antonio D'Angelo 121 Casa Verde, Sao Paulo".to_string(),
+            ),
+        ];
+
+        assert_eq!(lookup.into_param_array(), expected_results);
+    }
+
+    #[test]
+    fn lookup_with_max_results() {
+        let lookup = Lookup {
+            country: "Brazil".to_string(),
+            address1: "Rua Padre Antonio D'Angelo 121".to_string(),
+            max_results: 10,
+            ..Default::default()
+        };
+
+        let params = lookup.into_param_array();
+
+        assert!(params.contains(&("max_results".to_string(), "10".to_string())));
+    }
+
+    #[test]
+    fn lookup_without_max_results() {
+        let lookup = Lookup {
+            country: "Brazil".to_string(),
+            address1: "Rua Padre Antonio D'Angelo 121".to_string(),
+            ..Default::default()
+        };
+
+        let params = lookup.into_param_array();
+
+        assert!(!params.iter().any(|(k, _)| k == "max_results"));
+    }
+
+    #[test]
     fn candidate_test() {
         let response_payload = r#"[{
             "input_id": "12345678",
