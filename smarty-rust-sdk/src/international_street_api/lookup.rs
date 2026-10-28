@@ -18,7 +18,7 @@ pub struct Lookup {
     pub administrative_area: String,
     pub postal_code: String,
     pub features: String,
-    pub max_results: u32,
+    pub max_results: i32,
 
     pub results: Vec<Candidate>,
 }
@@ -63,7 +63,8 @@ impl Lookup {
             has_param("administrative_area".to_string(), self.administrative_area),
             has_param("postal_code".to_string(), self.postal_code),
             has_param("features".to_string(), self.features),
-            has_param("max_results".to_string(), self.max_results),
+            (self.max_results > 0)
+                .then(|| ("max_results".to_string(), self.max_results.to_string())),
         ]
         .iter()
         .filter_map(Option::clone)
