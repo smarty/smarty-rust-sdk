@@ -6,7 +6,7 @@ pub mod lookup;
 mod tests {
     use crate::international_postal_code_api::candidate::Candidate;
     use crate::international_postal_code_api::client::InternationalPostalCodeClient;
-    use crate::international_postal_code_api::lookup::Lookup;
+    use crate::international_postal_code_api::lookup::{Language, Lookup};
     use crate::sdk::options::OptionsBuilder;
     use serde_json::from_str;
 
@@ -28,6 +28,8 @@ mod tests {
             administrative_area: "SP".to_string(),
             country: "Brazil".to_string(),
             postal_code: "02516".to_string(),
+            language: Some(Language::Native),
+            max_results: 25,
             ..Default::default()
         };
 
@@ -37,9 +39,74 @@ mod tests {
             ("locality".to_string(), "Sao Paulo".to_string()),
             ("administrative_area".to_string(), "SP".to_string()),
             ("postal_code".to_string(), "02516".to_string()),
+            ("language".to_string(), "native".to_string()),
+            ("max_results".to_string(), "25".to_string()),
         ];
 
         assert_eq!(lookup.into_param_array(), expected_params);
+    }
+
+    #[test]
+    fn lookup_with_native_language() {
+        let lookup = Lookup {
+            country: "Brazil".to_string(),
+            language: Some(Language::Native),
+            ..Default::default()
+        };
+
+        let params = lookup.into_param_array();
+
+        assert!(params.contains(&("language".to_string(), "native".to_string())));
+    }
+
+    #[test]
+    fn lookup_with_latin_language() {
+        let lookup = Lookup {
+            country: "Brazil".to_string(),
+            language: Some(Language::Latin),
+            ..Default::default()
+        };
+
+        let params = lookup.into_param_array();
+
+        assert!(params.contains(&("language".to_string(), "latin".to_string())));
+    }
+
+    #[test]
+    fn lookup_without_language() {
+        let lookup = Lookup {
+            country: "Brazil".to_string(),
+            ..Default::default()
+        };
+
+        let params = lookup.into_param_array();
+
+        assert!(!params.iter().any(|(k, _)| k == "language"));
+    }
+
+    #[test]
+    fn lookup_with_max_results() {
+        let lookup = Lookup {
+            country: "Brazil".to_string(),
+            max_results: 1000,
+            ..Default::default()
+        };
+
+        let params = lookup.into_param_array();
+
+        assert!(params.contains(&("max_results".to_string(), "1000".to_string())));
+    }
+
+    #[test]
+    fn lookup_without_max_results() {
+        let lookup = Lookup {
+            country: "Brazil".to_string(),
+            ..Default::default()
+        };
+
+        let params = lookup.into_param_array();
+
+        assert!(!params.iter().any(|(k, _)| k == "max_results"));
     }
 
     #[test]
@@ -55,6 +122,7 @@ mod tests {
                 "dependent_locality": "Vila Guilherme",
                 "dependent_locality_name": "Santana",
                 "double_dependent_locality": "Zona Norte",
+                "thoroughfare": "Rua Padre Antonio D'Angelo",
                 "postal_code": "02516",
                 "postal_code_extra": "050"
             }
@@ -70,6 +138,7 @@ mod tests {
         assert_eq!(candidate.dependent_locality, "Vila Guilherme");
         assert_eq!(candidate.dependent_locality_name, "Santana");
         assert_eq!(candidate.double_dependent_locality, "Zona Norte");
+        assert_eq!(candidate.thoroughfare, "Rua Padre Antonio D'Angelo");
         assert_eq!(candidate.administrative_area, "SP");
         assert_eq!(candidate.sub_administrative_area, "Greater Sao Paulo");
         assert_eq!(candidate.super_administrative_area, "Southeast");

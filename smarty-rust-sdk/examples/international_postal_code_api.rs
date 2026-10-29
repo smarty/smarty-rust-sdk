@@ -16,6 +16,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
         administrative_area: "SP".to_string(),
         country: "Brazil".to_string(),
         postal_code: "02516".to_string(),
+        // language: Some(Language::Native), // JPN only; import lookup::Language
+        // max_results: 10,
         ..Default::default()
     };
 
@@ -33,6 +35,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
     client.send(lookup).await?;
 
     println!("{}", serde_json::to_string_pretty(&lookup.results)?);
+
+    for candidate in &lookup.results {
+        println!("Thoroughfare: {}", candidate.thoroughfare);
+    }
 
     Ok(())
 }

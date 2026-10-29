@@ -18,6 +18,7 @@ pub struct Lookup {
     pub administrative_area: String,
     pub postal_code: String,
     pub features: String,
+    pub max_results: i32,
 
     pub results: Vec<Candidate>,
 }
@@ -39,6 +40,7 @@ impl Default for Lookup {
             administrative_area: String::default(),
             postal_code: String::default(),
             features: String::default(),
+            max_results: 0,
             results: vec![],
         }
     }
@@ -51,6 +53,7 @@ impl Lookup {
             has_param("country".to_string(), self.country),
             Some(("geocode".to_string(), self.geocode.to_string())),
             has_param("language".to_string(), self.language.to_string()),
+            has_param("freeform".to_string(), self.freeform),
             has_param("address1".to_string(), self.address1),
             has_param("address2".to_string(), self.address2),
             has_param("address3".to_string(), self.address3),
@@ -60,6 +63,8 @@ impl Lookup {
             has_param("administrative_area".to_string(), self.administrative_area),
             has_param("postal_code".to_string(), self.postal_code),
             has_param("features".to_string(), self.features),
+            (self.max_results > 0)
+                .then(|| ("max_results".to_string(), self.max_results.to_string())),
         ]
         .iter()
         .filter_map(Option::clone)
